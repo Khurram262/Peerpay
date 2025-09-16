@@ -24,7 +24,9 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { initialLinkedAccounts, type LinkedAccount } from '@/lib/data';
+import { initialLinkedAccounts, type LinkedAccount, user } from '@/lib/data';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 function LinkAccountDialog({
   onLinkAccount,
@@ -114,6 +116,8 @@ function LinkAccountDialog({
 export default function SettingsPage() {
   const [accounts, setAccounts] = useState<LinkedAccount[]>([]);
   const { toast } = useToast();
+  const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
+
 
   useEffect(() => {
     const storedAccounts = localStorage.getItem('linkedAccounts');
@@ -155,23 +159,40 @@ export default function SettingsPage() {
 
   return (
     <div className="grid gap-8">
-      <Card>
+       <Card>
         <CardHeader>
           <CardTitle>Profile</CardTitle>
           <CardDescription>
-            Manage your personal information.
+            Manage your personal information and profile picture.
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-2">
-          <div className="grid gap-2">
-            <Label htmlFor="name">Full Name</Label>
-            <Input id="name" defaultValue="Alex Doe" />
+        <CardContent className="grid gap-6">
+          <div className="flex items-center gap-6">
+            <Avatar className="h-24 w-24">
+              {userAvatar && (
+                <AvatarImage src={userAvatar.imageUrl} alt={user.name} />
+              )}
+              <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div className='space-y-2'>
+              <Label>Profile Picture</Label>
+              <Input type="file" className="max-w-xs" />
+              <p className="text-xs text-muted-foreground">
+                Upload a new photo for your profile.
+              </p>
+            </div>
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" defaultValue="alex.doe@example.com" />
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="name">Full Name</Label>
+              <Input id="name" defaultValue={user.name} />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" type="email" defaultValue={user.email} />
+            </div>
           </div>
-          <div className="md:col-span-2 flex justify-end">
+          <div className="flex justify-end">
             <Button>Save Changes</Button>
           </div>
         </CardContent>

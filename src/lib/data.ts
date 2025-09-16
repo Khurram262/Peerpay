@@ -10,7 +10,7 @@ export type Transaction = {
   type: 'sent' | 'received' | 'top-up';
 };
 
-export type CardTheme = 'sky' | 'emerald' | 'amber' | 'rose' | 'slate' | 'violet';
+export type CardTheme = string; // Now a string to hold any color
 
 export type VirtualCard = {
   id: string;
@@ -132,7 +132,7 @@ export const initialVirtualCards: VirtualCard[] = [
     cardholder: 'Alex Doe',
     isPrimary: true,
     status: 'active',
-    theme: 'sky',
+    theme: '#0ea5e9', // Sky Blue
   },
   {
     id: 'card_2',
@@ -143,7 +143,7 @@ export const initialVirtualCards: VirtualCard[] = [
     cardholder: 'Alex Doe',
     isPrimary: false,
     status: 'active',
-    theme: 'emerald',
+    theme: '#10b981', // Emerald Green
   },
 ];
 

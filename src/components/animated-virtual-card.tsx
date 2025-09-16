@@ -6,18 +6,26 @@ import type { VirtualCard } from '@/lib/data';
 import { Ban } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const themeClasses = {
-  sky: 'from-sky-500 to-sky-700',
-  emerald: 'from-emerald-500 to-emerald-700',
-  amber: 'from-amber-500 to-amber-700',
-  rose: 'from-rose-500 to-rose-700',
-  slate: 'from-slate-600 to-slate-800',
-  violet: 'from-violet-500 to-violet-700',
-};
+function MastercardLogo() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 48 48"
+      className="h-12 w-12"
+      aria-label="Mastercard logo"
+    >
+      <circle fill="#EA001B" cx="18.5" cy="24" r="11.5" />
+      <circle fill="#F79E1B" cx="29.5" cy="24" r="11.5" />
+      <path
+        fill="#FF5F00"
+        d="M26.8,24A11.5,11.5,0,0,1,18.5,12.5a11.5,11.5,0,0,0,0,23,11.5,11.5,0,0,1,8.3-11.5Z"
+      />
+    </svg>
+  );
+}
 
 export function AnimatedVirtualCard({ card, forceFlip }: { card: VirtualCard, forceFlip?: boolean }) {
   const [isFlipped, setIsFlipped] = React.useState(false);
-  const cardTheme = themeClasses[card.theme] || themeClasses.sky;
 
   React.useEffect(() => {
     if (forceFlip !== undefined) {
@@ -28,6 +36,11 @@ export function AnimatedVirtualCard({ card, forceFlip }: { card: VirtualCard, fo
   const formatCardNumber = (num: string) => {
     return num.match(/.{1,4}/g)?.join(' ') ?? '';
   };
+  
+  const cardStyle = {
+    '--card-bg-color': card.theme,
+  } as React.CSSProperties;
+
 
   return (
     <div
@@ -43,12 +56,14 @@ export function AnimatedVirtualCard({ card, forceFlip }: { card: VirtualCard, fo
         {/* Front of the card */}
         <div className="absolute inset-0 [backface-visibility:hidden]">
           <div
+            style={cardStyle}
             className={cn(
-              'relative w-full h-full rounded-xl p-6 flex flex-col justify-between text-white bg-gradient-to-br shadow-lg overflow-hidden',
-              cardTheme
+              'relative w-full h-full rounded-xl p-6 flex flex-col justify-between text-white bg-[--card-bg-color] shadow-lg overflow-hidden'
             )}
           >
-             <div className="absolute top-0 left-0 w-full h-full bg-black/10 mix-blend-overlay"></div>
+             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent mix-blend-overlay"></div>
+             <div className="absolute inset-0 opacity-10 [background-image:radial-gradient(circle_at_50%_0,_hsl(0_0%_100%/0.2)_0,_transparent_100%),radial-gradient(circle_at_100%_100%,_hsl(0_0%_100%/0.2)_0,_transparent_100%)]"></div>
+
             {card.status === 'blocked' && (
               <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center z-20">
                 <Ban className="w-16 h-16 text-white/70" />
@@ -65,8 +80,8 @@ export function AnimatedVirtualCard({ card, forceFlip }: { card: VirtualCard, fo
               </div>
             </div>
 
-            <div className="relative text-left z-10 space-y-4">
-                <p className="font-mono text-lg sm:text-xl tracking-wider whitespace-nowrap">
+            <div className="relative text-left z-10 space-y-2">
+                <p className="font-mono text-xl md:text-2xl tracking-wider whitespace-nowrap">
                   {formatCardNumber(card.fullNumber)}
                 </p>
                 <div className="flex justify-between items-end">
@@ -76,11 +91,14 @@ export function AnimatedVirtualCard({ card, forceFlip }: { card: VirtualCard, fo
                         {card.cardholder}
                         </p>
                     </div>
-                    <div>
-                        <p className="text-xs text-gray-200/80 uppercase">Expires</p>
-                        <p className="font-medium tracking-wide text-gray-100">
-                        {card.expiry}
-                        </p>
+                    <div className='flex items-center gap-2'>
+                      <div>
+                          <p className="text-xs text-gray-200/80 uppercase text-right">Expires</p>
+                          <p className="font-medium tracking-wide text-gray-100">
+                          {card.expiry}
+                          </p>
+                      </div>
+                      <MastercardLogo />
                     </div>
                 </div>
             </div>
@@ -88,10 +106,10 @@ export function AnimatedVirtualCard({ card, forceFlip }: { card: VirtualCard, fo
         </div>
         {/* Back of the card */}
         <div
+          style={cardStyle}
           className={cn(
             'absolute inset-0 h-full w-full rounded-xl text-white [transform:rotateY(180deg)] [backface-visibility:hidden]',
-            'bg-gradient-to-br',
-            cardTheme
+            'bg-[--card-bg-color]'
           )}
         >
           <div className="relative w-full h-full rounded-xl p-0 flex flex-col justify-start">

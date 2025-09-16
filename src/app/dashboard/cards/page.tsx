@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -39,26 +40,19 @@ import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { AnimatedVirtualCard } from '@/components/animated-virtual-card';
 
-const themeColors: Record<CardTheme, string> = {
-  sky: 'bg-sky-500',
-  emerald: 'bg-emerald-500',
-  amber: 'bg-amber-500',
-  rose: 'bg-rose-500',
-  slate: 'bg-slate-500',
-  violet: 'bg-violet-500',
-};
+const defaultColor = '#0ea5e9';
 
 function CreateCardDialog({
   onCreateCard,
 }: {
   onCreateCard: (theme: CardTheme, cardholder: string) => void;
 }) {
-  const [selectedTheme, setSelectedTheme] = useState<CardTheme>('sky');
+  const [selectedColor, setSelectedColor] = useState(defaultColor);
   const [cardholderName, setCardholderName] = useState(user.name);
   const [isOpen, setIsOpen] = useState(false);
 
   const handleCreate = () => {
-    onCreateCard(selectedTheme, cardholderName);
+    onCreateCard(selectedColor, cardholderName);
     setIsOpen(false);
   };
   
@@ -71,7 +65,7 @@ function CreateCardDialog({
     cardholder: cardholderName,
     isPrimary: false,
     status: 'active',
-    theme: selectedTheme,
+    theme: selectedColor,
   };
 
 
@@ -100,22 +94,10 @@ function CreateCardDialog({
             <Input id="card-name" value={cardholderName} onChange={(e) => setCardholderName(e.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label>Choose a Color Theme</Label>
-            <div className="flex flex-wrap justify-center gap-3 pt-2">
-              {Object.keys(themeColors).map((theme) => (
-                <button
-                  key={theme}
-                  className={cn(
-                    'h-10 w-10 rounded-full border-2 transition-all',
-                    themeColors[theme as CardTheme],
-                    selectedTheme === theme
-                      ? 'border-primary ring-2 ring-ring'
-                      : 'border-transparent'
-                  )}
-                  onClick={() => setSelectedTheme(theme as CardTheme)}
-                  aria-label={`Select ${theme} theme`}
-                />
-              ))}
+            <Label htmlFor="card-color">Choose a Color</Label>
+            <div className='flex items-center gap-4'>
+              <Input id="card-color" type="color" value={selectedColor} onChange={(e) => setSelectedColor(e.target.value)} className="w-16 h-10 p-1" />
+              <Input type="text" value={selectedColor} onChange={(e) => setSelectedColor(e.target.value)} placeholder='#0ea5e9' />
             </div>
           </div>
         </div>
@@ -129,6 +111,38 @@ function CreateCardDialog({
     </Dialog>
   );
 }
+
+function OrderPhysicalCard() {
+  const { toast } = useToast();
+  const handleOrder = () => {
+    toast({
+      title: 'Order Placed',
+      description: 'Your physical card has been ordered and will be shipped to your registered address.',
+    });
+  };
+  return (
+    <Card className="mt-8">
+      <CardHeader>
+        <CardTitle>Order a Physical Card</CardTitle>
+        <CardDescription>
+          Get a physical version of your PeerPay card for in-store purchases.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground">
+          The physical card will be linked to your primary account and will have the same number and security features as your primary virtual card. Shipping fees may apply.
+        </p>
+      </CardContent>
+      <CardFooter>
+        <Button onClick={handleOrder}>
+          <CreditCard className="mr-2 h-4 w-4" />
+          Order Physical Card
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+}
+
 
 export default function CardsPage() {
   const [cards, setCardsState] = useState<VirtualCard[]>(initialVirtualCards);
@@ -239,89 +253,92 @@ export default function CardsPage() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-          <div>
-            <CardTitle>Virtual Cards</CardTitle>
-            <CardDescription>
-              Manage your virtual cards for secure online spending.
-            </CardDescription>
+    <>
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+            <div>
+              <CardTitle>Virtual Cards</CardTitle>
+              <CardDescription>
+                Manage your virtual cards for secure online spending.
+              </CardDescription>
+            </div>
+            <CreateCardDialog onCreateCard={handleCreateCard} />
           </div>
-          <CreateCardDialog onCreateCard={handleCreateCard} />
-        </div>
-      </CardHeader>
-      <CardContent className="grid gap-6 md:grid-cols-2">
-        {cards.map((card) => (
-           <div key={card.id} className="space-y-4">
-            <AnimatedVirtualCard card={card} />
-             <div className="flex justify-between items-center gap-2 p-2 border rounded-lg">
-                <div className="flex items-center gap-2">
-                 {card.isPrimary ? (
-                  <div className="text-xs font-bold text-primary py-1 px-2 rounded-full bg-primary/10 flex items-center gap-1">
-                    <CheckCircle className='h-3 w-3' />
-                    PRIMARY
-                  </div>
-                ) : (
-                  <Button variant="ghost" size="sm" onClick={() => handleSetPrimary(card.id)}>Set as primary</Button>
-                )}
-                </div>
-                <div className="flex items-center gap-2">
-                    <div className="flex items-center space-x-2">
-                      <Switch
-                        id={`block-switch-${card.id}`}
-                        checked={card.status === 'blocked'}
-                        onCheckedChange={() => handleToggleBlock(card.id)}
-                        aria-label={
-                          card.status === 'active' ? 'Block card' : 'Unblock card'
-                        }
-                      />
-                      <Label
-                        htmlFor={`block-switch-${card.id}`}
-                        className="text-sm text-muted-foreground"
-                      >
-                        {card.status === 'active' ? 'Active' : 'Blocked'}
-                      </Label>
+        </CardHeader>
+        <CardContent className="grid gap-6 md:grid-cols-2">
+          {cards.map((card) => (
+            <div key={card.id} className="space-y-4">
+              <AnimatedVirtualCard card={card} />
+              <div className="flex justify-between items-center gap-2 p-2 border rounded-lg">
+                  <div className="flex items-center gap-2">
+                  {card.isPrimary ? (
+                    <div className="text-xs font-bold text-primary py-1 px-2 rounded-full bg-primary/10 flex items-center gap-1">
+                      <CheckCircle className='h-3 w-3' />
+                      PRIMARY
                     </div>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-muted-foreground hover:text-destructive"
+                  ) : (
+                    <Button variant="ghost" size="sm" onClick={() => handleSetPrimary(card.id)}>Set as primary</Button>
+                  )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id={`block-switch-${card.id}`}
+                          checked={card.status === 'blocked'}
+                          onCheckedChange={() => handleToggleBlock(card.id)}
+                          aria-label={
+                            card.status === 'active' ? 'Block card' : 'Unblock card'
+                          }
+                        />
+                        <Label
+                          htmlFor={`block-switch-${card.id}`}
+                          className="text-sm text-muted-foreground"
                         >
-                          <Trash className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone. This will permanently
-                            delete your virtual card.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleRemoveCard(card.id)}
+                          {card.status === 'active' ? 'Active' : 'Blocked'}
+                        </Label>
+                      </div>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground hover:text-destructive"
                           >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                </div>
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will permanently
+                              delete your virtual card.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleRemoveCard(card.id)}
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                  </div>
+              </div>
             </div>
-          </div>
-        ))}
-        {cards.length === 0 && (
-            <div className="text-center py-12 text-muted-foreground md:col-span-2">
-                <p>You have no virtual cards.</p>
-                <p className="text-sm">Create one to get started!</p>
-            </div>
-        )}
-      </CardContent>
-    </Card>
+          ))}
+          {cards.length === 0 && (
+              <div className="text-center py-12 text-muted-foreground md:col-span-2">
+                  <p>You have no virtual cards.</p>
+                  <p className="text-sm">Create one to get started!</p>
+              </div>
+          )}
+        </CardContent>
+      </Card>
+      <OrderPhysicalCard />
+    </>
   );
 }

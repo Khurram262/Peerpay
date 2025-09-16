@@ -66,7 +66,7 @@ export function AnimatedVirtualCard({ card, forceFlip }: { card: VirtualCard, fo
             </div>
 
             <div className="relative text-left z-10 space-y-4">
-                <p className="font-mono text-xl tracking-widest">
+                <p className="font-mono text-lg sm:text-xl tracking-wider whitespace-nowrap">
                   {formatCardNumber(card.fullNumber)}
                 </p>
                 <div className="flex justify-between items-end">

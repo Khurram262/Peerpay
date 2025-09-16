@@ -7,29 +7,6 @@ import { Ban, Eye, EyeOff, Wifi } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
-function use3dTransform() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [style, setStyle] = useState({});
-
-  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    setStyle({
-      '--glow-x': `${x}px`,
-      '--glow-y': `${y}px`,
-    });
-  };
-
-  const onMouseLeave = () => {
-    setStyle({});
-  };
-
-  return { ref, style, onMouseMove, onMouseLeave };
-}
-
 function MastercardLogo() {
   return (
     <svg
@@ -57,7 +34,6 @@ const tierStyles = {
 export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   const [isFlipped, setIsFlipped] = React.useState(false);
   const [isDetailsVisible, setIsDetailsVisible] = React.useState(false);
-  const card3d = use3dTransform();
 
   const formatCardNumber = (num: string) => {
     return num.match(/.{1,4}/g)?.join(' ') ?? '';
@@ -74,11 +50,8 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   const currentTier = tierStyles[card.tier || 'green'];
 
   const cardBaseStyle =
-    'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden transition-all duration-300 ease-out shadow-2xl';
-  const cardFrontStyle = `
-    flex flex-col justify-between 
-    before:content-[''] before:absolute before:inset-0 before:bg-card-pattern before:bg-no-repeat before:opacity-0 before:transition-opacity before:duration-500 hover:before:opacity-100
-  `;
+    'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl';
+  const cardFrontStyle = `flex flex-col justify-between`;
   
   const cardBackgroundStyle = {
     background: `linear-gradient(to bottom right, ${card.theme.start}, ${card.theme.end})`,
@@ -86,16 +59,12 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
 
   return (
     <div
-      ref={card3d.ref}
-      style={card3d.style as React.CSSProperties}
-      onMouseMove={card3d.onMouseMove}
-      onMouseLeave={card3d.onMouseLeave}
       onClick={() => setIsFlipped(!isFlipped)}
-      className="group w-full h-56 [perspective:1000px] transition-transform duration-300 ease-out"
+      className="group w-full h-56 [perspective:1000px] cursor-pointer"
     >
       <div
         className={cn(
-          'relative h-full w-full rounded-2xl [transform-style:preserve-3d] transition-transform duration-700',
+          'relative h-full w-full rounded-2xl [transform-style:preserve-3d] transition-transform duration-700 group-hover:scale-105',
           isFlipped ? '[transform:rotateY(180deg)]' : ''
         )}
       >

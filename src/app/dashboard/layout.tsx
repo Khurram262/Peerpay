@@ -31,7 +31,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <div className="flex min-h-screen w-full flex-col">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 sm:px-6">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-white/10 bg-background/80 backdrop-blur-sm px-4 sm:px-6">
             <Link
                 href="/dashboard"
                 className="flex items-center gap-2 font-semibold"
@@ -62,7 +62,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </main>
       </div>
 
-       <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm border-t p-2 flex justify-around md:hidden z-50">
+       <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm border-t border-white/10 p-2 flex justify-around md:hidden z-50">
         <NavButton href="/dashboard" icon={Home} label="Home" />
         <NavButton href="/dashboard/cards" icon={CreditCard} label="Cards" />
         <NavButton href="/dashboard/payments" icon={Receipt} label="Payments" />

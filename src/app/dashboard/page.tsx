@@ -355,7 +355,7 @@ export default function DashboardPage() {
       <div className="grid gap-8 md:grid-cols-12">
         <div className="md:col-span-7 lg:col-span-8 space-y-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-            <Card className="bg-primary text-primary-foreground overflow-hidden shadow-xl">
+            <Card className="bg-gradient-to-tr from-primary/80 to-primary/60 text-primary-foreground overflow-hidden shadow-2xl">
               <CardContent className="p-6">
                 <p className="text-sm text-primary-foreground/80">
                   Available Balance
@@ -365,7 +365,7 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-secondary text-secondary-foreground overflow-hidden shadow-xl">
+            <Card className="bg-secondary/50 text-secondary-foreground overflow-hidden shadow-2xl">
               <CardContent className="p-6">
                  <div className="flex items-center gap-2">
                     <Gift className="text-amber-400" />
@@ -402,7 +402,7 @@ export default function DashboardPage() {
           {primaryCard ? (
              <AnimatedVirtualCard card={primaryCard} />
           ) : (
-             <Card className="h-56 flex items-center justify-center bg-muted/50">
+             <Card className="h-56 flex items-center justify-center">
                 <p className="text-muted-foreground">No primary card available.</p>
              </Card>
           )}

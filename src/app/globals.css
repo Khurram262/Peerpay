@@ -4,28 +4,28 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 220 20% 95%;
     --foreground: 224 71.4% 4.1%;
-    --card: 0 0% 100%;
+    --card: 220 20% 100%;
     --card-foreground: 224 71.4% 4.1%;
-    --popover: 0 0% 100%;
+    --popover: 220 20% 100%;
     --popover-foreground: 224 71.4% 4.1%;
-    --primary: 262.1 83.3% 57.8%;
+    --primary: 195 85% 41%;
     --primary-foreground: 210 20% 98%;
-    --secondary: 220 14.3% 95.9%;
+    --secondary: 220 14.3% 90%;
     --secondary-foreground: 220.9 39.3% 11%;
-    --muted: 220 14.3% 95.9%;
+    --muted: 220 14.3% 90%;
     --muted-foreground: 220 8.9% 46.1%;
-    --accent: 220 14.3% 95.9%;
+    --accent: 220 14.3% 90%;
     --accent-foreground: 220.9 39.3% 11%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 20% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 262.1 83.3% 57.8%;
+    --border: 220 13% 85%;
+    --input: 220 13% 88%;
+    --ring: 195 85% 41%;
     --radius: 0.75rem;
 
-    --chart-1: 262 80% 50%;
+    --chart-1: 195 80% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
@@ -33,27 +33,27 @@
   }
 
   .dark {
-    --background: 224 71.4% 4.1%;
+    --background: 220 20% 5%;
     --foreground: 210 20% 98%;
-    --card: 224 71.4% 4.1%;
+    --card: 220 20% 12%;
     --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
+    --popover: 220 20% 5%;
     --popover-foreground: 210 20% 98%;
-    --primary: 263.4 90.2% 62.2%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 215 27.9% 16.9%;
+    --primary: 195 90% 60%;
+    --primary-foreground: 220 20% 10%;
+    --secondary: 220 20% 15%;
     --secondary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
+    --muted: 220 20% 15%;
     --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 215 27.9% 16.9%;
+    --accent: 220 20% 15%;
     --accent-foreground: 210 20% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 20% 98%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 263.4 90.2% 62.2%;
+    --border: 220 20% 20%;
+    --input: 220 20% 20%;
+    --ring: 195 90% 60%;
     
-    --chart-1: 262 80% 58%;
+    --chart-1: 195 80% 58%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
@@ -67,8 +67,11 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-color: hsl(var(--background));
-    background-image: radial-gradient(circle at 1px 1px, hsl(var(--foreground) / 0.05) 1px, transparent 0);
-    background-size: 1.5rem 1.5rem;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-card/60 backdrop-blur-xl border border-white/10 rounded-2xl;
   }
 }

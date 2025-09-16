@@ -1,11 +1,42 @@
 
 'use client';
 
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import type { VirtualCard } from '@/lib/data';
 import { Ban, Eye, EyeOff, Wifi } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+
+function use3dTransform() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [style, setStyle] = useState({});
+
+  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const width = rect.width;
+    const height = rect.height;
+
+    const rotateX = (y / height - 0.5) * -20; // Max rotation 10 degrees
+    const rotateY = (x / width - 0.5) * 20;  // Max rotation 10 degrees
+
+    setStyle({
+      transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`,
+      '--glow-x': `${x}px`,
+      '--glow-y': `${y}px`,
+    });
+  };
+
+  const onMouseLeave = () => {
+    setStyle({
+      transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)',
+    });
+  };
+
+  return { ref, style, onMouseMove, onMouseLeave };
+}
 
 function MastercardLogo() {
   return (
@@ -26,30 +57,20 @@ function MastercardLogo() {
 }
 
 const tierStyles = {
-  green: {
-    accent: "text-green-400",
-  },
-  gold: {
-    accent: "text-amber-400",
-  },
-  black: {
-    accent: "text-gray-400",
-  }
-}
+  green: { accent: "text-green-400" },
+  gold: { accent: "text-amber-400" },
+  black: { accent: "text-gray-400" }
+};
 
 export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   const [isFlipped, setIsFlipped] = React.useState(false);
   const [isDetailsVisible, setIsDetailsVisible] = React.useState(false);
+  const card3d = use3dTransform();
 
   const formatCardNumber = (num: string) => {
     return num.match(/.{1,4}/g)?.join(' ') ?? '';
   };
   
-  const cardStyle = {
-    '--card-bg-start': card.theme.start,
-    '--card-bg-end': card.theme.end,
-  } as React.CSSProperties;
-
   const handleToggleDetails = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsDetailsVisible(prev => !prev);
@@ -60,30 +81,31 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   
   const currentTier = tierStyles[card.tier || 'green'];
 
+  const cardBaseStyle = "absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden transition-all duration-300 ease-out";
+  const cardFrontStyle = `
+    glass-card flex flex-col justify-between 
+    before:content-[''] before:absolute before:left-[var(--glow-x)] before:top-[var(--glow-y)] 
+    before:-translate-x-1/2 before:-translate-y-1/2 before:w-96 before:h-96 
+    before:bg-radial-gradient-glow before:opacity-0 before:transition-opacity before:duration-500 hover:before:opacity-100
+  `;
+
   return (
     <div
-      className="group w-full h-56 [perspective:1000px]"
+      ref={card3d.ref}
+      style={card3d.style as React.CSSProperties}
+      onMouseMove={card3d.onMouseMove}
+      onMouseLeave={card3d.onMouseLeave}
       onClick={() => setIsFlipped(!isFlipped)}
+      className="group w-full h-56 [perspective:1000px] transition-transform duration-300 ease-out"
     >
       <div
         className={cn(
-          'relative h-full w-full rounded-2xl shadow-xl transition-transform duration-700 [transform-style:preserve-3d]',
+          'relative h-full w-full rounded-2xl [transform-style:preserve-3d] transition-transform duration-700',
           isFlipped ? '[transform:rotateY(180deg)]' : ''
         )}
       >
         {/* Front of the card */}
-        <div className="absolute inset-0 [backface-visibility:hidden]">
-          <div
-            style={cardStyle}
-            className={cn(
-              'relative w-full h-full rounded-2xl p-6 flex flex-col justify-between text-white bg-gradient-to-br from-[--card-bg-start] to-[--card-bg-end] shadow-2xl overflow-hidden'
-            )}
-          >
-             <div className="absolute inset-0 bg-black/10 opacity-50 mix-blend-overlay"></div>
-             <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-white/20 blur-2xl"></div>
-             <div className="absolute -bottom-16 -left-10 h-32 w-32 rounded-full bg-white/10 blur-xl"></div>
-
-
+        <div className={cn(cardBaseStyle, cardFrontStyle, "[backface-visibility:hidden]")}>
             {card.status === 'blocked' && (
               <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center z-20">
                 <Ban className="w-16 h-16 text-white/70" />
@@ -99,8 +121,8 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
               
                <div className="flex items-center gap-2">
                  <Wifi className="h-6 w-6 text-white/80 rotate-90" />
-                 <div className="w-12 h-8 bg-yellow-400/80 rounded-md shadow-inner-lg flex items-center justify-center">
-                    <div className='w-8 h-5 bg-yellow-500/70 rounded-sm' />
+                 <div className="w-12 h-8 bg-black/20 rounded-md shadow-inner-lg flex items-center justify-center">
+                    <div className='w-8 h-5 bg-black/20 rounded-sm' />
                 </div>
               </div>
             </div>
@@ -134,17 +156,14 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
                   </div>
               </div>
             </div>
-          </div>
         </div>
         {/* Back of the card */}
         <div
-          style={cardStyle}
           className={cn(
-            'absolute inset-0 h-full w-full rounded-2xl text-white [transform:rotateY(180deg)] [backface-visibility:hidden]',
-            'bg-gradient-to-br from-[--card-bg-start] to-[--card-bg-end]'
+            cardBaseStyle,
+            'glass-card [transform:rotateY(180deg)] [backface-visibility:hidden]'
           )}
         >
-           <div className="absolute inset-0 bg-black/10 opacity-50 mix-blend-overlay"></div>
           <div className="relative w-full h-full rounded-2xl p-0 flex flex-col justify-start">
             <div className="w-full h-12 bg-black/80 mt-6"></div>
              <div className="px-6 py-4 space-y-4">

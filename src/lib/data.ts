@@ -1,5 +1,4 @@
 
-
 export type Transaction = {
   id: string;
   name: string;
@@ -142,7 +141,7 @@ export const initialVirtualCards: VirtualCard[] = [
     cardholder: 'Alex Doe',
     isPrimary: true,
     status: 'active',
-    theme: { start: '#059669', end: '#10B981' }, // Green
+    theme: { start: '#059669', end: '#10B981' },
   },
   {
     id: 'card_2',
@@ -155,7 +154,7 @@ export const initialVirtualCards: VirtualCard[] = [
     cardholder: 'Alex Doe',
     isPrimary: false,
     status: 'active',
-    theme: { start: '#F59E0B', end: '#FBBF24' }, // Amber
+    theme: { start: '#F59E0B', end: '#FBBF24' },
   },
    {
     id: 'card_3',
@@ -168,7 +167,7 @@ export const initialVirtualCards: VirtualCard[] = [
     cardholder: 'Alex Doe',
     isPrimary: false,
     status: 'blocked',
-    theme: { start: '#171717', end: '#404040' }, // Neutral 900
+    theme: { start: '#171717', end: '#404040' },
   },
 ];
 

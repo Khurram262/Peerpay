@@ -229,16 +229,28 @@ function RequestMoneyDialog({
   );
 }
 
-function TapToPayDialog() {
+function TapToPayDialog({ onPay }: { onPay: (amount: number) => void }) {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
+  const [amount, setAmount] = useState('');
 
   const handlePay = () => {
+    const payAmount = parseFloat(amount);
+    if (isNaN(payAmount) || payAmount <= 0) {
+      toast({
+        title: 'Invalid Amount',
+        description: 'Please enter a valid amount to pay.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    onPay(payAmount);
     setIsOpen(false);
     toast({
       title: 'Payment Successful',
-      description: 'Your tap-to-pay transaction was completed.',
+      description: `Your payment of $${payAmount.toFixed(2)} was completed.`,
     });
+    setAmount('');
   };
 
   return (
@@ -252,11 +264,22 @@ function TapToPayDialog() {
         <DialogHeader>
           <DialogTitle>Ready to Pay</DialogTitle>
           <DialogDescription>
-            Hold your device near the contactless terminal to complete your payment.
+            Enter the amount and hold your device near the contactless terminal to complete your payment.
           </DialogDescription>
         </DialogHeader>
-        <div className="py-8 flex justify-center">
+        <div className="py-8 flex flex-col items-center justify-center gap-6">
           <Nfc className="h-24 w-24 text-primary animate-pulse" />
+          <div className="w-full max-w-xs">
+            <Label htmlFor="pay-amount" className="sr-only">Amount</Label>
+            <Input
+              id="pay-amount"
+              type="number"
+              placeholder="0.00"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="text-center text-2xl h-12"
+            />
+          </div>
         </div>
         <DialogFooter>
            <Button variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
@@ -313,10 +336,10 @@ export default function DashboardPage() {
 
   const primaryCard = cards.find((vc) => vc.isPrimary);
 
-  const handleTransaction = (amount: number, type: 'send' | 'request') => {
-    const newBalance = type === 'send' 
-      ? currentWallet.balance - amount
-      : currentWallet.balance + amount;
+  const handleTransaction = (amount: number, type: 'send' | 'request' | 'pay') => {
+    const newBalance = type === 'request'
+      ? currentWallet.balance + amount
+      : currentWallet.balance - amount;
     
     const newWallet = { ...currentWallet, balance: newBalance };
     setWallet(newWallet);
@@ -364,7 +387,7 @@ export default function DashboardPage() {
                   <CardDescription>Use your phone to pay in-stores.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <TapToPayDialog />
+                  <TapToPayDialog onPay={(amount) => handleTransaction(amount, 'pay')} />
                 </CardContent>
              </Card>
           )}
@@ -447,5 +470,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    

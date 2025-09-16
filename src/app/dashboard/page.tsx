@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -22,6 +21,7 @@ import { wallet, transactions, virtualCards } from '@/lib/data';
 import { QrPaymentForm } from '@/components/qr-payment-form';
 import { AnimatedVirtualCard } from '@/components/animated-virtual-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import React from 'react';
 
 export default function DashboardPage() {
   const primaryCard = virtualCards.find((vc) => vc.isPrimary);
@@ -31,8 +31,7 @@ export default function DashboardPage() {
       <div className="grid gap-8 md:grid-cols-12">
         <div className="md:col-span-7 lg:col-span-8 space-y-8">
           <Card className="bg-primary text-primary-foreground overflow-hidden shadow-xl">
-            <div className="grid grid-cols-1 md:grid-cols-2">
-               <CardContent className="p-8 flex flex-col justify-center">
+             <CardContent className="p-8">
                 <p className="text-sm text-primary-foreground/80">
                   Available Balance
                 </p>
@@ -40,18 +39,15 @@ export default function DashboardPage() {
                   ${wallet.balance.toLocaleString()}
                 </div>
               </CardContent>
-              <CardFooter className="p-6 bg-primary/80 flex items-center justify-center">
-                 <div className="grid grid-cols-2 gap-4 w-full">
-                  <Button size="lg" variant="secondary" className="w-full">
-                    <ArrowUp className="mr-2 h-4 w-4" /> Send
-                  </Button>
-                  <Button size="lg" variant="secondary" className="w-full">
-                    <ArrowDown className="mr-2 h-4 w-4" /> Request
-                  </Button>
-                </div>
-              </CardFooter>
-            </div>
           </Card>
+           <div className="grid grid-cols-2 gap-4">
+              <Button size="lg" variant="secondary" className="w-full">
+                <ArrowUp className="mr-2 h-4 w-4" /> Send
+              </Button>
+              <Button size="lg" variant="secondary" className="w-full">
+                <ArrowDown className="mr-2 h-4 w-4" /> Request
+              </Button>
+            </div>
         </div>
         <div className="md:col-span-5 lg:col-span-4 row-start-1 md:row-start-auto">
             {primaryCard && <AnimatedVirtualCard card={primaryCard} />}
@@ -97,7 +93,7 @@ export default function DashboardPage() {
                           className={`text-right font-semibold ${
                             transaction.type === 'sent'
                               ? 'text-destructive'
-                              : 'text-green-600'
+                              : 'text-primary'
                           }`}
                         >
                           {transaction.type === 'sent' ? '-' : '+'} $

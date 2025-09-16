@@ -4,75 +4,75 @@
 
 @layer base {
   :root {
-    --background: 216 25% 98%; /* Light Gray */
-    --foreground: 222 47% 11%; /* Charcoal */
+    --background: 0 0% 100%; /* White */
+    --foreground: 240 10% 4%; /* Almost Black */
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 240 10% 4%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 221 64% 32%; /* Deep Blue */
-    --primary-foreground: 210 40% 98%;
-    --secondary: 158 81% 90%;
-    --secondary-foreground: 158 81% 30%;
-    --muted: 220 10% 94%;
-    --muted-foreground: 220 10% 55%;
-    --accent: 217 91% 92%; /* Lighter Sky Blue */
-    --accent-foreground: 217 91% 50%;
+    --popover-foreground: 240 10% 4%;
+    --primary: 139 100% 38%; /* Cash Green */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 221 64% 10%; /* Dark Navy */
+    --secondary-foreground: 210 40% 98%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 187 95% 42%; /* Bright Cyan */
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 220 10% 90%;
-    --input: 220 10% 92%;
-    --ring: 217 91% 60%; /* Sky Blue */
-    --chart-1: 221 64% 50%;
-    --chart-2: 158 81% 40%;
-    --chart-3: 217 91% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 139 100% 38%;
+    --chart-1: 139 100% 38%;
+    --chart-2: 187 95% 42%;
+    --chart-3: 221 64% 32%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.75rem;
 
     --sidebar-background: 222 47% 11%; /* Charcoal */
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 158 81% 40%; /* Emerald Green */
-    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-primary: 139 100% 38%; /* Cash Green */
+    --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 222 47% 18%;
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 222 47% 20%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-ring: 139 100% 38%;
   }
   .dark {
-    --background: 222 47% 11%;
+    --background: 222 84% 4.9%; /* Dark Navy */
     --foreground: 210 40% 98%;
-    --card: 222 47% 14%;
+    --card: 222 84% 4.9%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 47% 11%;
+    --popover: 222 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 217 91% 60%; /* Sky Blue */
-    --primary-foreground: 222 47% 11%;
-    --secondary: 158 81% 20%;
-    --secondary-foreground: 158 81% 85%;
-    --muted: 217 33% 20%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217 33% 25%;
+    --primary: 139 100% 38%; /* Cash Green */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 98%;
+    --secondary-foreground: 222 84% 4.9%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 187 95% 42%; /* Bright Cyan */
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 217 33% 25%;
-    --input: 217 33% 25%;
-    --ring: 217 91% 55%;
-    --chart-1: 217 70% 50%;
-    --chart-2: 158 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 139 100% 38%;
+    --chart-1: 139 100% 38%;
+    --chart-2: 187 95% 42%;
+    --chart-3: 210 40% 98%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
     
     --sidebar-background: 222 47% 11%; /* Charcoal */
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 158 81% 40%; /* Emerald Green */
-    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-primary: 139 100% 38%; /* Cash Green */
+    --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 222 47% 18%;
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 222 47% 20%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-ring: 139 100% 38%;
   }
 }
 

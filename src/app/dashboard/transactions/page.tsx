@@ -62,7 +62,7 @@ export default function TransactionsPage() {
                         ? 'default'
                         : 'secondary'
                     }
-                    className={transaction.type === 'received' ? 'bg-green-600' : ''}
+                    className={transaction.type === 'received' ? 'bg-primary' : ''}
                   >
                     {transaction.type}
                   </Badge>
@@ -74,7 +74,7 @@ export default function TransactionsPage() {
                   className={`text-right font-semibold ${
                     transaction.type === 'sent'
                       ? 'text-destructive'
-                      : 'text-green-600'
+                      : 'text-primary'
                   }`}
                 >
                   {transaction.type === 'sent' ? '-' : '+'} $

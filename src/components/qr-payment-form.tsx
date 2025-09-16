@@ -25,7 +25,7 @@ import {
 import { type QRPaymentFromImageOutput } from '@/ai/flows/qr-payment-from-image';
 import { Label } from './ui/label';
 
-export function QrPaymentForm() {
+export function QrPaymentForm({ onPayment }: { onPayment: (amount: number) => void }) {
   const [isLoading, setIsLoading] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState<QRPaymentFromImageOutput | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -61,6 +61,8 @@ export function QrPaymentForm() {
   };
 
   const handlePay = () => {
+    if (!paymentDetails) return;
+    onPayment(paymentDetails.paymentAmount);
     setIsDialogOpen(false);
     toast({
       title: 'Payment Sent!',

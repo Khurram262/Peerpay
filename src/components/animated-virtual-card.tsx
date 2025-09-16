@@ -74,12 +74,10 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   const currentTier = tierStyles[card.tier || 'green'];
 
   const cardBaseStyle =
-    'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden transition-all duration-300 ease-out';
+    'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden transition-all duration-300 ease-out shadow-2xl';
   const cardFrontStyle = `
     flex flex-col justify-between 
-    before:content-[''] before:absolute before:left-[var(--glow-x)] before:top-[var(--glow-y)] 
-    before:-translate-x-1/2 before:-translate-y-1/2 before:w-96 before:h-96 
-    before:bg-radial-gradient-glow before:opacity-0 before:transition-opacity before:duration-500 hover:before:opacity-100
+    before:content-[''] before:absolute before:inset-0 before:bg-card-pattern before:bg-no-repeat before:opacity-0 before:transition-opacity before:duration-500 hover:before:opacity-100
   `;
   
   const cardBackgroundStyle = {
@@ -106,7 +104,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
           className={cn(
             cardBaseStyle,
             cardFrontStyle,
-            '[backface-visibility:hidden]'
+            '[backface-visibility:hidden] border border-white/20'
           )}
           style={cardBackgroundStyle}
         >
@@ -181,7 +179,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
         <div
           className={cn(
             cardBaseStyle,
-            '[transform:rotateY(180deg)] [backface-visibility:hidden]'
+            '[transform:rotateY(180deg)] [backface-visibility:hidden] border border-white/20'
           )}
           style={cardBackgroundStyle}
         >

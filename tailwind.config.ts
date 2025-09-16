@@ -11,6 +11,7 @@ export default {
     extend: {
       backgroundImage: {
         'radial-gradient-glow': 'radial-gradient(circle at var(--glow-x) var(--glow-y), hsl(var(--primary) / 0.2), transparent 40%)',
+        'card-pattern': 'radial-gradient(350px circle at var(--glow-x) var(--glow-y), hsl(var(--primary) / 0.5), transparent 100%)',
       },
       fontFamily: {
         body: ['Inter', 'sans-serif'],

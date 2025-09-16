@@ -1,3 +1,4 @@
+
 import type { ReactNode } from 'react';
 import {
   Sidebar,
@@ -18,7 +19,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     <SidebarProvider>
       <div className="min-h-screen">
         <Sidebar variant="inset" collapsible="icon">
-          <SidebarHeader>
+          <SidebarHeader title="PeerPay">
             <div className="flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -56,3 +57,5 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     </SidebarProvider>
   );
 }
+
+    

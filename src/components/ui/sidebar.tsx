@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -10,7 +11,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   Tooltip,
@@ -175,6 +176,10 @@ const Sidebar = React.forwardRef<
     ref
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+    const header = React.Children.toArray(children).find(
+      (child) =>
+        React.isValidElement(child) && child.type === SidebarHeader
+    ) as React.ReactElement | undefined
 
     if (collapsible === "none") {
       return (
@@ -205,6 +210,9 @@ const Sidebar = React.forwardRef<
             }
             side={side}
           >
+            {header?.props.title && (
+              <SheetTitle className="sr-only">{header?.props.title}</SheetTitle>
+            )}
             <div className="flex h-full w-full flex-col">{children}</div>
           </SheetContent>
         </Sheet>
@@ -351,7 +359,7 @@ SidebarInput.displayName = "SidebarInput"
 
 const SidebarHeader = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"div">
+  React.ComponentProps<"div"> & { title?: string }
 >(({ className, ...props }, ref) => {
   return (
     <div
@@ -760,3 +768,5 @@ export {
   SidebarTrigger,
   useSidebar,
 }
+
+    

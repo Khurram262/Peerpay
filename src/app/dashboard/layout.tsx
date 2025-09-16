@@ -17,7 +17,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
       <div className="min-h-screen">
-        <Sidebar>
+        <Sidebar variant="inset" collapsible="icon">
           <SidebarHeader>
             <div className="flex items-center gap-2">
               <svg
@@ -28,11 +28,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="h-8 w-8 text-primary"
+                className="h-8 w-8 text-sidebar-primary"
               >
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
               </svg>
-              <h1 className="text-xl font-semibold tracking-tighter">
+              <h1 className="text-xl font-semibold tracking-tighter text-sidebar-foreground">
                 PeerPay
               </h1>
             </div>

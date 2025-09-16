@@ -18,7 +18,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
       <div className="min-h-screen">
-        <Sidebar variant="inset" collapsible="icon">
+        <Sidebar variant="inset" collapsible="none">
           <SidebarHeader title="PeerPay">
             <div className="flex items-center gap-2">
               <svg

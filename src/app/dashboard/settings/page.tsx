@@ -293,7 +293,7 @@ export default function SettingsPage() {
         <CardHeader>
           <CardTitle>Profile</CardTitle>
           <CardDescription>
-            Manage your personal information and profile picture.
+            Manage your personal information and account verification.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6">
@@ -327,6 +327,9 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+      
+      <VerificationPage />
+
       <Card>
         <CardHeader>
           <CardTitle>Security</CardTitle>
@@ -356,7 +359,7 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
-       <VerificationPage />
+
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -414,5 +417,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-    

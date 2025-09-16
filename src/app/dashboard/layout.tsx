@@ -5,7 +5,6 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { UserNav } from '@/components/user-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { DashboardNav } from '@/components/dashboard-nav';
 import {
   SidebarProvider,
   Sidebar,
@@ -17,6 +16,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { user } from '@/lib/data';
+import { DashboardNav } from '@/components/dashboard-nav';
 import { usePathname } from 'next/navigation';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
@@ -25,9 +25,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   return (
     <SidebarProvider>
-       {!hideSidebar && (
-        <Sidebar variant="inset" collapsible="icon">
-            <SidebarHeader>
+      <div className="flex min-h-screen w-full flex-col bg-muted/40">
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
             <Link
                 href="/dashboard"
                 className="flex items-center gap-2 font-semibold"
@@ -46,29 +45,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 PeerPay
                 </span>
             </Link>
-            </SidebarHeader>
-            <SidebarContent>
-            <DashboardNav />
-            </SidebarContent>
-            <SidebarFooter>
-            <div className="flex items-center gap-2">
-                <Avatar className="h-8 w-8">
-                <AvatarImage src="https://picsum.photos/seed/123/100/100" />
-                <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-                <span className="text-sm font-medium">{user.name}</span>
-                <span className="text-xs text-muted-foreground">
-                    {user.email}
-                </span>
-                </div>
-            </div>
-            </SidebarFooter>
-        </Sidebar>
-       )}
-      <SidebarInset>
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-          <SidebarTrigger className="sm:hidden" />
+
           <div className="relative ml-auto flex-1 md:grow-0">
             {/* Search can go here */}
           </div>
@@ -78,9 +55,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
           {children}
         </main>
-      </SidebarInset>
+      </div>
     </SidebarProvider>
   );
 }
-
-    

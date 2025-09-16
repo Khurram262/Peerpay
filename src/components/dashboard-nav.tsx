@@ -2,12 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  SidebarContent,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
   CreditCard,
@@ -29,7 +24,7 @@ const navItems = [
   {
     href: '/dashboard/cards',
     icon: CreditCard,
-    label: 'Virtual Cards',
+    label: 'Cards',
   },
   {
     href: '/dashboard/settings',
@@ -38,26 +33,43 @@ const navItems = [
   },
 ];
 
-export function DashboardNav() {
+export function DashboardNav({ isMobile }: { isMobile: boolean }) {
   const pathname = usePathname();
 
-  return (
-    <SidebarContent>
-      <SidebarMenu>
+  if (isMobile) {
+    return (
+      <>
         {navItems.map((item) => (
-          <SidebarMenuItem key={item.href}>
-            <Link href={item.href}>
-              <SidebarMenuButton
-                isActive={pathname === item.href}
-                tooltip={item.label}
-              >
-                <item.icon />
-                <span>{item.label}</span>
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
+          <Link
+            key={item.href}
+            href={item.href}
+            className={cn(
+              'flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground',
+              pathname === item.href && 'bg-muted text-foreground'
+            )}
+          >
+            <item.icon className="h-5 w-5" />
+            {item.label}
+          </Link>
         ))}
-      </SidebarMenu>
-    </SidebarContent>
+      </>
+    );
+  }
+
+  return (
+    <>
+      {navItems.map((item) => (
+        <Link
+          key={item.href}
+          href={item.href}
+          className={cn(
+            'text-muted-foreground transition-colors hover:text-foreground',
+            pathname === item.href && 'text-foreground'
+          )}
+        >
+          {item.label}
+        </Link>
+      ))}
+    </>
   );
 }

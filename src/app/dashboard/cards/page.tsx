@@ -108,7 +108,7 @@ function CreateCardDialog({
           <PlusCircle className="mr-2 h-4 w-4" /> Create New Card
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Create a New Virtual Card</DialogTitle>
           <DialogDescription>

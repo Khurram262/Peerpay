@@ -11,9 +11,12 @@ export type Transaction = {
 };
 
 export type CardTheme = string; // Now a string to hold any color
+export type CardTier = 'green' | 'gold' | 'black';
 
 export type VirtualCard = {
   id: string;
+  name: string;
+  tier: CardTier;
   fullNumber: string;
   last4: string;
   expiry: string;
@@ -125,6 +128,8 @@ export const setUser = (newUser: User) => {
 export const initialVirtualCards: VirtualCard[] = [
   {
     id: 'card_1',
+    name: 'Daily Spender',
+    tier: 'green',
     fullNumber: '4242424242424242',
     last4: '4242',
     expiry: '12/26',
@@ -132,10 +137,12 @@ export const initialVirtualCards: VirtualCard[] = [
     cardholder: 'Alex Doe',
     isPrimary: true,
     status: 'active',
-    theme: '#0ea5e9', // Sky Blue
+    theme: '#059669', // Emerald
   },
   {
     id: 'card_2',
+    name: 'Online Subscriptions',
+    tier: 'gold',
     fullNumber: '1234123412341234',
     last4: '1234',
     expiry: '08/25',
@@ -143,7 +150,20 @@ export const initialVirtualCards: VirtualCard[] = [
     cardholder: 'Alex Doe',
     isPrimary: false,
     status: 'active',
-    theme: '#10b981', // Emerald Green
+    theme: '#d97706', // Amber
+  },
+   {
+    id: 'card_3',
+    name: 'Travel Card',
+    tier: 'black',
+    fullNumber: '9876543212345678',
+    last4: '5678',
+    expiry: '04/28',
+    cvv: '789',
+    cardholder: 'Alex Doe',
+    isPrimary: false,
+    status: 'blocked',
+    theme: '#171717', // Neutral 900
   },
 ];
 

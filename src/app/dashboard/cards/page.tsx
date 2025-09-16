@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { initialVirtualCards, type VirtualCard, type CardTheme, user, setUser } from '@/lib/data';
+import { initialVirtualCards, type VirtualCard, type CardTheme, user, setUser, type CardTier } from '@/lib/data';
 import { CreditCard, PlusCircle, Trash, CheckCircle } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { Switch } from '@/components/ui/switch';
@@ -39,25 +39,43 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { AnimatedVirtualCard } from '@/components/animated-virtual-card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 
 const defaultColor = '#0ea5e9';
+const tierThemes: Record<CardTier, CardTheme> = {
+  green: '#059669',
+  gold: '#d97706',
+  black: '#171717',
+}
 
 function CreateCardDialog({
   onCreateCard,
 }: {
-  onCreateCard: (theme: CardTheme, cardholder: string) => void;
+  onCreateCard: (theme: CardTheme, cardholder: string, name: string, tier: CardTier) => void;
 }) {
   const [selectedColor, setSelectedColor] = useState(defaultColor);
   const [cardholderName, setCardholderName] = useState(user.name);
+  const [cardName, setCardName] = useState('');
+  const [cardTier, setCardTier] = useState<CardTier>('green');
   const [isOpen, setIsOpen] = useState(false);
 
   const handleCreate = () => {
-    onCreateCard(selectedColor, cardholderName);
+    onCreateCard(selectedColor, cardholderName, cardName, cardTier);
     setIsOpen(false);
+    setCardName('');
   };
   
   const previewCard: VirtualCard = {
     id: 'preview',
+    name: cardName || 'New Card',
+    tier: cardTier,
     fullNumber: '1234 5678 9876 5432',
     last4: '5432',
     expiry: 'MM/YY',
@@ -67,6 +85,10 @@ function CreateCardDialog({
     status: 'active',
     theme: selectedColor,
   };
+
+  useEffect(() => {
+    setSelectedColor(tierThemes[cardTier]);
+  }, [cardTier]);
 
 
   return (
@@ -90,14 +112,33 @@ function CreateCardDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="card-name">Cardholder Name</Label>
-            <Input id="card-name" value={cardholderName} onChange={(e) => setCardholderName(e.target.value)} />
+            <Label htmlFor="card-name-input">Card Name</Label>
+            <Input id="card-name-input" value={cardName} onChange={(e) => setCardName(e.target.value)} placeholder="e.g. Online Shopping" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="card-color">Choose a Color</Label>
-            <div className='flex items-center gap-4'>
-              <Input id="card-color" type="color" value={selectedColor} onChange={(e) => setSelectedColor(e.target.value)} className="w-16 h-10 p-1" />
-              <Input type="text" value={selectedColor} onChange={(e) => setSelectedColor(e.target.value)} placeholder='#0ea5e9' />
+            <Label htmlFor="cardholder-name">Cardholder Name</Label>
+            <Input id="cardholder-name" value={cardholderName} onChange={(e) => setCardholderName(e.target.value)} />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="card-tier">Card Tier</Label>
+               <Select value={cardTier} onValueChange={(value) => setCardTier(value as CardTier)}>
+                <SelectTrigger id="card-tier">
+                  <SelectValue placeholder="Choose a tier" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="green">Green</SelectItem>
+                  <SelectItem value="gold">Gold</SelectItem>
+                  <SelectItem value="black">Black</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="card-color">Color</Label>
+              <div className='flex items-center gap-2'>
+                <Input id="card-color" type="color" value={selectedColor} onChange={(e) => setSelectedColor(e.target.value)} className="w-16 h-10 p-1" />
+                <Input type="text" value={selectedColor} onChange={(e) => setSelectedColor(e.target.value)} placeholder='#0ea5e9' />
+              </div>
             </div>
           </div>
         </div>
@@ -284,9 +325,11 @@ export default function CardsPage() {
     })
   };
 
-  const handleCreateCard = (theme: CardTheme, cardholder: string) => {
+  const handleCreateCard = (theme: CardTheme, cardholder: string, name: string, tier: CardTier) => {
     const newCard: VirtualCard = {
       id: `card_${Date.now()}`,
+      name: name || 'New Card',
+      tier: tier,
       fullNumber: Math.floor(1000000000000000 + Math.random() * 9000000000000000).toString(),
       last4: Math.floor(1000 + Math.random() * 9000).toString(),
       expiry: `${Math.floor(1 + Math.random() * 12)
@@ -372,6 +415,7 @@ export default function CardsPage() {
                             variant="ghost"
                             size="icon"
                             className="text-muted-foreground hover:text-destructive"
+                            disabled={card.isPrimary}
                           >
                             <Trash className="h-4 w-4" />
                           </Button>

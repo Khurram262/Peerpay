@@ -3,7 +3,7 @@
 
 import React from 'react';
 import type { VirtualCard } from '@/lib/data';
-import { Ban } from 'lucide-react';
+import { Ban, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 function MastercardLogo() {
@@ -24,8 +24,24 @@ function MastercardLogo() {
   );
 }
 
+const tierStyles = {
+  green: {
+    pattern: "bg-green-500/10 [background-image:radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(16,185,129,0.3),rgba(255,255,255,0))]",
+    accent: "text-green-400",
+  },
+  gold: {
+    pattern: "bg-amber-500/10 [background-image:radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(245,158,11,0.3),rgba(255,255,255,0))]",
+    accent: "text-amber-400",
+  },
+  black: {
+    pattern: "bg-gray-900/50 [background-image:radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(200,200,200,0.2),rgba(255,255,255,0))]",
+    accent: "text-gray-400",
+  }
+}
+
 export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   const [isFlipped, setIsFlipped] = React.useState(false);
+  const [isDetailsVisible, setIsDetailsVisible] = React.useState(false);
 
   const formatCardNumber = (num: string) => {
     return num.match(/.{1,4}/g)?.join(' ') ?? '';
@@ -35,6 +51,15 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
     '--card-bg-color': card.theme,
   } as React.CSSProperties;
 
+  const handleToggleDetails = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsDetailsVisible(prev => !prev);
+    if (!isDetailsVisible) {
+      setTimeout(() => setIsDetailsVisible(false), 5000); // Auto-hide after 5s
+    }
+  };
+  
+  const currentTier = tierStyles[card.tier || 'green'];
 
   return (
     <div
@@ -55,7 +80,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
               'relative w-full h-full rounded-xl p-6 flex flex-col justify-between text-white bg-[--card-bg-color] shadow-lg overflow-hidden'
             )}
           >
-             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent mix-blend-overlay"></div>
+             <div className={cn("absolute inset-0", currentTier.pattern)}></div>
              <div className="absolute inset-0 opacity-10 [background-image:radial-gradient(circle_at_50%_0,_hsl(0_0%_100%/0.2)_0,_transparent_100%),radial-gradient(circle_at_100%_100%,_hsl(0_0%_100%/0.2)_0,_transparent_100%)]"></div>
 
             {card.status === 'blocked' && (
@@ -64,9 +89,13 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
               </div>
             )}
             <div className="relative flex justify-between items-start z-10">
-              <span className="text-xl font-semibold tracking-wider">
-                PeerPay
-              </span>
+              <div className='flex items-center gap-2'>
+                <span className="text-xl font-semibold tracking-wider">
+                  PeerPay
+                </span>
+                <span className={cn('text-sm font-semibold uppercase', currentTier.accent)}>{card.tier}</span>
+              </div>
+              
                <div className="flex items-center gap-2">
                  <div className="w-12 h-8 bg-yellow-400/80 rounded-md shadow-inner-lg flex items-center justify-center">
                     <div className='w-8 h-5 bg-yellow-500/70 rounded-sm' />
@@ -75,26 +104,33 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
             </div>
 
             <div className="relative text-left z-10 space-y-2">
+              <div className="flex items-center gap-4">
                 <p className="font-mono text-xl tracking-wider whitespace-nowrap md:text-2xl">
-                  {formatCardNumber(card.fullNumber)}
+                  {isDetailsVisible ? formatCardNumber(card.fullNumber) : `**** **** **** ${card.last4}`}
                 </p>
-                <div className="flex justify-between items-end">
+                 <Button variant="ghost" size="icon" className="h-8 w-8 text-white/70 hover:bg-white/20 hover:text-white" onClick={handleToggleDetails}>
+                    {isDetailsVisible ? <EyeOff /> : <Eye />}
+                    <span className="sr-only">View Card Details</span>
+                 </Button>
+              </div>
+
+              <div className="flex justify-between items-end">
+                  <div>
+                      <p className="text-xs text-gray-200/80 uppercase">Card Holder</p>
+                      <p className="font-medium tracking-wide text-gray-100">
+                      {card.cardholder}
+                      </p>
+                  </div>
+                  <div className='flex items-center gap-2'>
                     <div>
-                        <p className="text-xs text-gray-200/80 uppercase">Card Holder</p>
+                        <p className="text-xs text-gray-200/80 uppercase text-right">Expires</p>
                         <p className="font-medium tracking-wide text-gray-100">
-                        {card.cardholder}
+                           {isDetailsVisible ? card.expiry : 'MM/YY'}
                         </p>
                     </div>
-                    <div className='flex items-center gap-2'>
-                      <div>
-                          <p className="text-xs text-gray-200/80 uppercase text-right">Expires</p>
-                          <p className="font-medium tracking-wide text-gray-100">
-                          {card.expiry}
-                          </p>
-                      </div>
-                      <MastercardLogo />
-                    </div>
-                </div>
+                    <MastercardLogo />
+                  </div>
+              </div>
             </div>
           </div>
         </div>
@@ -106,6 +142,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
             'bg-[--card-bg-color]'
           )}
         >
+          <div className={cn("absolute inset-0", currentTier.pattern)}></div>
           <div className="relative w-full h-full rounded-xl p-0 flex flex-col justify-start">
             <div className="w-full h-12 bg-black/80 mt-6"></div>
              <div className="px-6 py-4 space-y-4">
@@ -117,6 +154,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
                         </p>
                     </div>
                 </div>
+                 <div className="h-8 w-3/4 bg-gray-300/80 rounded"></div>
             </div>
             <div className="text-xs text-gray-300/60 mt-auto px-6 pb-4 text-center">
               <p>

@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import type { VirtualCard } from '@/lib/data';
 import { Ban, Wifi } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -26,50 +26,19 @@ function MastercardLogo() {
 
 export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   const [isFlipped, setIsFlipped] = React.useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [style, setStyle] = useState<React.CSSProperties>({});
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-
-    const { left, top, width, height } = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - left;
-    const y = e.clientY - top;
-
-    const rotateX = (y / height - 0.5) * -25;
-    const rotateY = (x / width - 0.5) * 25;
-
-    setStyle({
-      '--glow-x': `${x}px`,
-      '--glow-y': `${y}px`,
-      transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`,
-      transition: 'transform 0.1s ease-out, background 0.1s ease-out',
-    });
-  };
-
-  const handleMouseLeave = () => {
-    setStyle({
-      transform: 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)',
-      transition: 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)',
-    });
-  };
 
   const cardBaseStyle =
     'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl';
   const cardFrontStyle = `flex flex-col justify-between`;
   
   const cardBackgroundStyle = {
-    background: `radial-gradient(circle at var(--glow-x) var(--glow-y), hsl(0 0% 100% / 0.15), transparent 40%), linear-gradient(to bottom right, ${card.theme.start}, ${card.theme.end})`,
+    background: `linear-gradient(to bottom right, ${card.theme.start}, ${card.theme.end})`,
   };
 
   return (
     <div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       onClick={() => setIsFlipped(!isFlipped)}
       className="group w-full h-56 [perspective:1000px] cursor-pointer"
-      style={style}
     >
       <div
         className={cn(

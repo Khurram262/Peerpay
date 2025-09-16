@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -47,6 +48,7 @@ export function AnimatedVirtualCard({ card, forceFlip }: { card: VirtualCard, fo
               cardTheme
             )}
           >
+             <div className="absolute top-0 left-0 w-full h-full bg-black/10 mix-blend-overlay"></div>
              <div className="absolute -top-1/3 -right-1/4 w-48 h-48 bg-white/10 rounded-full blur-xl opacity-50"></div>
              <div className="absolute -bottom-1/4 -left-1/4 w-32 h-32 bg-white/10 rounded-full blur-lg opacity-40"></div>
             {card.status === 'blocked' && (
@@ -58,26 +60,32 @@ export function AnimatedVirtualCard({ card, forceFlip }: { card: VirtualCard, fo
               <span className="text-xl font-semibold tracking-wider">
                 PeerPay
               </span>
-              <Wifi className="w-7 h-7 opacity-80" />
-            </div>
-            <div className="relative text-left z-10">
-                <div className="w-12 h-8 bg-yellow-400 rounded-md shadow-inner-lg flex items-center justify-center">
+               <div className="flex items-center gap-2">
+                 <div className="w-12 h-8 bg-yellow-400 rounded-md shadow-inner-lg flex items-center justify-center">
                     <div className='w-8 h-5 bg-yellow-500 rounded-sm' />
                 </div>
+              </div>
             </div>
-            <div className="relative flex justify-between items-end z-10">
-              <div>
-                <p className="text-xs text-gray-200/80">Card Holder</p>
-                <p className="font-medium tracking-wide text-gray-100">
-                  {card.cardholder}
+
+            <div className="relative text-left z-10 space-y-4">
+                <p className="font-mono text-xl tracking-widest">
+                  {formatCardNumber(card.fullNumber)}
                 </p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-200/80">Expires</p>
-                <p className="font-medium tracking-wide text-gray-100">
-                  {card.expiry}
-                </p>
-              </div>
+                <div className="flex justify-between items-end">
+                    <div>
+                        <p className="text-xs text-gray-200/80">Card Holder</p>
+                        <p className="font-medium tracking-wide text-gray-100">
+                        {card.cardholder}
+                        </p>
+                    </div>
+                    <div>
+                        <p className="text-xs text-gray-200/80">Expires</p>
+                        <p className="font-medium tracking-wide text-gray-100">
+                        {card.expiry}
+                        </p>
+                    </div>
+                    <Wifi className="w-7 h-7 opacity-80" />
+                </div>
             </div>
           </div>
         </div>
@@ -98,14 +106,6 @@ export function AnimatedVirtualCard({ card, forceFlip }: { card: VirtualCard, fo
                         <p className="text-black font-mono tracking-widest">
                         {card.cvv}
                         </p>
-                    </div>
-                </div>
-                 <div>
-                    <p className="text-xs text-gray-300/80 mb-1">Card Number</p>
-                    <div className="h-9 bg-white rounded-md flex items-center justify-center">
-                    <p className="text-black font-mono tracking-wider text-lg">
-                        {formatCardNumber(card.fullNumber)}
-                    </p>
                     </div>
                 </div>
             </div>

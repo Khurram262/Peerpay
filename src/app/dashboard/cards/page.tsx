@@ -114,13 +114,32 @@ function CreateCardDialog({
 
 function OrderPhysicalCard() {
   const { toast } = useToast();
+  const [isOpen, setIsOpen] = useState(false);
+  const [address, setAddress] = useState({
+    name: user.name,
+    line1: '123 Main St',
+    line2: '',
+    city: 'San Francisco',
+    state: 'CA',
+    zip: '94105',
+    country: 'USA',
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setAddress(prev => ({...prev, [id]: value}));
+  }
+
   const handleOrder = () => {
     toast({
       title: 'Order Placed',
-      description: 'Your physical card has been ordered and will be shipped to your registered address.',
+      description: `Your physical card will be shipped to: ${address.line1}, ${address.city}.`,
     });
+    setIsOpen(false);
   };
+
   return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
     <Card className="mt-8">
       <CardHeader>
         <CardTitle>Order a Physical Card</CardTitle>
@@ -134,12 +153,61 @@ function OrderPhysicalCard() {
         </p>
       </CardContent>
       <CardFooter>
-        <Button onClick={handleOrder}>
-          <CreditCard className="mr-2 h-4 w-4" />
-          Order Physical Card
-        </Button>
+        <DialogTrigger asChild>
+          <Button>
+            <CreditCard className="mr-2 h-4 w-4" />
+            Order Physical Card
+          </Button>
+        </DialogTrigger>
       </CardFooter>
     </Card>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Confirm Shipping Address</DialogTitle>
+          <DialogDescription>
+            Please enter the name and address where you want your physical card to be shipped.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="name">Full Name</Label>
+            <Input id="name" value={address.name} onChange={handleInputChange} />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="line1">Address Line 1</Label>
+            <Input id="line1" value={address.line1} onChange={handleInputChange} />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="line2">Address Line 2 (Optional)</Label>
+            <Input id="line2" value={address.line2} onChange={handleInputChange} />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="city">City</Label>
+              <Input id="city" value={address.city} onChange={handleInputChange} />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="state">State/Province</Label>
+              <Input id="state" value={address.state} onChange={handleInputChange} />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="zip">ZIP/Postal Code</Label>
+              <Input id="zip" value={address.zip} onChange={handleInputChange} />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="country">Country</Label>
+              <Input id="country" value={address.country} onChange={handleInputChange} />
+            </div>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
+          <Button onClick={handleOrder}>Confirm and Order</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

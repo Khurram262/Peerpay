@@ -11,6 +11,7 @@ import {
   Receipt,
   Gift,
   BrainCircuit,
+  ShieldCheck,
 } from 'lucide-react';
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 
@@ -44,6 +45,11 @@ const navItems = [
     href: '/dashboard/insights',
     icon: BrainCircuit,
     label: 'Insights',
+  },
+  {
+    href: '/dashboard/verification',
+    icon: ShieldCheck,
+    label: 'Verification',
   },
   {
     href: '/dashboard/settings',

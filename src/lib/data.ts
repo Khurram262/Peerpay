@@ -30,6 +30,7 @@ export type VirtualCard = {
 export type User = {
     name: string;
     email: string;
+    referralCode: string;
 }
 
 export type Wallet = {
@@ -115,7 +116,7 @@ export const transactions: Transaction[] = [
   },
 ];
 
-export let user: User = { name: 'Alex Doe', email: 'alex.doe@example.com' };
+export let user: User = { name: 'Alex Doe', email: 'alex.doe@example.com', referralCode: 'ALEXD4831' };
 
 export const setUser = (newUser: User) => {
   if (typeof window !== 'undefined') {
@@ -168,6 +169,12 @@ export const initialVirtualCards: VirtualCard[] = [
 ];
 
 export const rewardHistory: Reward[] = [
+    {
+        id: 'reward_6',
+        activity: 'Friend Referral Bonus',
+        points: 200,
+        date: '2024-05-22',
+    },
     {
         id: 'reward_1',
         activity: 'Electricity Bill Payment',

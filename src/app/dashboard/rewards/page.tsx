@@ -16,13 +16,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { wallet as initialWallet, type Wallet, rewardHistory, type Reward } from '@/lib/data';
-import { Gift, Star } from 'lucide-react';
+import { wallet as initialWallet, type Wallet, rewardHistory, type Reward, user } from '@/lib/data';
+import { Gift, Star, Copy, Share2 } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { format, parseISO } from 'date-fns';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 
 export default function RewardsPage() {
   const [currentWallet, setCurrentWallet] = useState<Wallet>(initialWallet);
+  const { toast } = useToast();
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -44,6 +48,14 @@ export default function RewardsPage() {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
+  
+  const handleCopyReferral = () => {
+    navigator.clipboard.writeText(user.referralCode);
+    toast({
+        title: 'Referral Code Copied!',
+        description: 'You can now share your referral code with friends.',
+    });
+  }
 
   return (
     <div className="grid gap-8">
@@ -63,10 +75,33 @@ export default function RewardsPage() {
         </CardHeader>
         <CardContent>
           <p className="text-yellow-100">
-            Earn points on bill payments and redeem them for exciting rewards.
+            Earn points on bill payments, referrals and more. Redeem them for exciting rewards!
           </p>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Invite Friends, Earn Rewards</CardTitle>
+          <CardDescription>Share your referral code. You and your friend will both get 200 bonus points when they sign up!</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-grow">
+              <Input readOnly value={user.referralCode} className="text-lg h-12 text-center sm:text-left" />
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={handleCopyReferral} className="w-full">
+                <Copy className="mr-2" /> Copy Code
+              </Button>
+               <Button variant="outline" className="w-full">
+                <Share2 className="mr-2" /> Share
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>Points History</CardTitle>

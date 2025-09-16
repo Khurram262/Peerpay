@@ -5,6 +5,7 @@ import React from 'react';
 import type { VirtualCard } from '@/lib/data';
 import { Ban, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 function MastercardLogo() {
   return (

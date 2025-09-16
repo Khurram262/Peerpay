@@ -49,7 +49,7 @@ function MastercardLogo() {
 }
 
 const tierStyles = {
-  green: { accent: 'text-green-400' },
+  green: { accent: 'text-cyan-400' },
   gold: { accent: 'text-amber-400' },
   black: { accent: 'text-gray-400' },
 };

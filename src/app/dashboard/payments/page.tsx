@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Lightbulb, Droplets, Wifi, Smartphone } from 'lucide-react';
+import { Lightbulb, Droplets, Wifi, Smartphone, Flame } from 'lucide-react';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -83,6 +83,11 @@ function UtilityPayments() {
               <SelectItem value="internet">
                 <div className="flex items-center gap-2">
                   <Wifi className="h-4 w-4" /> Internet Provider
+                </div>
+              </SelectItem>
+              <SelectItem value="gas">
+                <div className="flex items-center gap-2">
+                  <Flame className="h-4 w-4" /> Gas Company
                 </div>
               </SelectItem>
             </SelectContent>

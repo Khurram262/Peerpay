@@ -1,3 +1,4 @@
+
 'use client';
 
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -13,10 +14,33 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
+import { user as initialUser } from '@/lib/data';
+import React, { useState, useEffect } from 'react';
 
 export function UserNav() {
+  const [user, setUser] = useState(initialUser);
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
-  const user = { name: 'Alex Doe', email: 'alex.doe@example.com' };
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+        } catch (e) {
+          console.error("Failed to parse user from localStorage", e);
+        }
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    handleStorageChange(); // Initial check
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   return (
     <DropdownMenu>

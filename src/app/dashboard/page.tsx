@@ -35,7 +35,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { virtualCards as initialVirtualCards } from '@/lib/data';
+import { initialVirtualCards } from '@/lib/data';
 import type { VirtualCard } from '@/lib/data';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -229,7 +229,7 @@ function RequestMoneyDialog({
 }
 
 export default function DashboardPage() {
-  const [cards, setCards] = useState<VirtualCard[]>(initialVirtualCards);
+  const [cards, setCards] = useState<VirtualCard[]>([]);
   const [balance, setBalance] = useState(wallet.balance);
   const isMobile = useIsMobile();
   const [isClient, setIsClient] = useState(false);
@@ -247,6 +247,8 @@ export default function DashboardPage() {
         } catch (e) {
           console.error("Failed to parse virtual cards from localStorage", e);
         }
+      } else {
+        setCards(initialVirtualCards);
       }
     };
     
@@ -269,6 +271,7 @@ export default function DashboardPage() {
   };
 
   if (!isClient) {
+    // Render a skeleton or null during SSR to avoid hydration mismatch
     return null; 
   }
 

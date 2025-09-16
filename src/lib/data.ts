@@ -1,4 +1,5 @@
 
+
 export type Transaction = {
   id: string;
   name: string;
@@ -22,6 +23,11 @@ export type VirtualCard = {
   status: 'active' | 'blocked';
   theme: CardTheme;
 };
+
+export type User = {
+    name: string;
+    email: string;
+}
 
 export const wallet = {
   balance: 2342.78,
@@ -76,7 +82,17 @@ export const transactions: Transaction[] = [
   },
 ];
 
-export let virtualCards: VirtualCard[] = [
+export let user: User = { name: 'Alex Doe', email: 'alex.doe@example.com' };
+
+export const setUser = (newUser: User) => {
+  if (typeof window !== 'undefined') {
+    user = newUser;
+    localStorage.setItem('user', JSON.stringify(newUser));
+    window.dispatchEvent(new Event('storage'));
+  }
+}
+
+export const initialVirtualCards: VirtualCard[] = [
   {
     id: 'card_1',
     fullNumber: '4242424242424242',
@@ -100,10 +116,3 @@ export let virtualCards: VirtualCard[] = [
     theme: 'emerald',
   },
 ];
-
-export const setVirtualCards = (newCards: VirtualCard[]) => {
-   if (typeof window !== 'undefined') {
-    localStorage.setItem('virtualCards', JSON.stringify(newCards));
-    window.dispatchEvent(new Event('storage'));
-  }
-};

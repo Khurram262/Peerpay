@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { virtualCards as initialVirtualCards, setVirtualCards, type VirtualCard, type CardTheme } from '@/lib/data';
+import { initialVirtualCards, type VirtualCard, type CardTheme, user, setUser } from '@/lib/data';
 import { CreditCard, PlusCircle, Trash, CheckCircle } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { Switch } from '@/components/ui/switch';
@@ -51,13 +51,14 @@ const themeColors: Record<CardTheme, string> = {
 function CreateCardDialog({
   onCreateCard,
 }: {
-  onCreateCard: (theme: CardTheme) => void;
+  onCreateCard: (theme: CardTheme, cardholder: string) => void;
 }) {
   const [selectedTheme, setSelectedTheme] = useState<CardTheme>('sky');
+  const [cardholderName, setCardholderName] = useState(user.name);
   const [isOpen, setIsOpen] = useState(false);
 
   const handleCreate = () => {
-    onCreateCard(selectedTheme);
+    onCreateCard(selectedTheme, cardholderName);
     setIsOpen(false);
   };
   
@@ -67,7 +68,7 @@ function CreateCardDialog({
     last4: '5432',
     expiry: 'MM/YY',
     cvv: '123',
-    cardholder: 'Alex Doe',
+    cardholder: cardholderName,
     isPrimary: false,
     status: 'active',
     theme: selectedTheme,
@@ -96,7 +97,7 @@ function CreateCardDialog({
 
           <div className="space-y-2">
             <Label htmlFor="card-name">Cardholder Name</Label>
-            <Input id="card-name" defaultValue="Alex Doe" />
+            <Input id="card-name" value={cardholderName} onChange={(e) => setCardholderName(e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label>Choose a Color Theme</Label>
@@ -135,6 +136,8 @@ export default function CardsPage() {
 
   useEffect(() => {
     const storedCards = localStorage.getItem('virtualCards');
+    const storedUser = localStorage.getItem('user');
+
     if (storedCards) {
       try {
         const parsedCards = JSON.parse(storedCards);
@@ -143,15 +146,24 @@ export default function CardsPage() {
         }
       } catch (e) {
         console.error("Failed to parse virtual cards from localStorage", e);
-        // If parsing fails, we can fall back to initialVirtualCards
         setCardsState(initialVirtualCards);
       }
+    }
+
+    if (storedUser) {
+        try {
+            const parsedUser = JSON.parse(storedUser);
+            setUser(parsedUser);
+        } catch (e) {
+            console.error("Failed to parse user from localStorage", e);
+        }
     }
   }, []);
   
   const updateCards = (newCards: VirtualCard[]) => {
     setCardsState(newCards);
-    setVirtualCards(newCards);
+    localStorage.setItem('virtualCards', JSON.stringify(newCards));
+    window.dispatchEvent(new Event('storage'));
   };
 
 
@@ -190,7 +202,7 @@ export default function CardsPage() {
     })
   };
 
-  const handleCreateCard = (theme: CardTheme) => {
+  const handleCreateCard = (theme: CardTheme, cardholder: string) => {
     const newCard: VirtualCard = {
       id: `card_${Date.now()}`,
       fullNumber: Math.floor(1000000000000000 + Math.random() * 9000000000000000).toString(),
@@ -199,13 +211,19 @@ export default function CardsPage() {
         .toString()
         .padStart(2, '0')}/${new Date().getFullYear() % 100 + 5}`,
       cvv: Math.floor(100 + Math.random() * 900).toString(),
-      cardholder: 'Alex Doe',
+      cardholder: cardholder,
       isPrimary: cards.length === 0,
       status: 'active',
       theme,
     };
-    updateCards([...cards, newCard]);
-     toast({
+    
+    const newUser = { ...user, name: cardholder };
+    setUser(newUser);
+    const newCards = [...cards, newCard].map(c => ({ ...c, cardholder: cardholder }));
+
+    updateCards(newCards);
+
+    toast({
         title: 'Card Created',
         description: 'Your new virtual card has been added to your account.',
     })

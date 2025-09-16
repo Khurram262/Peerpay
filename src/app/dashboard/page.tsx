@@ -17,11 +17,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { wallet, transactions, virtualCards } from '@/lib/data';
+import { wallet, transactions } from '@/lib/data';
 import { QrPaymentForm } from '@/components/qr-payment-form';
 import { AnimatedVirtualCard } from '@/components/animated-virtual-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -34,6 +34,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { virtualCards as initialVirtualCards } from '@/lib/data';
+import type { VirtualCard } from '@/lib/data';
+import { useIsMobile } from '@/hooks/use-mobile';
+
 
 function SendMoneyDialog({ onSend }: { onSend: (amount: number) => void }) {
   const { toast } = useToast();
@@ -224,8 +228,27 @@ function RequestMoneyDialog({
 }
 
 export default function DashboardPage() {
-  const primaryCard = virtualCards.find((vc) => vc.isPrimary);
+  const [cards, setCards] = useState<VirtualCard[]>(initialVirtualCards);
   const [balance, setBalance] = useState(wallet.balance);
+  const isMobile = useIsMobile();
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const storedCards = localStorage.getItem('virtualCards');
+      if (storedCards) {
+        setCards(JSON.parse(storedCards));
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    handleStorageChange(); // Initial check
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  const primaryCard = cards.find((vc) => vc.isPrimary);
 
   const handleTransaction = (amount: number, type: 'send' | 'request') => {
     if (type === 'send') {
@@ -255,7 +278,13 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className="md:col-span-5 lg:col-span-4 row-start-1 md:row-start-auto">
-          {primaryCard && <AnimatedVirtualCard card={primaryCard} />}
+          {primaryCard ? (
+             <AnimatedVirtualCard card={primaryCard} forceFlip={isMobile} />
+          ) : (
+             <Card className="h-56 flex items-center justify-center bg-muted/50">
+                <p className="text-muted-foreground">No primary card available.</p>
+             </Card>
+          )}
         </div>
       </div>
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">

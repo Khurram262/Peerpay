@@ -10,20 +10,27 @@ const themeClasses = {
   emerald: 'from-emerald-500 to-emerald-700',
   amber: 'from-amber-500 to-amber-700',
   rose: 'from-rose-500 to-rose-700',
+  slate: 'from-slate-600 to-slate-800',
+  violet: 'from-violet-500 to-violet-700',
 };
 
-export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
+export function AnimatedVirtualCard({ card, forceFlip }: { card: VirtualCard, forceFlip?: boolean }) {
   const [isFlipped, setIsFlipped] = React.useState(false);
+  const cardTheme = themeClasses[card.theme] || themeClasses.sky;
+
+  React.useEffect(() => {
+    if (forceFlip !== undefined) {
+      setIsFlipped(forceFlip);
+    }
+  }, [forceFlip]);
 
   const formatCardNumber = (num: string) => {
-    return num.replace(/\d{4}(?=\d)/g, '$& ');
+    return num.match(/.{1,4}/g)?.join(' ') ?? '';
   };
-
-  const cardTheme = themeClasses[card.theme] || themeClasses.sky;
 
   return (
     <div
-      className="group w-full max-w-sm h-56 [perspective:1000px]"
+      className="group w-full max-w-sm h-56 [perspective:1000px] cursor-pointer"
       onClick={() => setIsFlipped(!isFlipped)}
     >
       <div
@@ -33,15 +40,17 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
         )}
       >
         {/* Front of the card */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 [backface-visibility:hidden]">
           <div
             className={cn(
-              'relative w-full h-full rounded-xl p-6 flex flex-col justify-between text-white bg-gradient-to-br shadow-lg',
+              'relative w-full h-full rounded-xl p-6 flex flex-col justify-between text-white bg-gradient-to-br shadow-lg overflow-hidden',
               cardTheme
             )}
           >
+             <div className="absolute -top-1/3 -right-1/4 w-48 h-48 bg-white/10 rounded-full blur-xl opacity-50"></div>
+             <div className="absolute -bottom-1/4 -left-1/4 w-32 h-32 bg-white/10 rounded-full blur-lg opacity-40"></div>
             {card.status === 'blocked' && (
-              <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center z-20">
                 <Ban className="w-16 h-16 text-white/70" />
               </div>
             )}
@@ -52,19 +61,19 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
               <Wifi className="w-7 h-7 opacity-80" />
             </div>
             <div className="relative text-left z-10">
-              <p className="font-mono text-2xl tracking-widest text-gray-200/90">
-                •••• •••• •••• {card.last4}
-              </p>
+                <div className="w-12 h-8 bg-yellow-400 rounded-md shadow-inner-lg flex items-center justify-center">
+                    <div className='w-8 h-5 bg-yellow-500 rounded-sm' />
+                </div>
             </div>
             <div className="relative flex justify-between items-end z-10">
               <div>
-                <p className="text-xs text-gray-300/80">Card Holder</p>
+                <p className="text-xs text-gray-200/80">Card Holder</p>
                 <p className="font-medium tracking-wide text-gray-100">
                   {card.cardholder}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray-300/80">Expires</p>
+                <p className="text-xs text-gray-200/80">Expires</p>
                 <p className="font-medium tracking-wide text-gray-100">
                   {card.expiry}
                 </p>
@@ -80,32 +89,27 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
             cardTheme
           )}
         >
-          <div className="relative w-full h-full rounded-xl p-6 flex flex-col justify-between">
-            <div className="absolute top-8 left-0 w-full h-12 bg-black/80"></div>
-            <div className="text-right text-xs text-gray-300/80 pt-2">
-              <p>For customer service call +1-234-567-890</p>
-            </div>
-            <div className="flex-1 flex flex-col justify-center items-end pr-4">
-              <p className="text-gray-300 text-xs self-start mb-2 pl-2">
-                Full Card Number
-              </p>
-              <div className="w-full h-9 bg-white/90 rounded-md flex items-center justify-start mb-4">
-                <p className="text-black font-mono tracking-wider pl-4">
-                  {formatCardNumber(card.fullNumber)}
-                </p>
-              </div>
-              <div className="flex justify-end gap-4 w-full">
+          <div className="relative w-full h-full rounded-xl p-0 flex flex-col justify-start">
+            <div className="w-full h-12 bg-black/80 mt-6"></div>
+             <div className="px-6 py-4 space-y-4">
                 <div className="text-right">
-                  <p className="text-gray-300 text-xs">CVV</p>
-                  <div className="w-20 h-8 bg-white/90 rounded-md flex items-center justify-end pr-2">
-                    <p className="text-black font-mono tracking-widest">
-                      {card.cvv}
-                    </p>
-                  </div>
+                    <p className="text-xs text-gray-300/80">CVV</p>
+                    <div className="h-9 bg-white rounded-md flex items-center justify-end pr-4">
+                        <p className="text-black font-mono tracking-widest">
+                        {card.cvv}
+                        </p>
+                    </div>
                 </div>
-              </div>
+                 <div>
+                    <p className="text-xs text-gray-300/80 mb-1">Card Number</p>
+                    <div className="h-9 bg-white rounded-md flex items-center justify-center">
+                    <p className="text-black font-mono tracking-wider text-lg">
+                        {formatCardNumber(card.fullNumber)}
+                    </p>
+                    </div>
+                </div>
             </div>
-            <div className="text-right text-xs text-gray-400/80">
+            <div className="text-xs text-gray-300/60 mt-auto px-6 pb-4 text-center">
               <p>
                 This card is issued by PeerPay Inc. Use of this card
                 constitutes acceptance of the terms and conditions.

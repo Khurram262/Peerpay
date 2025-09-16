@@ -8,9 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { virtualCards, type VirtualCard, type CardTheme } from '@/lib/data';
-import { CreditCard, PlusCircle, Trash, Ban, Palette } from 'lucide-react';
-import React, { useState } from 'react';
+import { virtualCards as initialVirtualCards, setVirtualCards, type VirtualCard, type CardTheme } from '@/lib/data';
+import { CreditCard, PlusCircle, Trash, Ban, Palette, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import {
@@ -42,6 +42,8 @@ const themeColors: Record<CardTheme, string> = {
   emerald: 'bg-emerald-500',
   amber: 'bg-amber-500',
   rose: 'bg-rose-500',
+  slate: 'bg-slate-500',
+  violet: 'bg-violet-500',
 };
 
 function CreateCardDialog({
@@ -78,7 +80,7 @@ function CreateCardDialog({
           </div>
           <div className="space-y-2">
             <Label>Choose a Color Theme</Label>
-            <div className="flex gap-3 pt-2">
+            <div className="flex flex-wrap gap-3 pt-2">
               {Object.keys(themeColors).map((theme) => (
                 <button
                   key={theme}
@@ -108,12 +110,24 @@ function CreateCardDialog({
 }
 
 export default function CardsPage() {
-  const [cards, setCards] = useState<VirtualCard[]>(virtualCards);
+  const [cards, setCardsState] = useState<VirtualCard[]>(initialVirtualCards);
   const { toast } = useToast();
 
+  useEffect(() => {
+    const storedCards = localStorage.getItem('virtualCards');
+    if (storedCards) {
+      setCardsState(JSON.parse(storedCards));
+    }
+  }, []);
+  
+  const updateCards = (newCards: VirtualCard[]) => {
+    setCardsState(newCards);
+    setVirtualCards(newCards);
+  };
+
+
   const handleToggleBlock = (cardId: string) => {
-    setCards((prevCards) =>
-      prevCards.map((card) =>
+    const newCards = cards.map((card) =>
         card.id === cardId
           ? {
               ...card,
@@ -121,7 +135,8 @@ export default function CardsPage() {
             }
           : card
       )
-    );
+    updateCards(newCards);
+
     const card = cards.find(c => c.id === cardId);
     toast({
         title: `Card ${card?.status === 'active' ? 'Blocked' : 'Unblocked'}`,
@@ -130,11 +145,18 @@ export default function CardsPage() {
   };
 
   const handleRemoveCard = (cardId: string) => {
-    setCards((prevCards) => prevCards.filter((card) => card.id !== cardId));
-    const card = cards.find(c => c.id === cardId);
+    const cardToRemove = cards.find((c) => c.id === cardId);
+    let newCards = cards.filter((card) => card.id !== cardId);
+
+    if (cardToRemove?.isPrimary && newCards.length > 0) {
+        newCards[0].isPrimary = true;
+    }
+    
+    updateCards(newCards);
+    
     toast({
         title: 'Card Removed',
-        description: `Your card ending in ${card?.last4} has been removed.`,
+        description: `Your card ending in ${cardToRemove?.last4} has been removed.`,
         variant: 'destructive',
     })
   };
@@ -149,16 +171,25 @@ export default function CardsPage() {
         .padStart(2, '0')}/${new Date().getFullYear() % 100 + 5}`,
       cvv: Math.floor(100 + Math.random() * 900).toString(),
       cardholder: 'Alex Doe',
-      isPrimary: false,
+      isPrimary: cards.length === 0,
       status: 'active',
       theme,
     };
-    setCards((prevCards) => [...prevCards, newCard]);
+    updateCards([...cards, newCard]);
      toast({
         title: 'Card Created',
         description: 'Your new virtual card has been added to your account.',
     })
   };
+
+  const handleSetPrimary = (cardId: string) => {
+    const newCards = cards.map(c => ({...c, isPrimary: c.id === cardId}));
+    updateCards(newCards);
+    toast({
+      title: 'Primary Card Updated',
+      description: `Card ending in ${cards.find(c => c.id === cardId)?.last4} is now your primary card.`,
+    });
+  }
 
   return (
     <Card>
@@ -200,10 +231,13 @@ export default function CardsPage() {
               </div>
             </div>
             <div className="flex items-center gap-4 self-end sm:self-center">
-              {card.isPrimary && (
-                <div className="text-xs font-bold text-primary py-1 px-2 rounded-full bg-primary/10">
+              {card.isPrimary ? (
+                <div className="text-xs font-bold text-primary py-1 px-2 rounded-full bg-primary/10 flex items-center gap-1">
+                  <CheckCircle className='h-3 w-3' />
                   PRIMARY
                 </div>
+              ) : (
+                 <Button variant="ghost" size="sm" onClick={() => handleSetPrimary(card.id)}>Set as primary</Button>
               )}
               <div className="flex items-center space-x-2">
                 <Switch
@@ -227,7 +261,6 @@ export default function CardsPage() {
                     variant="ghost"
                     size="icon"
                     className="text-muted-foreground hover:text-destructive"
-                    disabled={card.isPrimary}
                   >
                     <Trash className="h-4 w-4" />
                   </Button>
@@ -253,6 +286,12 @@ export default function CardsPage() {
             </div>
           </div>
         ))}
+        {cards.length === 0 && (
+            <div className="text-center py-12 text-muted-foreground">
+                <p>You have no virtual cards.</p>
+                <p className="text-sm">Create one to get started!</p>
+            </div>
+        )}
       </CardContent>
     </Card>
   );

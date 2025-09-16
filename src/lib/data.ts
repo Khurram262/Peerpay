@@ -8,7 +8,7 @@ export type Transaction = {
   type: 'sent' | 'received' | 'top-up';
 };
 
-export type CardTheme = 'sky' | 'emerald' | 'amber' | 'rose';
+export type CardTheme = 'sky' | 'emerald' | 'amber' | 'rose' | 'slate' | 'violet';
 
 export type VirtualCard = {
   id: string;
@@ -75,7 +75,7 @@ export const transactions: Transaction[] = [
   },
 ];
 
-export const virtualCards: VirtualCard[] = [
+export let virtualCards: VirtualCard[] = [
   {
     id: 'card_1',
     fullNumber: '4242424242424242',
@@ -99,3 +99,22 @@ export const virtualCards: VirtualCard[] = [
     theme: 'emerald',
   },
 ];
+
+if (typeof window !== 'undefined' && localStorage.getItem('virtualCards')) {
+  try {
+    const storedCards = JSON.parse(localStorage.getItem('virtualCards')!);
+    if (Array.isArray(storedCards)) {
+      virtualCards = storedCards;
+    }
+  } catch (e) {
+    console.error("Failed to parse virtual cards from localStorage", e);
+  }
+}
+
+export const setVirtualCards = (newCards: VirtualCard[]) => {
+  virtualCards = newCards;
+   if (typeof window !== 'undefined') {
+    localStorage.setItem('virtualCards', JSON.stringify(newCards));
+    window.dispatchEvent(new Event('storage'));
+  }
+};

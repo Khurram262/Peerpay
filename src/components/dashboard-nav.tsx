@@ -3,13 +3,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
   CreditCard,
   ArrowRightLeft,
   Settings,
   Receipt,
+  Gift,
 } from 'lucide-react';
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 
@@ -33,6 +33,11 @@ const navItems = [
     href: '/dashboard/payments',
     icon: Receipt,
     label: 'Payments',
+  },
+  {
+    href: '/dashboard/rewards',
+    icon: Gift,
+    label: 'Rewards',
   },
   {
     href: '/dashboard/settings',

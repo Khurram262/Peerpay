@@ -14,7 +14,6 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (

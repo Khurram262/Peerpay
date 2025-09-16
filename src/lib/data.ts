@@ -1,5 +1,4 @@
 
-
 export type Transaction = {
   id: string;
   name: string;
@@ -29,10 +28,32 @@ export type User = {
     email: string;
 }
 
-export const wallet = {
+export type Wallet = {
+  balance: number;
+  currency: 'USD';
+  rewardsPoints: number;
+}
+
+export type Reward = {
+    id: string;
+    activity: string;
+    points: number;
+    date: string;
+}
+
+export let wallet: Wallet = {
   balance: 2342.78,
   currency: 'USD',
+  rewardsPoints: 1250,
 };
+
+export const setWallet = (newWallet: Wallet) => {
+  if (typeof window !== 'undefined') {
+    wallet = newWallet;
+    localStorage.setItem('wallet', JSON.stringify(newWallet));
+    window.dispatchEvent(new Event('storage'));
+  }
+}
 
 export const transactions: Transaction[] = [
   {
@@ -116,3 +137,36 @@ export const initialVirtualCards: VirtualCard[] = [
     theme: 'emerald',
   },
 ];
+
+export const rewardHistory: Reward[] = [
+    {
+        id: 'reward_1',
+        activity: 'Electricity Bill Payment',
+        points: 50,
+        date: '2024-05-21',
+    },
+    {
+        id: 'reward_2',
+        activity: 'Internet Bill Payment',
+        points: 30,
+        date: '2024-05-15',
+    },
+    {
+        id: 'reward_3',
+        activity: 'Water Bill Payment',
+        points: 25,
+        date: '2024-05-10',
+    },
+     {
+        id: 'reward_4',
+        activity: 'Gas Bill Payment',
+        points: 20,
+        date: '2024-05-05',
+    },
+    {
+        id: 'reward_5',
+        activity: 'Welcome Bonus',
+        points: 100,
+        date: '2024-05-01',
+    }
+]

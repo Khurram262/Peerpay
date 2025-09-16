@@ -1,7 +1,7 @@
 
 'use client';
 
-import { ArrowDown, ArrowUp, Send, UserPlus } from 'lucide-react';
+import { ArrowDown, ArrowUp, Send, UserPlus, Gift } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { wallet, transactions } from '@/lib/data';
+import { wallet, transactions, setWallet, type Wallet } from '@/lib/data';
 import { QrPaymentForm } from '@/components/qr-payment-form';
 import { AnimatedVirtualCard } from '@/components/animated-virtual-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -230,7 +230,7 @@ function RequestMoneyDialog({
 
 export default function DashboardPage() {
   const [cards, setCards] = useState<VirtualCard[]>([]);
-  const [balance, setBalance] = useState(wallet.balance);
+  const [currentWallet, setCurrentWallet] = useState<Wallet>(wallet);
   const isMobile = useIsMobile();
   const [isClient, setIsClient] = useState(false);
 
@@ -250,6 +250,17 @@ export default function DashboardPage() {
       } else {
         setCards(initialVirtualCards);
       }
+      
+      const storedWallet = localStorage.getItem('wallet');
+      if (storedWallet) {
+        try {
+            const parsedWallet = JSON.parse(storedWallet);
+            setCurrentWallet(parsedWallet);
+        } catch(e) {
+            console.error("Failed to parse wallet from localStorage", e);
+        }
+      }
+
     };
     
     window.addEventListener('storage', handleStorageChange);
@@ -263,11 +274,13 @@ export default function DashboardPage() {
   const primaryCard = cards.find((vc) => vc.isPrimary);
 
   const handleTransaction = (amount: number, type: 'send' | 'request') => {
-    if (type === 'send') {
-      setBalance((prev) => prev - amount);
-    } else {
-      setBalance((prev) => prev + amount);
-    }
+    const newBalance = type === 'send' 
+      ? currentWallet.balance - amount
+      : currentWallet.balance + amount;
+    
+    const newWallet = { ...currentWallet, balance: newBalance };
+    setWallet(newWallet);
+    setCurrentWallet(newWallet);
   };
 
   if (!isClient) {
@@ -279,16 +292,31 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-8">
       <div className="grid gap-8 md:grid-cols-12">
         <div className="md:col-span-7 lg:col-span-8 space-y-8">
-          <Card className="bg-primary text-primary-foreground overflow-hidden shadow-xl">
-            <CardContent className="p-8">
-              <p className="text-sm text-primary-foreground/80">
-                Available Balance
-              </p>
-              <div className="text-5xl font-bold tracking-tight">
-                ${balance.toLocaleString()}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+            <Card className="bg-primary text-primary-foreground overflow-hidden shadow-xl">
+              <CardContent className="p-6">
+                <p className="text-sm text-primary-foreground/80">
+                  Available Balance
+                </p>
+                <div className="text-4xl font-bold tracking-tight">
+                  ${currentWallet.balance.toLocaleString()}
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-secondary text-secondary-foreground overflow-hidden shadow-xl">
+              <CardContent className="p-6">
+                 <div className="flex items-center gap-2">
+                    <Gift className="text-amber-400" />
+                    <p className="text-sm text-secondary-foreground/80">
+                    Reward Points
+                    </p>
+                 </div>
+                <div className="text-4xl font-bold tracking-tight">
+                  {currentWallet.rewardsPoints.toLocaleString()}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <SendMoneyDialog onSend={(amount) => handleTransaction(amount, 'send')} />
             <RequestMoneyDialog onRequest={(amount) => handleTransaction(amount, 'request')} />

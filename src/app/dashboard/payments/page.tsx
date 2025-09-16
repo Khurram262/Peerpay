@@ -23,14 +23,12 @@ import {
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import { setWallet, wallet as initialWallet, type Wallet } from '@/lib/data';
 import { Lightbulb, Droplets, Wifi, Smartphone, Flame } from 'lucide-react';
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 
-
-function UtilityPayments() {
+function UtilityPayments({onPay}: {onPay: (amount: number) => void}) {
   const { toast } = useToast();
-  const router = useRouter();
   const [amount, setAmount] = useState('');
 
   const handlePay = () => {
@@ -43,15 +41,12 @@ function UtilityPayments() {
       });
       return;
     }
-    
-    localStorage.setItem('paymentAmount', paymentAmount.toString());
-
+    onPay(paymentAmount);
     toast({ 
       title: 'Payment Submitted', 
-      description: 'Your utility bill payment is being processed.'
+      description: `Your bill payment of $${paymentAmount} is being processed. You've earned ${Math.floor(paymentAmount / 10)} points!`
     });
-
-    router.push('/dashboard');
+    setAmount('');
   }
 
   return (
@@ -109,9 +104,8 @@ function UtilityPayments() {
   );
 }
 
-function MobileTopUp() {
+function MobileTopUp({onTopUp}: {onTopUp: (amount: number) => void}) {
   const { toast } = useToast();
-  const router = useRouter();
   const [amount, setAmount] = useState('');
   const quickAmounts = [10, 20, 50, 100];
 
@@ -124,14 +118,12 @@ function MobileTopUp() {
       });
       return;
     }
-    
-    localStorage.setItem('paymentAmount', topUpAmount.toString());
-
+    onTopUp(topUpAmount);
     toast({ 
       title: 'Top-up Successful', 
-      description: 'The mobile top-up has been completed.'
+      description: `The mobile top-up of $${topUpAmount} has been completed.`
     });
-    router.push('/dashboard');
+    setAmount('');
   }
 
   return (
@@ -178,10 +170,39 @@ function MobileTopUp() {
 }
 
 export default function PaymentsPage() {
+  const [currentWallet, setCurrentWallet] = useState<Wallet>(initialWallet);
 
-  React.useEffect(() => {
-    localStorage.removeItem('paymentAmount');
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const storedWallet = localStorage.getItem('wallet');
+      if (storedWallet) {
+        try {
+          const parsedWallet = JSON.parse(storedWallet);
+          setCurrentWallet(parsedWallet);
+        } catch (e) {
+          console.error("Failed to parse wallet from localStorage", e);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    handleStorageChange(); // Initial check
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
+
+  const handlePayment = (amount: number, type: 'bill' | 'topup') => {
+    const pointsEarned = type === 'bill' ? Math.floor(amount / 10) : 0;
+    const newWallet: Wallet = {
+      ...currentWallet,
+      balance: currentWallet.balance - amount,
+      rewardsPoints: currentWallet.rewardsPoints + pointsEarned,
+    };
+    setWallet(newWallet);
+    setCurrentWallet(newWallet);
+  };
 
   return (
     <div className="flex flex-col gap-8">
@@ -198,10 +219,10 @@ export default function PaymentsPage() {
           <TabsTrigger value="mobile">Mobile Top-up</TabsTrigger>
         </TabsList>
         <TabsContent value="utility">
-          <UtilityPayments />
+          <UtilityPayments onPay={(amount) => handlePayment(amount, 'bill')} />
         </TabsContent>
         <TabsContent value="mobile">
-          <MobileTopUp />
+          <MobileTopUp onTopUp={(amount) => handlePayment(amount, 'topup')} />
         </TabsContent>
       </Tabs>
     </div>

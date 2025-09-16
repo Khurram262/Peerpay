@@ -97,7 +97,7 @@ function CreateCardDialog({
         <div className="space-y-6 py-4 max-h-[70vh] overflow-y-auto pr-2">
 
           <div className="flex justify-center">
-            <AnimatedVirtualCard card={previewCard} />
+            <AnimatedVirtualCard card={previewCard} isVisible={true} />
           </div>
           <div className="space-y-2">
             <Label>Card Color</Label>

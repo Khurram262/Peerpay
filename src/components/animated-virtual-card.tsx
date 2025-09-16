@@ -2,7 +2,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import type { VirtualCard } from '@/lib/data';
 import { Ban, Wifi } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -34,18 +34,50 @@ const formatHiddenCardNumber = (cardNumber: string) => {
 };
 
 export function AnimatedVirtualCard({ card, isVisible = false }: { card: VirtualCard, isVisible?: boolean }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [style, setStyle] = useState({});
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+
+    const { left, top, width, height } = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - left;
+    const y = e.clientY - top;
+    
+    const rotateX = (y / height - 0.5) * -20;
+    const rotateY = (x / width - 0.5) * 20;
+
+    const bgX = (x / width) * 100;
+    const bgY = (y / height) * 100;
+
+    setStyle({
+      transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`,
+      '--bg-x': `${bgX}%`,
+      '--bg-y': `${bgY}%`,
+    } as React.CSSProperties);
+  };
+
+  const handleMouseLeave = () => {
+    setStyle({
+      transform: 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)',
+    });
+  };
 
   const cardBaseStyle =
-    'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl transition-transform duration-500';
+    'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl transition-transform duration-300';
   const cardFrontStyle = `flex flex-col justify-between`;
   
   const cardBackgroundStyle = {
-    background: `linear-gradient(to bottom right, ${card.theme.start}, ${card.theme.end})`,
+    background: `radial-gradient(circle at var(--bg-x, 50%) var(--bg-y, 50%), hsla(0,0%,100%,.1), transparent 40%), linear-gradient(to bottom right, ${card.theme.start}, ${card.theme.end})`,
   };
 
   return (
     <div
-      className="group w-full max-w-md mx-auto h-56 [perspective:1000px] cursor-pointer"
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={style}
+      className="group w-full max-w-md mx-auto h-56 [transform-style:preserve-3d] transition-transform duration-300 ease-out"
     >
       <div
         className={cn(

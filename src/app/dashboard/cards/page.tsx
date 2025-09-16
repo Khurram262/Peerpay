@@ -6,10 +6,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { virtualCards } from '@/lib/data';
+import { virtualCards, type VirtualCard } from '@/lib/data';
 import { CreditCard, PlusCircle } from 'lucide-react';
 
-function VirtualCardDisplay({ card }: { card: typeof virtualCards[0] }) {
+function VirtualCardDisplay({ card }: { card: VirtualCard }) {
   return (
     <div className="border p-4 rounded-lg flex justify-between items-center">
       <div className="flex items-center gap-4">

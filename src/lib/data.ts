@@ -8,6 +8,16 @@ export type Transaction = {
   type: 'sent' | 'received' | 'top-up';
 };
 
+export type VirtualCard = {
+  id: string;
+  fullNumber: string;
+  last4: string;
+  expiry: string;
+  cvv: string;
+  cardholder: string;
+  isPrimary: boolean;
+};
+
 export const wallet = {
   balance: 2342.78,
   currency: 'USD',
@@ -61,18 +71,22 @@ export const transactions: Transaction[] = [
   },
 ];
 
-export const virtualCards = [
+export const virtualCards: VirtualCard[] = [
   {
     id: 'card_1',
+    fullNumber: '4242424242424242',
     last4: '4242',
     expiry: '12/26',
+    cvv: '123',
     cardholder: 'Alex Doe',
     isPrimary: true,
   },
   {
     id: 'card_2',
+    fullNumber: '1234123412341234',
     last4: '1234',
     expiry: '08/25',
+    cvv: '456',
     cardholder: 'Alex Doe',
     isPrimary: false,
   },

@@ -54,10 +54,6 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
     });
   };
 
-  const formatCardNumber = (num: string) => {
-    return num.match(/.{1,4}/g)?.join(' ') ?? '';
-  };
-
   const cardBaseStyle =
     'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl';
   const cardFrontStyle = `flex flex-col justify-between`;
@@ -113,7 +109,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
           <div className="relative text-left z-10 space-y-2">
             <div className="flex items-center gap-4">
               <p className="font-mono text-xl tracking-wider whitespace-nowrap md:text-2xl">
-                {formatCardNumber(card.fullNumber)}
+                {card.fullNumber}
               </p>
             </div>
 

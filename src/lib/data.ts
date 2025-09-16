@@ -14,12 +14,9 @@ export type CardTheme = {
   end: string;
 };
 
-export type CardTier = 'green' | 'gold' | 'black';
-
 export type VirtualCard = {
   id: string;
   name: string;
-  tier: CardTier;
   fullNumber: string;
   last4: string;
   expiry: string;
@@ -133,7 +130,6 @@ export const initialVirtualCards: VirtualCard[] = [
   {
     id: 'card_1',
     name: 'Daily Spender',
-    tier: 'green',
     fullNumber: '4242424242424242',
     last4: '4242',
     expiry: '12/26',
@@ -141,12 +137,11 @@ export const initialVirtualCards: VirtualCard[] = [
     cardholder: 'Alex Doe',
     isPrimary: true,
     status: 'active',
-    theme: { start: '#059669', end: '#10B981' },
+    theme: { start: '#16a34a', end: '#4ade80' },
   },
   {
     id: 'card_2',
     name: 'Online Subscriptions',
-    tier: 'gold',
     fullNumber: '1234123412341234',
     last4: '1234',
     expiry: '08/25',
@@ -154,12 +149,11 @@ export const initialVirtualCards: VirtualCard[] = [
     cardholder: 'Alex Doe',
     isPrimary: false,
     status: 'active',
-    theme: { start: '#F59E0B', end: '#FBBF24' },
+    theme: { start: '#f59e0b', end: '#fcd34d' },
   },
    {
     id: 'card_3',
     name: 'Travel Card',
-    tier: 'black',
     fullNumber: '9876543212345678',
     last4: '5678',
     expiry: '04/28',
@@ -167,7 +161,7 @@ export const initialVirtualCards: VirtualCard[] = [
     cardholder: 'Alex Doe',
     isPrimary: false,
     status: 'blocked',
-    theme: { start: '#171717', end: '#404040' },
+    theme: { start: '#171717', end: '#525252' },
   },
 ];
 

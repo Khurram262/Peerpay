@@ -11,7 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { initialVirtualCards, type VirtualCard, type CardTheme, user, setUser, type CardTier } from '@/lib/data';
+import { initialVirtualCards, type VirtualCard, type CardTheme, user, setUser } from '@/lib/data';
 import { CreditCard, PlusCircle, Trash, CheckCircle } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { Switch } from '@/components/ui/switch';
@@ -40,37 +40,29 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { AnimatedVirtualCard } from '@/components/animated-virtual-card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 const availableThemes: Record<string, CardTheme> = {
-  green: { start: '#059669', end: '#10B981' },
-  gold: { start: '#F59E0B', end: '#FBBF24' },
-  black: { start: '#171717', end: '#404040' },
-  purple: { start: '#5B21B6', end: '#7C3AED' },
-  blue: { start: '#2563EB', end: '#3B82F6' },
-  rose: { start: '#BE123C', end: '#F43F5E' },
+  green: { start: '#16a34a', end: '#4ade80' },
+  gold: { start: '#f59e0b', end: '#fcd34d' },
+  black: { start: '#171717', end: '#525252' },
+  purple: { start: '#7e22ce', end: '#a855f7' },
+  blue: { start: '#2563eb', end: '#60a5fa' },
+  rose: { start: '#e11d48', end: '#fb7185' },
 };
 
 
 function CreateCardDialog({
   onCreateCard,
 }: {
-  onCreateCard: (theme: CardTheme, cardholder: string, name: string, tier: CardTier) => void;
+  onCreateCard: (theme: CardTheme, cardholder: string, name: string) => void;
 }) {
   const [selectedTheme, setSelectedTheme] = useState(availableThemes.green);
   const [cardholderName, setCardholderName] = useState(user.name);
   const [cardName, setCardName] = useState('');
-  const [cardTier, setCardTier] = useState<CardTier>('green');
   const [isOpen, setIsOpen] = useState(false);
 
   const handleCreate = () => {
-    onCreateCard(selectedTheme, cardholderName, cardName, cardTier);
+    onCreateCard(selectedTheme, cardholderName, cardName);
     setIsOpen(false);
     setCardName('');
   };
@@ -78,7 +70,6 @@ function CreateCardDialog({
   const previewCard: VirtualCard = {
     id: 'preview',
     name: cardName || 'New Card',
-    tier: cardTier,
     fullNumber: '1234 5678 9876 5432',
     last4: '5432',
     expiry: 'MM/YY',
@@ -132,19 +123,6 @@ function CreateCardDialog({
           <div className="space-y-2">
             <Label htmlFor="cardholder-name">Cardholder Name</Label>
             <Input id="cardholder-name" value={cardholderName} onChange={(e) => setCardholderName(e.target.value)} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="card-tier">Card Tier</Label>
-              <Select value={cardTier} onValueChange={(value) => setCardTier(value as CardTier)}>
-              <SelectTrigger id="card-tier">
-                <SelectValue placeholder="Choose a tier" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="green">Green</SelectItem>
-                <SelectItem value="gold">Gold</SelectItem>
-                <SelectItem value="black">Black</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </div>
         <DialogFooter>
@@ -330,11 +308,10 @@ export default function CardsPage() {
     })
   };
 
-  const handleCreateCard = (theme: CardTheme, cardholder: string, name: string, tier: CardTier) => {
+  const handleCreateCard = (theme: CardTheme, cardholder: string, name: string) => {
     const newCard: VirtualCard = {
       id: `card_${Date.now()}`,
       name: name || 'New Card',
-      tier: tier,
       fullNumber: Math.floor(1000000000000000 + Math.random() * 9000000000000000).toString(),
       last4: Math.floor(1000 + Math.random() * 9000).toString(),
       expiry: `${Math.floor(1 + Math.random() * 12)

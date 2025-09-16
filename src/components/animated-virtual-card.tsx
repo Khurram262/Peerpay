@@ -3,9 +3,8 @@
 
 import React, { useRef, useState } from 'react';
 import type { VirtualCard } from '@/lib/data';
-import { Ban, Eye, EyeOff, Wifi } from 'lucide-react';
+import { Ban, Wifi } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 
 function MastercardLogo() {
   return (
@@ -25,15 +24,8 @@ function MastercardLogo() {
   );
 }
 
-const tierStyles = {
-  green: { accent: 'text-green-300' },
-  gold: { accent: 'text-amber-300' },
-  black: { accent: 'text-gray-300' },
-};
-
 export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   const [isFlipped, setIsFlipped] = React.useState(false);
-  const [isDetailsVisible, setIsDetailsVisible] = React.useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const [style, setStyle] = useState<React.CSSProperties>({});
 
@@ -65,16 +57,6 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   const formatCardNumber = (num: string) => {
     return num.match(/.{1,4}/g)?.join(' ') ?? '';
   };
-
-  const handleToggleDetails = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsDetailsVisible((prev) => !prev);
-    if (!isDetailsVisible) {
-      setTimeout(() => setIsDetailsVisible(false), 5000); // Auto-hide after 5s
-    }
-  };
-
-  const currentTier = tierStyles[card.tier || 'green'];
 
   const cardBaseStyle =
     'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl';
@@ -118,14 +100,6 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
               <span className="text-xl font-semibold tracking-wider">
                 PeerPay
               </span>
-              <span
-                className={cn(
-                  'text-sm font-semibold uppercase',
-                  currentTier.accent
-                )}
-              >
-                {card.tier}
-              </span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -139,19 +113,8 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
           <div className="relative text-left z-10 space-y-2">
             <div className="flex items-center gap-4">
               <p className="font-mono text-xl tracking-wider whitespace-nowrap md:text-2xl">
-                {isDetailsVisible
-                  ? formatCardNumber(card.fullNumber)
-                  : `**** **** **** ${card.last4}`}
+                {formatCardNumber(card.fullNumber)}
               </p>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-white/70 hover:bg-white/20 hover:text-white"
-                onClick={handleToggleDetails}
-              >
-                {isDetailsVisible ? <EyeOff /> : <Eye />}
-                <span className="sr-only">View Card Details</span>
-              </Button>
             </div>
 
             <div className="flex justify-between items-end">
@@ -167,7 +130,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
                     Expires
                   </p>
                   <p className="font-medium tracking-wide text-white">
-                    {isDetailsVisible ? card.expiry : 'MM/YY'}
+                    {card.expiry}
                   </p>
                 </div>
                 <MastercardLogo />
@@ -190,7 +153,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
                 <p className="text-xs text-white/80 uppercase">CVV</p>
                 <div className="h-9 bg-white rounded-md flex items-center justify-end pr-4">
                   <p className="text-black font-mono tracking-widest">
-                    {isDetailsVisible ? card.cvv : '***'}
+                    {card.cvv}
                   </p>
                 </div>
               </div>

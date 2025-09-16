@@ -96,14 +96,14 @@ function CreateCardDialog({
           <PlusCircle className="mr-2 h-4 w-4" /> Create New Card
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md w-[90%] rounded-lg">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Create a New Virtual Card</DialogTitle>
           <DialogDescription>
             Customize and create a new card for your account.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-6 py-4">
+        <div className="space-y-6 py-4 max-h-[70vh] overflow-y-auto pr-2">
 
           <div className="flex justify-center">
             <AnimatedVirtualCard card={previewCard} />
@@ -207,14 +207,14 @@ function OrderPhysicalCard() {
         </DialogTrigger>
       </CardFooter>
     </Card>
-      <DialogContent className="sm:max-w-lg w-[90%] rounded-lg">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Confirm Shipping Address</DialogTitle>
           <DialogDescription>
             Please enter the name and address where you want your physical card to be shipped.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-2">
           <div className="grid gap-2">
             <Label htmlFor="name">Full Name</Label>
             <Input id="name" value={address.name} onChange={handleInputChange} />

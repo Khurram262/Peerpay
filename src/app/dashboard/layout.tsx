@@ -5,26 +5,28 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { UserNav } from '@/components/user-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarTrigger,
-  SidebarInset,
-  SidebarFooter,
-} from '@/components/ui/sidebar';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { user } from '@/lib/data';
-import { DashboardNav } from '@/components/dashboard-nav';
 import { usePathname } from 'next/navigation';
+import { CreditCard, Receipt, Gift, BrainCircuit, Home } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-export default function DashboardLayout({ children }: { children: ReactNode }) {
+
+const NavButton = ({ href, icon: Icon, label }: { href: string, icon: React.ElementType, label: string }) => {
   const pathname = usePathname();
-  const hideSidebar = pathname.startsWith('/dashboard/') && pathname.split('/').length > 2;
+  const isActive = pathname === href;
 
   return (
-    <SidebarProvider>
+    <Link href={href} className={cn('flex flex-col items-center justify-center text-xs gap-1', isActive ? 'text-primary' : 'text-muted-foreground')}>
+      <Icon className="h-6 w-6" />
+      <span>{label}</span>
+    </Link>
+  );
+};
+
+
+export default function DashboardLayout({ children }: { children: ReactNode }) {
+
+  return (
+    <>
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
             <Link
@@ -52,10 +54,18 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           <ThemeToggle />
           <UserNav />
         </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+        <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8 pb-24 md:pb-8">
           {children}
         </main>
       </div>
-    </SidebarProvider>
+
+       <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-2 flex justify-around md:hidden z-50">
+        <NavButton href="/dashboard" icon={Home} label="Home" />
+        <NavButton href="/dashboard/cards" icon={CreditCard} label="Cards" />
+        <NavButton href="/dashboard/payments" icon={Receipt} label="Payments" />
+        <NavButton href="/dashboard/rewards" icon={Gift} label="Rewards" />
+        <NavButton href="/dashboard/insights" icon={BrainCircuit} label="Insights" />
+      </div>
+    </>
   );
 }

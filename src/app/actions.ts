@@ -4,6 +4,8 @@ import {
   qrPaymentFromImage,
   type QRPaymentFromImageOutput,
 } from '@/ai/flows/qr-payment-from-image';
+import { getSpendingInsights, type SpendingInsightsOutput } from '@/ai/flows/spending-insights-flow';
+import type { Transaction } from '@/lib/data';
 import { z } from 'zod';
 
 const processQrCodeSchema = z.object({
@@ -49,6 +51,24 @@ export async function processQrCode(
       success: false,
       error:
         'Failed to extract details from QR code. Please ensure it is a valid payment QR code and try again.',
+    };
+  }
+}
+
+type SpendingInsightsResult =
+  | { success: true; data: SpendingInsightsOutput }
+  | { success: false; error: string };
+
+export async function fetchSpendingInsights(transactions: Transaction[]): Promise<SpendingInsightsResult> {
+  try {
+    const result = await getSpendingInsights({ transactions });
+    return { success: true, data: result };
+  } catch (e) {
+    console.error('Spending insights error:', e);
+    return {
+      success: false,
+      error:
+        'Failed to generate spending insights. The AI may be temporarily unavailable. Please try again later.',
     };
   }
 }

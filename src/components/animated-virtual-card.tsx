@@ -31,7 +31,7 @@ export function AnimatedVirtualCard({ card, forceFlip }: { card: VirtualCard, fo
 
   return (
     <div
-      className="group w-full max-w-sm h-56 [perspective:1000px] cursor-pointer"
+      className="group w-full h-56 [perspective:1000px] cursor-pointer"
       onClick={() => setIsFlipped(!isFlipped)}
     >
       <div

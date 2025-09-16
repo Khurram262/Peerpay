@@ -8,6 +8,8 @@ export type Transaction = {
   type: 'sent' | 'received' | 'top-up';
 };
 
+export type CardTheme = 'sky' | 'emerald' | 'amber' | 'rose';
+
 export type VirtualCard = {
   id: string;
   fullNumber: string;
@@ -16,6 +18,8 @@ export type VirtualCard = {
   cvv: string;
   cardholder: string;
   isPrimary: boolean;
+  status: 'active' | 'blocked';
+  theme: CardTheme;
 };
 
 export const wallet = {
@@ -80,6 +84,8 @@ export const virtualCards: VirtualCard[] = [
     cvv: '123',
     cardholder: 'Alex Doe',
     isPrimary: true,
+    status: 'active',
+    theme: 'sky',
   },
   {
     id: 'card_2',
@@ -89,5 +95,7 @@ export const virtualCards: VirtualCard[] = [
     cvv: '456',
     cardholder: 'Alex Doe',
     isPrimary: false,
+    status: 'active',
+    theme: 'emerald',
   },
 ];

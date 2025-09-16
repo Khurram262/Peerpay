@@ -1,7 +1,7 @@
 
 'use client';
 
-import { ArrowDown, ArrowUp, Send, UserPlus, Gift } from 'lucide-react';
+import { ArrowDown, ArrowUp, Send, UserPlus, Gift, Nfc } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -38,6 +38,7 @@ import { useToast } from '@/hooks/use-toast';
 import { initialVirtualCards } from '@/lib/data';
 import type { VirtualCard } from '@/lib/data';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 
 function SendMoneyDialog({ onSend }: { onSend: (amount: number) => void }) {
@@ -228,6 +229,45 @@ function RequestMoneyDialog({
   );
 }
 
+function TapToPayDialog() {
+  const { toast } = useToast();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handlePay = () => {
+    setIsOpen(false);
+    toast({
+      title: 'Payment Successful',
+      description: 'Your tap-to-pay transaction was completed.',
+    });
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button size="lg" className="w-full">
+          <Nfc className="mr-2 h-4 w-4" /> Tap to Pay
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Ready to Pay</DialogTitle>
+          <DialogDescription>
+            Hold your device near the contactless terminal to complete your payment.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="py-8 flex justify-center">
+          <Nfc className="h-24 w-24 text-primary animate-pulse" />
+        </div>
+        <DialogFooter>
+           <Button variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
+           <Button onClick={handlePay}>Simulate Payment</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+
 export default function DashboardPage() {
   const [cards, setCards] = useState<VirtualCard[]>([]);
   const [currentWallet, setCurrentWallet] = useState<Wallet>(wallet);
@@ -317,6 +357,17 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </div>
+          {isMobile && (
+             <Card>
+                <CardHeader>
+                  <CardTitle>Contactless Payment</CardTitle>
+                  <CardDescription>Use your phone to pay in-stores.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <TapToPayDialog />
+                </CardContent>
+             </Card>
+          )}
           <div className="grid grid-cols-2 gap-4">
             <SendMoneyDialog onSend={(amount) => handleTransaction(amount, 'send')} />
             <RequestMoneyDialog onRequest={(amount) => handleTransaction(amount, 'request')} />
@@ -396,3 +447,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    

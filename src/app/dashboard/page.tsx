@@ -1,3 +1,4 @@
+
 'use client';
 
 import { ArrowDown, ArrowUp, Send, UserPlus } from 'lucide-react';
@@ -231,12 +232,21 @@ export default function DashboardPage() {
   const [cards, setCards] = useState<VirtualCard[]>(initialVirtualCards);
   const [balance, setBalance] = useState(wallet.balance);
   const isMobile = useIsMobile();
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     const handleStorageChange = () => {
       const storedCards = localStorage.getItem('virtualCards');
       if (storedCards) {
-        setCards(JSON.parse(storedCards));
+        try {
+          const parsedCards = JSON.parse(storedCards);
+          if (Array.isArray(parsedCards)) {
+            setCards(parsedCards);
+          }
+        } catch (e) {
+          console.error("Failed to parse virtual cards from localStorage", e);
+        }
       }
     };
     
@@ -257,6 +267,10 @@ export default function DashboardPage() {
       setBalance((prev) => prev + amount);
     }
   };
+
+  if (!isClient) {
+    return null; 
+  }
 
   return (
     <div className="flex flex-col gap-8">

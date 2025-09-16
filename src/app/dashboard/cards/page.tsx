@@ -136,7 +136,16 @@ export default function CardsPage() {
   useEffect(() => {
     const storedCards = localStorage.getItem('virtualCards');
     if (storedCards) {
-      setCardsState(JSON.parse(storedCards));
+      try {
+        const parsedCards = JSON.parse(storedCards);
+        if (Array.isArray(parsedCards)) {
+          setCardsState(parsedCards);
+        }
+      } catch (e) {
+        console.error("Failed to parse virtual cards from localStorage", e);
+        // If parsing fails, we can fall back to initialVirtualCards
+        setCardsState(initialVirtualCards);
+      }
     }
   }, []);
   

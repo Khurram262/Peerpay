@@ -1,3 +1,4 @@
+
 export type Transaction = {
   id: string;
   name: string;
@@ -100,19 +101,7 @@ export let virtualCards: VirtualCard[] = [
   },
 ];
 
-if (typeof window !== 'undefined' && localStorage.getItem('virtualCards')) {
-  try {
-    const storedCards = JSON.parse(localStorage.getItem('virtualCards')!);
-    if (Array.isArray(storedCards)) {
-      virtualCards = storedCards;
-    }
-  } catch (e) {
-    console.error("Failed to parse virtual cards from localStorage", e);
-  }
-}
-
 export const setVirtualCards = (newCards: VirtualCard[]) => {
-  virtualCards = newCards;
    if (typeof window !== 'undefined') {
     localStorage.setItem('virtualCards', JSON.stringify(newCards));
     window.dispatchEvent(new Event('storage'));

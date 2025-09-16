@@ -24,7 +24,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { setWallet, wallet as initialWallet, type Wallet } from '@/lib/data';
-import { Lightbulb, Droplets, Wifi, Smartphone, Flame } from 'lucide-react';
+import { Lightbulb, Droplets, Wifi, Smartphone, Flame, Youtube, Sprout } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 
 function UtilityPayments({onPay}: {onPay: (amount: number) => void}) {
@@ -129,9 +129,9 @@ function MobileTopUp({onTopUp}: {onTopUp: (amount: number) => void}) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Mobile Top-up</CardTitle>
+        <CardTitle>Mobile Recharge</CardTitle>
         <CardDescription>
-          Enter a mobile number and select an amount to top-up.
+          Enter a mobile number and select an amount to recharge.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -162,8 +162,99 @@ function MobileTopUp({onTopUp}: {onTopUp: (amount: number) => void}) {
       <CardFooter>
         <Button onClick={() => handleTopUp(parseFloat(amount))} className="w-full">
           <Smartphone className="mr-2 h-4 w-4" />
-          Top-up Now
+          Recharge Now
         </Button>
+      </CardFooter>
+    </Card>
+  );
+}
+
+function SubscriptionPayments({onPay}: {onPay: (amount: number) => void}) {
+  const { toast } = useToast();
+  const [amount, setAmount] = useState('');
+  const [service, setService] = useState('');
+
+  const subscriptionDetails: Record<string, { icon: React.ElementType, defaultAmount: string }> = {
+    netflix: { icon: () => <Sprout className="h-4 w-4 text-red-600" />, defaultAmount: '15.49' },
+    spotify: { icon: () => <Sprout className="h-4 w-4 text-green-500" />, defaultAmount: '10.99' },
+    youtube: { icon: Youtube, defaultAmount: '13.99' }
+  }
+
+  useEffect(() => {
+    if(service) {
+      setAmount(subscriptionDetails[service].defaultAmount);
+    } else {
+      setAmount('');
+    }
+  }, [service]);
+
+
+  const handlePay = () => {
+    const paymentAmount = parseFloat(amount);
+     if (isNaN(paymentAmount) || paymentAmount <= 0) {
+      toast({
+        title: 'Invalid Amount',
+        description: 'Please enter a valid amount to pay.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    if (!service) {
+      toast({
+        title: 'No Service Selected',
+        description: 'Please choose a subscription service.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    onPay(paymentAmount);
+    toast({ 
+      title: 'Payment Successful', 
+      description: `Your subscription payment of $${paymentAmount} for ${service.charAt(0).toUpperCase() + service.slice(1)} has been processed.`
+    });
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Pay for Subscriptions</CardTitle>
+        <CardDescription>
+          Manage your recurring subscription payments.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="service">Select Service</Label>
+          <Select onValueChange={setService} value={service}>
+            <SelectTrigger id="service">
+              <SelectValue placeholder="Choose a subscription" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="netflix">
+                <div className="flex items-center gap-2">
+                  {React.createElement(subscriptionDetails.netflix.icon)} Netflix
+                </div>
+              </SelectItem>
+              <SelectItem value="spotify">
+                <div className="flex items-center gap-2">
+                  {React.createElement(subscriptionDetails.spotify.icon)} Spotify
+                </div>
+              </SelectItem>
+              <SelectItem value="youtube">
+                <div className="flex items-center gap-2">
+                  <Youtube className="h-4 w-4" /> YouTube Premium
+                </div>
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="sub-amount">Amount (USD)</Label>
+          <Input id="sub-amount" type="number" placeholder="0.00" value={amount} onChange={e => setAmount(e.target.value)} />
+        </div>
+      </CardContent>
+      <CardFooter>
+        <Button onClick={handlePay} className="w-full" disabled={!service}>Pay Subscription</Button>
       </CardFooter>
     </Card>
   );
@@ -193,7 +284,7 @@ export default function PaymentsPage() {
     };
   }, []);
 
-  const handlePayment = (amount: number, type: 'bill' | 'topup') => {
+  const handlePayment = (amount: number, type: 'bill' | 'topup' | 'subscription') => {
     const pointsEarned = type === 'bill' ? Math.floor(amount / 10) : 0;
     const newWallet: Wallet = {
       ...currentWallet,
@@ -214,15 +305,19 @@ export default function PaymentsPage() {
       </div>
 
       <Tabs defaultValue="utility" className="w-full max-w-2xl mx-auto">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="utility">Utility Bills</TabsTrigger>
-          <TabsTrigger value="mobile">Mobile Top-up</TabsTrigger>
+          <TabsTrigger value="mobile">Mobile Recharge</TabsTrigger>
+          <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
         </TabsList>
         <TabsContent value="utility">
           <UtilityPayments onPay={(amount) => handlePayment(amount, 'bill')} />
         </TabsContent>
         <TabsContent value="mobile">
           <MobileTopUp onTopUp={(amount) => handlePayment(amount, 'topup')} />
+        </TabsContent>
+        <TabsContent value="subscriptions">
+          <SubscriptionPayments onPay={(amount) => handlePayment(amount, 'subscription')} />
         </TabsContent>
       </Tabs>
     </div>

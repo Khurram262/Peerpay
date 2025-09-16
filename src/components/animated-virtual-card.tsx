@@ -24,14 +24,8 @@ function MastercardLogo() {
   );
 }
 
-export function AnimatedVirtualCard({ card, forceFlip }: { card: VirtualCard, forceFlip?: boolean }) {
+export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   const [isFlipped, setIsFlipped] = React.useState(false);
-
-  React.useEffect(() => {
-    if (forceFlip !== undefined) {
-      setIsFlipped(forceFlip);
-    }
-  }, [forceFlip]);
 
   const formatCardNumber = (num: string) => {
     return num.match(/.{1,4}/g)?.join(' ') ?? '';
@@ -81,7 +75,7 @@ export function AnimatedVirtualCard({ card, forceFlip }: { card: VirtualCard, fo
             </div>
 
             <div className="relative text-left z-10 space-y-2">
-                <p className="font-mono text-xl md:text-2xl tracking-wider whitespace-nowrap">
+                <p className="font-mono text-xl tracking-wider whitespace-nowrap md:text-2xl">
                   {formatCardNumber(card.fullNumber)}
                 </p>
                 <div className="flex justify-between items-end">

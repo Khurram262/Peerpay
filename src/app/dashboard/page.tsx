@@ -324,7 +324,7 @@ export default function DashboardPage() {
         </div>
         <div className="md:col-span-5 lg:col-span-4 row-start-1 md:row-start-auto">
           {primaryCard ? (
-             <AnimatedVirtualCard card={primaryCard} forceFlip={isMobile} />
+             <AnimatedVirtualCard card={primaryCard} />
           ) : (
              <Card className="h-56 flex items-center justify-center bg-muted/50">
                 <p className="text-muted-foreground">No primary card available.</p>

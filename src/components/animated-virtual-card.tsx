@@ -24,11 +24,15 @@ function MastercardLogo() {
   );
 }
 
+const formatCardNumber = (cardNumber: string) => {
+  return cardNumber.replace(/(\d{4})/g, '$1 ').trim();
+};
+
 export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   const [isFlipped, setIsFlipped] = React.useState(false);
 
   const cardBaseStyle =
-    'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl';
+    'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl transition-transform duration-500';
   const cardFrontStyle = `flex flex-col justify-between`;
   
   const cardBackgroundStyle = {
@@ -38,7 +42,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   return (
     <div
       onClick={() => setIsFlipped(!isFlipped)}
-      className="group w-full h-56 [perspective:1000px] cursor-pointer"
+      className="group w-full max-w-md mx-auto h-56 [perspective:1000px] cursor-pointer"
     >
       <div
         className={cn(
@@ -51,7 +55,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
           className={cn(
             cardBaseStyle,
             cardFrontStyle,
-            '[backface-visibility:hidden] border border-white/10'
+            '[backface-visibility:hidden] border border-white/10',
           )}
           style={cardBackgroundStyle}
         >
@@ -78,7 +82,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
           <div className="relative text-left z-10 space-y-2">
             <div className="flex items-center gap-4">
               <p className="font-mono text-xl tracking-wider whitespace-nowrap md:text-2xl">
-                {card.fullNumber}
+                {formatCardNumber(card.fullNumber)}
               </p>
             </div>
 
@@ -109,7 +113,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
             cardBaseStyle,
             '[transform:rotateY(180deg)] [backface-visibility:hidden] border border-white/10'
           )}
-          style={{background: `linear-gradient(to bottom right, ${card.theme.start}, ${card.theme.end})`}}
+          style={cardBackgroundStyle}
         >
           <div className="relative w-full h-full rounded-2xl p-0 flex flex-col justify-start">
             <div className="w-full h-12 bg-black/80 mt-6"></div>

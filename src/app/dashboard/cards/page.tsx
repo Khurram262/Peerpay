@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { initialVirtualCards, type VirtualCard, type CardTheme, user, setUser } from '@/lib/data';
-import { CreditCard, PlusCircle, Trash, CheckCircle } from 'lucide-react';
+import { CreditCard, PlusCircle, Trash, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -42,7 +42,7 @@ import { Input } from '@/components/ui/input';
 import { AnimatedVirtualCard } from '@/components/animated-virtual-card';
 
 const availableThemes: Record<string, CardTheme> = {
-  green: { start: '#16a34a', end: '#4ade80' },
+  green: { start: 'hsl(142.1 76.2% 36.3%)', end: 'hsl(142.1 76.2% 26.3%)' },
   gold: { start: '#f59e0b', end: '#fcd34d' },
   black: { start: '#171717', end: '#525252' },
   purple: { start: '#7e22ce', end: '#a855f7' },
@@ -70,7 +70,7 @@ function CreateCardDialog({
   const previewCard: VirtualCard = {
     id: 'preview',
     name: cardName || 'New Card',
-    fullNumber: '1234 5678 9876 5432',
+    fullNumber: '1234567898765432',
     last4: '5432',
     expiry: 'MM/YY',
     cvv: '123',
@@ -238,6 +238,7 @@ function OrderPhysicalCard() {
 
 export default function CardsPage() {
   const [cards, setCardsState] = useState<VirtualCard[]>(initialVirtualCards);
+  const [visibleCardId, setVisibleCardId] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -278,7 +279,7 @@ export default function CardsPage() {
         card.id === cardId
           ? {
               ...card,
-              status: card.status === 'active' ? 'blocked' : 'active',
+              status: card.status === 'blocked' ? 'active' : 'active',
             }
           : card
       )
@@ -345,6 +346,15 @@ export default function CardsPage() {
     });
   }
 
+  const handleToggleVisibility = (cardId: string) => {
+    if (visibleCardId === cardId) {
+      setVisibleCardId(null);
+    } else {
+      setVisibleCardId(cardId);
+    }
+  };
+
+
   return (
     <>
       <Card>
@@ -362,7 +372,7 @@ export default function CardsPage() {
         <CardContent className="grid gap-6 md:grid-cols-2">
           {cards.map((card) => (
             <div key={card.id} className="space-y-4">
-              <AnimatedVirtualCard card={card} />
+              <AnimatedVirtualCard card={card} isVisible={visibleCardId === card.id} />
               <div className="flex flex-col sm:flex-row justify-between items-center gap-2 p-2 border rounded-lg">
                   <div className="flex items-center gap-2">
                   {card.isPrimary ? (
@@ -375,6 +385,10 @@ export default function CardsPage() {
                   )}
                   </div>
                   <div className="flex items-center gap-2">
+                      <Button variant="ghost" size="sm" onClick={() => handleToggleVisibility(card.id)}>
+                        {visibleCardId === card.id ? <EyeOff /> : <Eye />}
+                        <span className="ml-2">{visibleCardId === card.id ? 'Hide' : 'View'} Details</span>
+                      </Button>
                       <div className="flex items-center space-x-2">
                         <Switch
                           id={`block-switch-${card.id}`}

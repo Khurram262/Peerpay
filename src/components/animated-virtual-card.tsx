@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React from 'react';
@@ -25,11 +26,14 @@ function MastercardLogo() {
 }
 
 const formatCardNumber = (cardNumber: string) => {
-  return cardNumber.replace(/(\d{4})/g, '$1 ').trim();
+    return cardNumber.replace(/(\d{4})/g, '$1 ').trim();
 };
 
-export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
-  const [isFlipped, setIsFlipped] = React.useState(false);
+const formatHiddenCardNumber = (cardNumber: string) => {
+  return `**** **** **** ${cardNumber.slice(-4)}`;
+};
+
+export function AnimatedVirtualCard({ card, isVisible = false }: { card: VirtualCard, isVisible?: boolean }) {
 
   const cardBaseStyle =
     'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl transition-transform duration-500';
@@ -41,13 +45,12 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
 
   return (
     <div
-      onClick={() => setIsFlipped(!isFlipped)}
       className="group w-full max-w-md mx-auto h-56 [perspective:1000px] cursor-pointer"
     >
       <div
         className={cn(
           'relative h-full w-full rounded-2xl [transform-style:preserve-3d] transition-transform duration-700',
-          isFlipped ? '[transform:rotateY(180deg)]' : ''
+           isVisible ? '[transform:rotateY(180deg)]' : ''
         )}
       >
         {/* Front of the card */}
@@ -81,8 +84,8 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
 
           <div className="relative text-left z-10 space-y-2">
             <div className="flex items-center gap-4">
-              <p className="font-mono text-xl tracking-wider whitespace-nowrap md:text-2xl">
-                {formatCardNumber(card.fullNumber)}
+               <p className="font-mono text-xl tracking-wider whitespace-nowrap md:text-2xl">
+                {isVisible ? formatCardNumber(card.fullNumber) : formatHiddenCardNumber(card.fullNumber)}
               </p>
             </div>
 
@@ -99,7 +102,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
                     Expires
                   </p>
                   <p className="font-medium tracking-wide text-white">
-                    {card.expiry}
+                     {isVisible ? card.expiry : 'MM/YY'}
                   </p>
                 </div>
                 <MastercardLogo />
@@ -122,7 +125,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
                 <p className="text-xs text-white/80 uppercase">CVV</p>
                 <div className="h-9 bg-white rounded-md flex items-center justify-end pr-4">
                   <p className="text-black font-mono tracking-widest">
-                    {card.cvv}
+                    {isVisible ? card.cvv : '***'}
                   </p>
                 </div>
               </div>

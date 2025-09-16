@@ -210,9 +210,7 @@ const Sidebar = React.forwardRef<
             }
             side={side}
           >
-            {header?.props.title && (
-              <SheetTitle className="sr-only">{header?.props.title}</SheetTitle>
-            )}
+            <SheetTitle className="sr-only">{header?.props.title || 'Sidebar'}</SheetTitle>
             <div className="flex h-full w-full flex-col">{children}</div>
           </SheetContent>
         </Sheet>

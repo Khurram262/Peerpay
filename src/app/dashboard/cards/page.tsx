@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -108,7 +109,7 @@ function CreateCardDialog({
           <PlusCircle className="mr-2 h-4 w-4" /> Create New Card
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md w-[90%] rounded-lg">
         <DialogHeader>
           <DialogTitle>Create a New Virtual Card</DialogTitle>
           <DialogDescription>
@@ -203,7 +204,7 @@ function OrderPhysicalCard() {
         </DialogTrigger>
       </CardFooter>
     </Card>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg w-[90%] rounded-lg">
         <DialogHeader>
           <DialogTitle>Confirm Shipping Address</DialogTitle>
           <DialogDescription>

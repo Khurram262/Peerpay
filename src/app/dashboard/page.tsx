@@ -355,9 +355,9 @@ export default function DashboardPage() {
       <div className="grid gap-8 md:grid-cols-12">
         <div className="md:col-span-7 lg:col-span-8 space-y-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-            <Card className="bg-gradient-to-tr from-primary/80 to-primary/60 text-primary-foreground overflow-hidden shadow-2xl">
+            <Card>
               <CardContent className="p-6">
-                <p className="text-sm text-primary-foreground/80">
+                <p className="text-sm text-muted-foreground">
                   Available Balance
                 </p>
                 <div className="text-4xl font-bold tracking-tight">
@@ -365,11 +365,11 @@ export default function DashboardPage() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-secondary/50 text-secondary-foreground overflow-hidden shadow-2xl">
+            <Card>
               <CardContent className="p-6">
                  <div className="flex items-center gap-2">
                     <Gift className="text-amber-400" />
-                    <p className="text-sm text-secondary-foreground/80">
+                    <p className="text-sm text-muted-foreground">
                     Reward Points
                     </p>
                  </div>
@@ -456,8 +456,8 @@ export default function DashboardPage() {
                       <TableCell
                         className={`text-right font-semibold ${
                           transaction.type === 'sent'
-                            ? 'text-destructive'
-                            : 'text-primary'
+                            ? 'text-red-500'
+                            : 'text-green-500'
                         }`}
                       >
                         {transaction.type === 'sent' ? '-' : '+'} $

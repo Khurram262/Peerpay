@@ -26,16 +26,16 @@ function MastercardLogo() {
 }
 
 const tierStyles = {
-  green: { accent: 'text-cyan-400' },
-  gold: { accent: 'text-amber-400' },
-  black: { accent: 'text-gray-400' },
+  green: { accent: 'text-green-300' },
+  gold: { accent: 'text-amber-300' },
+  black: { accent: 'text-gray-300' },
 };
 
 export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   const [isFlipped, setIsFlipped] = React.useState(false);
   const [isDetailsVisible, setIsDetailsVisible] = React.useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-  const [style, setStyle] = useState({});
+  const [style, setStyle] = useState<React.CSSProperties>({});
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -44,21 +44,21 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
     const x = e.clientX - left;
     const y = e.clientY - top;
 
-    const rotateX = (y / height - 0.5) * -20;
-    const rotateY = (x / width - 0.5) * 20;
+    const rotateX = (y / height - 0.5) * -25;
+    const rotateY = (x / width - 0.5) * 25;
 
     setStyle({
       '--glow-x': `${x}px`,
       '--glow-y': `${y}px`,
       transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`,
-      transition: 'none',
+      transition: 'transform 0.1s ease-out, background 0.1s ease-out',
     });
   };
 
   const handleMouseLeave = () => {
     setStyle({
       transform: 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)',
-      transition: 'transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
+      transition: 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)',
     });
   };
 
@@ -77,11 +77,11 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   const currentTier = tierStyles[card.tier || 'green'];
 
   const cardBaseStyle =
-    'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl bg-card-pattern';
+    'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl';
   const cardFrontStyle = `flex flex-col justify-between`;
   
   const cardBackgroundStyle = {
-    background: `linear-gradient(to bottom right, ${card.theme.start}, ${card.theme.end})`,
+    background: `radial-gradient(circle at var(--glow-x) var(--glow-y), hsl(0 0% 100% / 0.15), transparent 40%), linear-gradient(to bottom right, ${card.theme.start}, ${card.theme.end})`,
   };
 
   return (
@@ -104,11 +104,10 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
           className={cn(
             cardBaseStyle,
             cardFrontStyle,
-            '[backface-visibility:hidden] border border-white/20'
+            '[backface-visibility:hidden] border border-white/10'
           )}
           style={cardBackgroundStyle}
         >
-          <div className="absolute inset-0 w-full h-full bg-card-pattern opacity-60 mix-blend-soft-light"></div>
           {card.status === 'blocked' && (
             <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center z-20">
               <Ban className="w-16 h-16 text-white/70" />
@@ -131,7 +130,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
 
             <div className="flex items-center gap-2">
               <Wifi className="h-6 w-6 text-white/80 rotate-90" />
-              <div className="w-12 h-8 bg-black/20 rounded-md shadow-inner-lg flex items-center justify-center">
+              <div className="w-12 h-8 bg-black/10 rounded-md shadow-inner flex items-center justify-center">
                 <div className="w-8 h-5 bg-black/20 rounded-sm" />
               </div>
             </div>
@@ -180,11 +179,10 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
         <div
           className={cn(
             cardBaseStyle,
-            '[transform:rotateY(180deg)] [backface-visibility:hidden] border border-white/20'
+            '[transform:rotateY(180deg)] [backface-visibility:hidden] border border-white/10'
           )}
-          style={cardBackgroundStyle}
+          style={{background: `linear-gradient(to bottom right, ${card.theme.start}, ${card.theme.end})`}}
         >
-          <div className="absolute inset-0 w-full h-full bg-card-pattern opacity-60 mix-blend-soft-light"></div>
           <div className="relative w-full h-full rounded-2xl p-0 flex flex-col justify-start">
             <div className="w-full h-12 bg-black/80 mt-6"></div>
             <div className="px-6 py-4 space-y-4">
@@ -196,7 +194,10 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
                   </p>
                 </div>
               </div>
-              <div className="h-8 w-3/4 bg-white/60 rounded"></div>
+               <div className="flex justify-start items-center gap-2">
+                <div className="h-8 w-1/2 bg-white/60 rounded"></div>
+                <div className="h-8 w-1/4 bg-white/60 rounded"></div>
+               </div>
             </div>
             <div className="text-xs text-white/60 mt-auto px-6 pb-4 text-center">
               <p>

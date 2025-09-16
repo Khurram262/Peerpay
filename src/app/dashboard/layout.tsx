@@ -16,8 +16,8 @@ const NavButton = ({ href, icon: Icon, label }: { href: string, icon: React.Elem
 
   return (
     <Link href={href} className={cn(
-      'flex flex-col items-center justify-center text-xs gap-1 h-14 w-16 rounded-md', 
-      isActive ? 'text-primary bg-primary/10' : 'text-muted-foreground'
+      'flex flex-col items-center justify-center text-xs gap-1 h-16 w-full rounded-md transition-colors', 
+      isActive ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:bg-muted/50'
       )}>
       <Icon className="h-5 w-5" />
       <span>{label}</span>
@@ -31,7 +31,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <div className="flex min-h-screen w-full flex-col">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-white/10 bg-background/80 backdrop-blur-sm px-4 sm:px-6">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur-sm px-4 sm:px-6">
             <Link
                 href="/dashboard"
                 className="flex items-center gap-2 font-semibold"
@@ -62,7 +62,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </main>
       </div>
 
-       <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm border-t border-white/10 p-2 flex justify-around md:hidden z-50">
+       <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t p-2 flex justify-around md:hidden z-50">
         <NavButton href="/dashboard" icon={Home} label="Home" />
         <NavButton href="/dashboard/cards" icon={CreditCard} label="Cards" />
         <NavButton href="/dashboard/payments" icon={Receipt} label="Payments" />

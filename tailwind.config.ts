@@ -9,14 +9,8 @@ export default {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        'radial-gradient-glow': 'radial-gradient(circle at var(--glow-x) var(--glow-y), hsl(var(--primary) / 0.2), transparent 40%)',
-        'card-pattern': 'radial-gradient(350px circle at var(--glow-x) var(--glow-y), hsl(var(--primary) / 0.5), transparent 100%)',
-      },
       fontFamily: {
-        body: ['Inter', 'sans-serif'],
-        headline: ['Inter', 'sans-serif'],
-        code: ['monospace'],
+        sans: ['var(--font-inter)', 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',

@@ -1,4 +1,5 @@
 
+
 export type Transaction = {
   id: string;
   name: string;
@@ -39,6 +40,14 @@ export type Reward = {
     activity: string;
     points: number;
     date: string;
+}
+
+export type LinkedAccount = {
+  id: string;
+  type: 'bank' | 'card';
+  name: string;
+  provider: string;
+  last4: string;
 }
 
 export let wallet: Wallet = {
@@ -168,5 +177,22 @@ export const rewardHistory: Reward[] = [
         activity: 'Welcome Bonus',
         points: 100,
         date: '2024-05-01',
+    }
+]
+
+export const initialLinkedAccounts: LinkedAccount[] = [
+    {
+        id: 'acc_1',
+        type: 'bank',
+        name: 'Main Savings Account',
+        provider: 'Capital Bank',
+        last4: '1234',
+    },
+    {
+        id: 'acc_2',
+        type: 'card',
+        name: 'Visa Debit',
+        provider: 'Global Trust Bank',
+        last4: '5678',
     }
 ]

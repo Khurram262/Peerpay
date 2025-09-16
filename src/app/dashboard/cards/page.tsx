@@ -48,30 +48,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const availableThemes: Record<string, CardTheme> = {
+  green: { start: '#059669', end: '#10B981' },
+  gold: { start: '#F59E0B', end: '#FBBF24' },
+  black: { start: '#171717', end: '#404040' },
+  purple: { start: '#5B21B6', end: '#7C3AED' },
+  blue: { start: '#2563EB', end: '#3B82F6' },
+  rose: { start: '#BE123C', end: '#F43F5E' },
+};
 
-const defaultColor = 'var(--color-slate-900)';
-
-const tierThemes: Record<CardTier, CardTheme> = {
-  green: {
-    start: '#059669',
-    end: '#10B981'
-  },
-  gold: {
-    start: '#F59E0B',
-    end: '#FBBF24'
-  },
-  black: {
-    start: '#171717',
-    end: '#404040'
-  }
-}
 
 function CreateCardDialog({
   onCreateCard,
 }: {
   onCreateCard: (theme: CardTheme, cardholder: string, name: string, tier: CardTier) => void;
 }) {
-  const [selectedTheme, setSelectedTheme] = useState(tierThemes.green);
+  const [selectedTheme, setSelectedTheme] = useState(availableThemes.green);
   const [cardholderName, setCardholderName] = useState(user.name);
   const [cardName, setCardName] = useState('');
   const [cardTier, setCardTier] = useState<CardTier>('green');
@@ -97,11 +89,6 @@ function CreateCardDialog({
     theme: selectedTheme,
   };
 
-  useEffect(() => {
-    setSelectedTheme(tierThemes[cardTier]);
-  }, [cardTier]);
-
-
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -121,7 +108,23 @@ function CreateCardDialog({
           <div className="flex justify-center">
             <AnimatedVirtualCard card={previewCard} />
           </div>
-
+          <div className="space-y-2">
+            <Label>Card Color</Label>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(availableThemes).map(([name, theme]) => (
+                <button
+                  key={name}
+                  onClick={() => setSelectedTheme(theme)}
+                  className={cn(
+                    'h-8 w-8 rounded-full border-2 transition-all',
+                    selectedTheme.start === theme.start ? 'border-primary ring-2 ring-primary/50' : 'border-transparent'
+                  )}
+                  style={{ background: `linear-gradient(to bottom right, ${theme.start}, ${theme.end})` }}
+                  aria-label={`Select ${name} theme`}
+                />
+              ))}
+            </div>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="card-name-input">Card Name</Label>
             <Input id="card-name-input" value={cardName} onChange={(e) => setCardName(e.target.value)} placeholder="e.g. Online Shopping" />

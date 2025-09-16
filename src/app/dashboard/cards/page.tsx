@@ -382,7 +382,7 @@ export default function CardsPage() {
           {cards.map((card) => (
             <div key={card.id} className="space-y-4">
               <AnimatedVirtualCard card={card} />
-              <div className="flex justify-between items-center gap-2 p-2 border rounded-lg">
+              <div className="flex flex-col sm:flex-row justify-between items-center gap-2 p-2 border rounded-lg">
                   <div className="flex items-center gap-2">
                   {card.isPrimary ? (
                     <div className="text-xs font-bold text-primary py-1 px-2 rounded-full bg-primary/10 flex items-center gap-1">

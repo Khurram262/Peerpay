@@ -150,7 +150,7 @@ function MobileTopUp({onTopUp}: {onTopUp: (amount: number) => void}) {
         </div>
         <div className="space-y-2">
           <Label>Or select a quick amount</Label>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {quickAmounts.map((quickAmount) => (
               <Button key={quickAmount} variant="outline" onClick={() => handleTopUp(quickAmount)}>
                 ${quickAmount}
@@ -186,7 +186,7 @@ function SubscriptionPayments({onPay}: {onPay: (amount: number) => void}) {
     } else {
       setAmount('');
     }
-  }, [service]);
+  }, [service, subscriptionDetails]);
 
 
   const handlePay = () => {

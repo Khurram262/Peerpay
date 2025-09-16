@@ -297,14 +297,14 @@ export default function SettingsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6">
-          <div className="flex items-center gap-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
             <Avatar className="h-24 w-24">
               {userAvatar && (
                 <AvatarImage src={userAvatar.imageUrl} alt={user.name} />
               )}
               <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
             </Avatar>
-            <div className='space-y-2'>
+            <div className='space-y-2 flex-grow'>
               <Label>Profile Picture</Label>
               <Input type="file" className="max-w-xs" />
               <p className="text-xs text-muted-foreground">
@@ -362,7 +362,7 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
             <div>
               <CardTitle>Linked Accounts</CardTitle>
               <CardDescription>

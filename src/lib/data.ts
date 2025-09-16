@@ -138,7 +138,7 @@ export const initialVirtualCards: VirtualCard[] = [
     cardholder: 'Alex Doe',
     isPrimary: true,
     status: 'active',
-    theme: '#059669', // Emerald
+    theme: '#22c55e', // Green
   },
   {
     id: 'card_2',
@@ -151,7 +151,7 @@ export const initialVirtualCards: VirtualCard[] = [
     cardholder: 'Alex Doe',
     isPrimary: false,
     status: 'active',
-    theme: '#d97706', // Amber
+    theme: '#f59e0b', // Amber
   },
    {
     id: 'card_3',

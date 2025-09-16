@@ -69,7 +69,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
     >
       <div
         className={cn(
-          'relative h-full w-full rounded-xl shadow-xl transition-all duration-500 [transform-style:preserve-3d]',
+          'relative h-full w-full rounded-xl shadow-xl transition-transform duration-700 [transform-style:preserve-3d]',
           isFlipped ? '[transform:rotateY(180deg)]' : ''
         )}
       >

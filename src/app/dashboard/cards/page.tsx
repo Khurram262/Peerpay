@@ -48,10 +48,10 @@ import {
 } from "@/components/ui/select";
 
 
-const defaultColor = '#0ea5e9';
+const defaultColor = '#2563eb';
 const tierThemes: Record<CardTier, CardTheme> = {
-  green: '#059669',
-  gold: '#d97706',
+  green: '#22c55e',
+  gold: '#f59e0b',
   black: '#171717',
 }
 
@@ -137,7 +137,7 @@ function CreateCardDialog({
               <Label htmlFor="card-color">Color</Label>
               <div className='flex items-center gap-2'>
                 <Input id="card-color" type="color" value={selectedColor} onChange={(e) => setSelectedColor(e.target.value)} className="w-16 h-10 p-1" />
-                <Input type="text" value={selectedColor} onChange={(e) => setSelectedColor(e.target.value)} placeholder='#0ea5e9' />
+                <Input type="text" value={selectedColor} onChange={(e) => setSelectedColor(e.target.value)} placeholder='#2563eb' />
               </div>
             </div>
           </div>

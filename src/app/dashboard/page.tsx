@@ -441,6 +441,9 @@ const HomeSection = ({ handleTransaction, currentWallet, isMobile, primaryCard }
             <SendMoneyDialog onSend={(amount) => handleTransaction(amount, 'send')} />
             <RequestMoneyDialog onRequest={(amount) => handleTransaction(amount, 'request')} />
           </div>
+           {isMobile && (
+            <QrPaymentForm onPayment={(amount) => handleTransaction(amount, 'send')} />
+          )}
         </div>
         <div className="md:col-span-5 lg:col-span-4 row-start-1 md:row-start-auto">
           {primaryCard ? (
@@ -514,7 +517,7 @@ const HomeSection = ({ handleTransaction, currentWallet, isMobile, primaryCard }
             </CardContent>
           </Card>
         </div>
-        <div className="space-y-8">
+        <div className="space-y-8 hidden md:block">
           <QrPaymentForm onPayment={(amount) => handleTransaction(amount, 'send')} />
         </div>
       </div>

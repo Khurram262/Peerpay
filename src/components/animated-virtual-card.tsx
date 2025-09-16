@@ -34,6 +34,33 @@ const tierStyles = {
 export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   const [isFlipped, setIsFlipped] = React.useState(false);
   const [isDetailsVisible, setIsDetailsVisible] = React.useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [style, setStyle] = useState({});
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return;
+
+    const { left, top, width, height } = cardRef.current.getBoundingClientRect();
+    const x = e.clientX - left;
+    const y = e.clientY - top;
+
+    const rotateX = (y / height - 0.5) * -20;
+    const rotateY = (x / width - 0.5) * 20;
+
+    setStyle({
+      '--glow-x': `${x}px`,
+      '--glow-y': `${y}px`,
+      transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`,
+      transition: 'none',
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setStyle({
+      transform: 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)',
+      transition: 'transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)',
+    });
+  };
 
   const formatCardNumber = (num: string) => {
     return num.match(/.{1,4}/g)?.join(' ') ?? '';
@@ -50,7 +77,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   const currentTier = tierStyles[card.tier || 'green'];
 
   const cardBaseStyle =
-    'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl';
+    'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl bg-card-pattern';
   const cardFrontStyle = `flex flex-col justify-between`;
   
   const cardBackgroundStyle = {
@@ -59,12 +86,16 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
 
   return (
     <div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       onClick={() => setIsFlipped(!isFlipped)}
       className="group w-full h-56 [perspective:1000px] cursor-pointer"
+      style={style}
     >
       <div
         className={cn(
-          'relative h-full w-full rounded-2xl [transform-style:preserve-3d] transition-transform duration-700 group-hover:scale-105',
+          'relative h-full w-full rounded-2xl [transform-style:preserve-3d] transition-transform duration-700',
           isFlipped ? '[transform:rotateY(180deg)]' : ''
         )}
       >
@@ -77,6 +108,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
           )}
           style={cardBackgroundStyle}
         >
+          <div className="absolute inset-0 w-full h-full bg-card-pattern opacity-60 mix-blend-soft-light"></div>
           {card.status === 'blocked' && (
             <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center z-20">
               <Ban className="w-16 h-16 text-white/70" />
@@ -152,6 +184,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
           )}
           style={cardBackgroundStyle}
         >
+          <div className="absolute inset-0 w-full h-full bg-card-pattern opacity-60 mix-blend-soft-light"></div>
           <div className="relative w-full h-full rounded-2xl p-0 flex flex-col justify-start">
             <div className="w-full h-12 bg-black/80 mt-6"></div>
             <div className="px-6 py-4 space-y-4">

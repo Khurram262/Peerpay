@@ -45,20 +45,20 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <Link href="/dashboard/settings">
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-          </Link>
-          <Link href="/dashboard/cards">
-            <DropdownMenuItem>Billing</DropdownMenuItem>
-          </Link>
-          <Link href="/dashboard/settings">
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-          </Link>
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/settings">Profile</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/cards">Billing</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/settings">Settings</Link>
+            </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-         <Link href="/login">
-            <DropdownMenuItem>Log out</DropdownMenuItem>
-          </Link>
+         <DropdownMenuItem asChild>
+            <Link href="/login">Log out</Link>
+          </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

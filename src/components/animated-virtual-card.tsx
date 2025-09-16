@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import type { VirtualCard } from '@/lib/data';
 import { Ban, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -43,9 +43,6 @@ const tierStyles = {
 export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   const [isFlipped, setIsFlipped] = React.useState(false);
   const [isDetailsVisible, setIsDetailsVisible] = React.useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [style, setStyle] = useState<React.CSSProperties>({});
-
 
   const formatCardNumber = (num: string) => {
     return num.match(/.{1,4}/g)?.join(' ') ?? '';
@@ -64,44 +61,15 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   };
   
   const currentTier = tierStyles[card.tier || 'green'];
-  
-  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const { left, top, width, height } = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - left;
-    const y = e.clientY - top;
-    const rotateX = (y / height - 0.5) * -20;
-    const rotateY = (x / width - 0.5) * 20;
-
-    const glareX = (x / width) * 100;
-    const glareY = (y / height) * 100;
-
-    setStyle({
-      transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`,
-      '--glare-x': `${glareX}%`,
-      '--glare-y': `${glareY}%`,
-    } as React.CSSProperties);
-  };
-
-  const onMouseLeave = () => {
-    setStyle({
-      transform: 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)',
-    });
-  };
-
 
   return (
     <div
       className="group w-full h-56 [perspective:1000px]"
       onClick={() => setIsFlipped(!isFlipped)}
-       ref={cardRef}
-      onMouseMove={onMouseMove}
-      onMouseLeave={onMouseLeave}
     >
       <div
-        style={style}
         className={cn(
-          'relative h-full w-full rounded-xl shadow-xl transition-transform duration-300 [transform-style:preserve-3d]',
+          'relative h-full w-full rounded-xl shadow-xl transition-transform duration-500 [transform-style:preserve-3d]',
           isFlipped ? '[transform:rotateY(180deg)]' : ''
         )}
       >
@@ -114,12 +82,6 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
             )}
           >
              <div className={cn("absolute inset-0", currentTier.pattern)}></div>
-             <div 
-               className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-               style={{ 
-                 background: 'radial-gradient(circle at var(--glare-x) var(--glare-y), hsla(0,0%,100%,0.25), transparent 40%)' 
-               }}
-             />
 
             {card.status === 'blocked' && (
               <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center z-20">

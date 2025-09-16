@@ -1,7 +1,7 @@
 
 'use client';
 
-import { ArrowDown, ArrowUp, Send, UserPlus, Gift, Nfc } from 'lucide-react';
+import { ArrowDown, ArrowUp, Send, UserPlus, Gift, Nfc, BrainCircuit, Receipt, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -38,7 +38,12 @@ import { useToast } from '@/hooks/use-toast';
 import { initialVirtualCards } from '@/lib/data';
 import type { VirtualCard } from '@/lib/data';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import Link from 'next/link';
+import TransactionsPage from './transactions/page';
+import CardsPage from './cards/page';
+import PaymentsPage from './payments/page';
+import RewardsPage from './rewards/page';
+import InsightsPage from './insights/page';
 
 
 function SendMoneyDialog({ onSend }: { onSend: (amount: number) => void }) {
@@ -296,6 +301,7 @@ export default function DashboardPage() {
   const [currentWallet, setCurrentWallet] = useState<Wallet>(wallet);
   const isMobile = useIsMobile();
   const [isClient, setIsClient] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
     setIsClient(true);
@@ -346,6 +352,25 @@ export default function DashboardPage() {
     setCurrentWallet(newWallet);
   };
 
+  const renderSection = () => {
+    switch (activeSection) {
+      case 'home':
+        return <HomeSection handleTransaction={handleTransaction} currentWallet={currentWallet} isMobile={isMobile} primaryCard={primaryCard} />;
+      case 'transactions':
+        return <TransactionsPage />;
+      case 'cards':
+        return <CardsPage />;
+      case 'payments':
+        return <PaymentsPage />;
+      case 'rewards':
+        return <RewardsPage />;
+      case 'insights':
+        return <InsightsPage />;
+      default:
+        return <HomeSection handleTransaction={handleTransaction} currentWallet={currentWallet} isMobile={isMobile} primaryCard={primaryCard} />;
+    }
+  }
+
   if (!isClient) {
     // Render a skeleton or null during SSR to avoid hydration mismatch
     return null; 
@@ -353,6 +378,27 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-8">
+      {renderSection()}
+      <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-2 flex justify-around md:hidden">
+        <NavButton icon={CreditCard} label="Home" onClick={() => setActiveSection('home')} isActive={activeSection === 'home'} />
+        <NavButton icon={Receipt} label="Payments" onClick={() => setActiveSection('payments')} isActive={activeSection === 'payments'}/>
+        <NavButton icon={Gift} label="Rewards" onClick={() => setActiveSection('rewards')} isActive={activeSection === 'rewards'}/>
+        <NavButton icon={BrainCircuit} label="Insights" onClick={() => setActiveSection('insights')} isActive={activeSection === 'insights'}/>
+      </div>
+    </div>
+  );
+}
+
+const NavButton = ({ icon: Icon, label, onClick, isActive }: { icon: React.ElementType, label: string, onClick: () => void, isActive: boolean }) => (
+  <button onClick={onClick} className={`flex flex-col items-center justify-center text-xs gap-1 ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>
+    <Icon className="h-6 w-6" />
+    <span>{label}</span>
+  </button>
+);
+
+
+const HomeSection = ({ handleTransaction, currentWallet, isMobile, primaryCard }: { handleTransaction: any, currentWallet: Wallet, isMobile: boolean, primaryCard?: VirtualCard }) => (
+  <div className="flex flex-col gap-8">
       <div className="grid gap-8 md:grid-cols-12">
         <div className="md:col-span-7 lg:col-span-8 space-y-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
@@ -409,11 +455,16 @@ export default function DashboardPage() {
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <Card>
-            <CardHeader>
-              <CardTitle>Recent Transactions</CardTitle>
-              <CardDescription>
-                Here are the latest movements in your account.
-              </CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Recent Transactions</CardTitle>
+                <CardDescription>
+                  Here are the latest movements in your account.
+                </CardDescription>
+              </div>
+              <Link href="/dashboard/transactions">
+                 <Button variant="outline">View All</Button>
+              </Link>
             </CardHeader>
             <CardContent>
               <Table>
@@ -468,5 +519,6 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
-  );
-}
+)
+
+    

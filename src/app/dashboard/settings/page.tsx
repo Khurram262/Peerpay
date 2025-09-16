@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Landmark, CreditCard, PlusCircle, ArrowDownToLine, ArrowUpFromLine } from 'lucide-react';
+import { Landmark, CreditCard, PlusCircle, ArrowDownToLine, ArrowUpFromLine, ShieldCheck } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -27,6 +27,8 @@ import { useToast } from '@/hooks/use-toast';
 import { initialLinkedAccounts, type LinkedAccount, user, wallet as initialWallet, setWallet, type Wallet } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import VerificationPage from '../verification/page';
+
 
 function LinkAccountDialog({
   onLinkAccount,
@@ -354,6 +356,7 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+       <VerificationPage />
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
@@ -411,3 +414,5 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+    

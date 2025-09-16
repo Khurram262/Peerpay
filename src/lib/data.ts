@@ -10,7 +10,11 @@ export type Transaction = {
   type: 'sent' | 'received' | 'top-up';
 };
 
-export type CardTheme = string; // Now a string to hold any color
+export type CardTheme = {
+  start: string;
+  end: string;
+};
+
 export type CardTier = 'green' | 'gold' | 'black';
 
 export type VirtualCard = {
@@ -138,7 +142,7 @@ export const initialVirtualCards: VirtualCard[] = [
     cardholder: 'Alex Doe',
     isPrimary: true,
     status: 'active',
-    theme: '#22c55e', // Green
+    theme: { start: '#059669', end: '#10B981' }, // Green
   },
   {
     id: 'card_2',
@@ -151,7 +155,7 @@ export const initialVirtualCards: VirtualCard[] = [
     cardholder: 'Alex Doe',
     isPrimary: false,
     status: 'active',
-    theme: '#f59e0b', // Amber
+    theme: { start: '#F59E0B', end: '#FBBF24' }, // Amber
   },
    {
     id: 'card_3',
@@ -164,7 +168,7 @@ export const initialVirtualCards: VirtualCard[] = [
     cardholder: 'Alex Doe',
     isPrimary: false,
     status: 'blocked',
-    theme: '#171717', // Neutral 900
+    theme: { start: '#171717', end: '#404040' }, // Neutral 900
   },
 ];
 

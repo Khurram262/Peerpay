@@ -48,11 +48,21 @@ import {
 } from "@/components/ui/select";
 
 
-const defaultColor = '#2563eb';
+const defaultColor = 'var(--color-slate-900)';
+
 const tierThemes: Record<CardTier, CardTheme> = {
-  green: '#22c55e',
-  gold: '#f59e0b',
-  black: '#171717',
+  green: {
+    start: '#059669',
+    end: '#10B981'
+  },
+  gold: {
+    start: '#F59E0B',
+    end: '#FBBF24'
+  },
+  black: {
+    start: '#171717',
+    end: '#404040'
+  }
 }
 
 function CreateCardDialog({
@@ -60,14 +70,14 @@ function CreateCardDialog({
 }: {
   onCreateCard: (theme: CardTheme, cardholder: string, name: string, tier: CardTier) => void;
 }) {
-  const [selectedColor, setSelectedColor] = useState(defaultColor);
+  const [selectedTheme, setSelectedTheme] = useState(tierThemes.green);
   const [cardholderName, setCardholderName] = useState(user.name);
   const [cardName, setCardName] = useState('');
   const [cardTier, setCardTier] = useState<CardTier>('green');
   const [isOpen, setIsOpen] = useState(false);
 
   const handleCreate = () => {
-    onCreateCard(selectedColor, cardholderName, cardName, cardTier);
+    onCreateCard(selectedTheme, cardholderName, cardName, cardTier);
     setIsOpen(false);
     setCardName('');
   };
@@ -83,11 +93,11 @@ function CreateCardDialog({
     cardholder: cardholderName,
     isPrimary: false,
     status: 'active',
-    theme: selectedColor,
+    theme: selectedTheme,
   };
 
   useEffect(() => {
-    setSelectedColor(tierThemes[cardTier]);
+    setSelectedTheme(tierThemes[cardTier]);
   }, [cardTier]);
 
 
@@ -119,27 +129,18 @@ function CreateCardDialog({
             <Label htmlFor="cardholder-name">Cardholder Name</Label>
             <Input id="cardholder-name" value={cardholderName} onChange={(e) => setCardholderName(e.target.value)} />
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="card-tier">Card Tier</Label>
-               <Select value={cardTier} onValueChange={(value) => setCardTier(value as CardTier)}>
-                <SelectTrigger id="card-tier">
-                  <SelectValue placeholder="Choose a tier" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="green">Green</SelectItem>
-                  <SelectItem value="gold">Gold</SelectItem>
-                  <SelectItem value="black">Black</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="card-color">Color</Label>
-              <div className='flex items-center gap-2'>
-                <Input id="card-color" type="color" value={selectedColor} onChange={(e) => setSelectedColor(e.target.value)} className="w-16 h-10 p-1" />
-                <Input type="text" value={selectedColor} onChange={(e) => setSelectedColor(e.target.value)} placeholder='#2563eb' />
-              </div>
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="card-tier">Card Tier</Label>
+              <Select value={cardTier} onValueChange={(value) => setCardTier(value as CardTier)}>
+              <SelectTrigger id="card-tier">
+                <SelectValue placeholder="Choose a tier" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="green">Green</SelectItem>
+                <SelectItem value="gold">Gold</SelectItem>
+                <SelectItem value="black">Black</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <DialogFooter>

@@ -3,7 +3,7 @@
 
 import React from 'react';
 import type { VirtualCard } from '@/lib/data';
-import { Ban, Eye, EyeOff } from 'lucide-react';
+import { Ban, Eye, EyeOff, Wifi } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
@@ -27,15 +27,12 @@ function MastercardLogo() {
 
 const tierStyles = {
   green: {
-    pattern: "bg-green-500/10",
     accent: "text-green-400",
   },
   gold: {
-    pattern: "bg-amber-500/10",
     accent: "text-amber-400",
   },
   black: {
-    pattern: "bg-gray-900/50",
     accent: "text-gray-400",
   }
 }
@@ -49,7 +46,8 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
   };
   
   const cardStyle = {
-    '--card-bg-color': card.theme,
+    '--card-bg-start': card.theme.start,
+    '--card-bg-end': card.theme.end,
   } as React.CSSProperties;
 
   const handleToggleDetails = (e: React.MouseEvent) => {
@@ -69,7 +67,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
     >
       <div
         className={cn(
-          'relative h-full w-full rounded-xl shadow-xl transition-transform duration-500 [transform-style:preserve-3d]',
+          'relative h-full w-full rounded-2xl shadow-xl transition-transform duration-700 [transform-style:preserve-3d]',
           isFlipped ? '[transform:rotateY(180deg)]' : ''
         )}
       >
@@ -78,10 +76,13 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
           <div
             style={cardStyle}
             className={cn(
-              'relative w-full h-full rounded-xl p-6 flex flex-col justify-between text-white bg-[--card-bg-color] shadow-lg overflow-hidden'
+              'relative w-full h-full rounded-2xl p-6 flex flex-col justify-between text-white bg-gradient-to-br from-[--card-bg-start] to-[--card-bg-end] shadow-2xl overflow-hidden'
             )}
           >
-             <div className={cn("absolute inset-0", currentTier.pattern)}></div>
+             <div className="absolute inset-0 bg-black/10 opacity-50 mix-blend-overlay"></div>
+             <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-white/20 blur-2xl"></div>
+             <div className="absolute -bottom-16 -left-10 h-32 w-32 rounded-full bg-white/10 blur-xl"></div>
+
 
             {card.status === 'blocked' && (
               <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center z-20">
@@ -97,6 +98,7 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
               </div>
               
                <div className="flex items-center gap-2">
+                 <Wifi className="h-6 w-6 text-white/80 rotate-90" />
                  <div className="w-12 h-8 bg-yellow-400/80 rounded-md shadow-inner-lg flex items-center justify-center">
                     <div className='w-8 h-5 bg-yellow-500/70 rounded-sm' />
                 </div>
@@ -138,19 +140,19 @@ export function AnimatedVirtualCard({ card }: { card: VirtualCard }) {
         <div
           style={cardStyle}
           className={cn(
-            'absolute inset-0 h-full w-full rounded-xl text-white [transform:rotateY(180deg)] [backface-visibility:hidden]',
-            'bg-[--card-bg-color]'
+            'absolute inset-0 h-full w-full rounded-2xl text-white [transform:rotateY(180deg)] [backface-visibility:hidden]',
+            'bg-gradient-to-br from-[--card-bg-start] to-[--card-bg-end]'
           )}
         >
-          <div className={cn("absolute inset-0", currentTier.pattern)}></div>
-          <div className="relative w-full h-full rounded-xl p-0 flex flex-col justify-start">
+           <div className="absolute inset-0 bg-black/10 opacity-50 mix-blend-overlay"></div>
+          <div className="relative w-full h-full rounded-2xl p-0 flex flex-col justify-start">
             <div className="w-full h-12 bg-black/80 mt-6"></div>
              <div className="px-6 py-4 space-y-4">
                 <div className="text-right">
                     <p className="text-xs text-gray-300/80 uppercase">CVV</p>
                     <div className="h-9 bg-white rounded-md flex items-center justify-end pr-4">
                         <p className="text-black font-mono tracking-widest">
-                        {card.cvv}
+                        {isDetailsVisible ? card.cvv : '***'}
                         </p>
                     </div>
                 </div>

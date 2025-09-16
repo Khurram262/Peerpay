@@ -15,8 +15,11 @@ const NavButton = ({ href, icon: Icon, label }: { href: string, icon: React.Elem
   const isActive = pathname === href;
 
   return (
-    <Link href={href} className={cn('flex flex-col items-center justify-center text-xs gap-1', isActive ? 'text-primary' : 'text-muted-foreground')}>
-      <Icon className="h-6 w-6" />
+    <Link href={href} className={cn(
+      'flex flex-col items-center justify-center text-xs gap-1 h-14 w-16 rounded-md', 
+      isActive ? 'text-primary bg-primary/10' : 'text-muted-foreground'
+      )}>
+      <Icon className="h-5 w-5" />
       <span>{label}</span>
     </Link>
   );
@@ -27,8 +30,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <div className="flex min-h-screen w-full flex-col bg-muted/40">
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+      <div className="flex min-h-screen w-full flex-col">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 sm:px-6">
             <Link
                 href="/dashboard"
                 className="flex items-center gap-2 font-semibold"
@@ -37,7 +40,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 role="img"
                 viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
+                className="h-6 w-6 text-primary"
                 fill="currentColor"
                 >
                 <title>PeerPay</title>
@@ -54,12 +57,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           <ThemeToggle />
           <UserNav />
         </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8 pb-24 md:pb-8">
+        <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8 pb-28 md:pb-8">
           {children}
         </main>
       </div>
 
-       <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-2 flex justify-around md:hidden z-50">
+       <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm border-t p-2 flex justify-around md:hidden z-50">
         <NavButton href="/dashboard" icon={Home} label="Home" />
         <NavButton href="/dashboard/cards" icon={CreditCard} label="Cards" />
         <NavButton href="/dashboard/payments" icon={Receipt} label="Payments" />

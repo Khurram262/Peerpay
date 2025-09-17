@@ -5,8 +5,13 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { UserNav } from '@/components/user-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { SidebarProvider, Sidebar, SidebarTrigger, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
-import { CreditCard, Receipt, Gift, BrainCircuit, Home, Settings, History } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import { CreditCard, Receipt, Gift, BrainCircuit, Home, Settings, History, Menu } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 const navItems = [
@@ -40,54 +45,68 @@ const AppLogo = () => (
     </Link>
 )
 
-const AppSidebar = () => {
+const MobileNav = () => {
     const pathname = usePathname();
     return (
-        <Sidebar collapsible="icon">
-            <SidebarHeader>
-                <AppLogo />
-            </SidebarHeader>
-            <SidebarContent>
-                <SidebarMenu>
-                {navItems.map((item) => (
-                    <SidebarMenuItem key={item.href}>
-                        <Link href={item.href}>
-                            <SidebarMenuButton isActive={pathname === item.href} tooltip={item.label}>
-                            <item.icon />
-                            <span>{item.label}</span>
-                            </SidebarMenuButton>
+        <Sheet>
+            <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden">
+                    <Menu />
+                    <span className="sr-only">Toggle navigation menu</span>
+                </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="flex flex-col">
+                <nav className="grid gap-2 text-lg font-medium">
+                    <AppLogo />
+                    {navItems.map((item) => (
+                         <Link
+                            key={item.href}
+                            href={item.href}
+                            className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary ${pathname === item.href ? 'text-primary bg-muted' : 'text-muted-foreground'}`}
+                        >
+                            <item.icon className="h-4 w-4" />
+                            {item.label}
                         </Link>
-                    </SidebarMenuItem>
-                ))}
-                </SidebarMenu>
-            </SidebarContent>
-        </Sidebar>
+                    ))}
+                </nav>
+            </SheetContent>
+        </Sheet>
+    )
+}
+
+const DesktopNav = () => {
+    const pathname = usePathname();
+    return (
+        <nav className="hidden md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
+            <AppLogo />
+            {navItems.map((item) => (
+                <Link
+                key={item.href}
+                href={item.href}
+                className={`transition-colors hover:text-foreground ${pathname === item.href ? 'text-foreground' : 'text-muted-foreground'}`}
+                >
+                {item.label}
+                </Link>
+            ))}
+        </nav>
     )
 }
 
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AppSidebar />
-        <div className="flex flex-1 flex-col">
-            <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur-sm px-4 sm:px-6">
-                <SidebarTrigger className="md:hidden" />
-                <div className="hidden md:block">
-                   <AppLogo />
+      <div className="flex min-h-screen w-full flex-col">
+            <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur-sm px-4 md:px-6 z-50">
+                <MobileNav />
+                <DesktopNav />
+                <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4 justify-end">
+                    <ThemeToggle />
+                    <UserNav />
                 </div>
-                <div className="relative ml-auto flex-1 md:grow-0">
-                    {/* Search can go here */}
-                </div>
-                <ThemeToggle />
-                <UserNav />
             </header>
             <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
             {children}
             </main>
-        </div>
       </div>
-    </SidebarProvider>
   );
 }

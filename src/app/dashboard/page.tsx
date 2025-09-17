@@ -31,13 +31,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { wallet, transactions, setWallet, type Wallet } from '@/lib/data';
-import {
-  Bar,
-  BarChart,
-  ResponsiveContainer,
-  XAxis,
-  Tooltip,
-} from "recharts"
 import { QrPaymentForm } from '@/components/qr-payment-form';
 import { AnimatedVirtualCard } from '@/components/animated-virtual-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -58,17 +51,8 @@ import { initialVirtualCards } from '@/lib/data';
 import type { VirtualCard, User } from '@/lib/data';
 import Link from 'next/link';
 import { user as initialUser } from '@/lib/data';
-import { format, parseISO, subDays } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 
-const chartData = [
-  { date: format(subDays(new Date(), 6), "MMM d"), total: Math.floor(Math.random() * 200) + 50 },
-  { date: format(subDays(new Date(), 5), "MMM d"), total: Math.floor(Math.random() * 200) + 50 },
-  { date: format(subDays(new Date(), 4), "MMM d"), total: Math.floor(Math.random() * 200) + 50 },
-  { date: format(subDays(new Date(), 3), "MMM d"), total: Math.floor(Math.random() * 200) + 50 },
-  { date: format(subDays(new Date(), 2), "MMM d"), total: Math.floor(Math.random() * 200) + 50 },
-  { date: format(subDays(new Date(), 1), "MMM d"), total: Math.floor(Math.random() * 200) + 50 },
-  { date: format(new Date(), "MMM d"), total: Math.floor(Math.random() * 200) + 50 },
-]
 
 function QuickActionButton({ icon: Icon, label, href, onAction }: { icon: React.ElementType, label: string, href?: string, onAction?: () => void }) {
     const content = (
@@ -197,32 +181,7 @@ export default function DashboardPage() {
                 <CardTitle className="text-4xl tracking-tight">${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="h-40">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={chartData}>
-                            <XAxis
-                                dataKey="date"
-                                stroke="#888888"
-                                fontSize={12}
-                                tickLine={false}
-                                axisLine={false}
-                                />
-                             <Tooltip
-                                contentStyle={{
-                                    background: "hsl(var(--background))",
-                                    border: "1px solid hsl(var(--border))",
-                                    borderRadius: "var(--radius)",
-                                }}
-                                labelStyle={{ color: "hsl(var(--foreground))" }}
-                                />
-                            <Bar
-                                dataKey="total"
-                                fill="hsl(var(--primary))"
-                                radius={[4, 4, 0, 0]}
-                            />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </div>
+                <p className="text-xs text-muted-foreground">+20.1% from last month</p>
             </CardContent>
           </Card>
 

@@ -69,7 +69,7 @@ function CreateCardDialog({
   
   const previewCard: VirtualCard = {
     id: 'preview',
-    name: cardName || 'New Card',
+    name: cardName || 'Virtual Card',
     fullNumber: '1234567898765432',
     last4: '5432',
     expiry: 'MM/YY',
@@ -312,7 +312,7 @@ export default function CardsPage() {
   const handleCreateCard = (theme: CardTheme, cardholder: string, name: string) => {
     const newCard: VirtualCard = {
       id: `card_${Date.now()}`,
-      name: name || 'New Card',
+      name: name || 'Virtual Card',
       fullNumber: Math.floor(1000000000000000 + Math.random() * 9000000000000000).toString(),
       last4: Math.floor(1000 + Math.random() * 9000).toString(),
       expiry: `${Math.floor(1 + Math.random() * 12)

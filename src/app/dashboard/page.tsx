@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -15,6 +16,8 @@ import {
   History,
   Settings,
   Send,
+  Landmark,
+  ArrowDownToLine,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -45,7 +48,7 @@ import {
   TableCell,
   TableRow,
 } from '@/components/ui/table';
-import { wallet, transactions, setWallet, type Wallet } from '@/lib/data';
+import { wallet, transactions, setWallet, type Wallet, type LinkedAccount, initialLinkedAccounts } from '@/lib/data';
 import { QrPaymentForm } from '@/components/qr-payment-form';
 import { AnimatedVirtualCard } from '@/components/animated-virtual-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -68,6 +71,91 @@ const navItems = [
   { href: '/dashboard/insights', icon: BrainCircuit, label: 'Insights' },
   { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
 ];
+
+function AddMoneyDialog({ onAddMoney }: { onAddMoney: (amount: number) => void }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [amount, setAmount] = useState('');
+  const [selectedAccount, setSelectedAccount] = useState<LinkedAccount | null>(null);
+  const [accounts, setAccounts] = useState<LinkedAccount[]>([]);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const storedAccounts = localStorage.getItem('linkedAccounts');
+    if (storedAccounts) {
+      setAccounts(JSON.parse(storedAccounts));
+    } else {
+      setAccounts(initialLinkedAccounts);
+    }
+  }, [isOpen]);
+
+  const handleAdd = () => {
+    const addAmount = parseFloat(amount);
+    if (!selectedAccount) {
+      toast({ title: 'No Account Selected', description: 'Please select a funding source.', variant: 'destructive' });
+      return;
+    }
+    if (!addAmount || addAmount <= 0) {
+      toast({ title: 'Invalid Amount', description: 'Please enter a valid amount.', variant: 'destructive' });
+      return;
+    }
+    onAddMoney(addAmount);
+    setIsOpen(false);
+    setSelectedAccount(null);
+    setAmount('');
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <div className="w-full cursor-pointer">
+          <QuickActionButton icon={PlusCircle} label="Add Money" />
+        </div>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Add Money to Wallet</DialogTitle>
+          <DialogDescription>Select a linked account and enter the amount to add.</DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto">
+          <div className="grid gap-2">
+            <Label>From</Label>
+            <div className="space-y-2">
+              {accounts.length > 0 ? accounts.map(account => (
+                <div key={account.id} onClick={() => setSelectedAccount(account)} className={`flex items-center gap-4 border p-3 rounded-lg cursor-pointer transition-colors ${selectedAccount?.id === account.id ? 'bg-primary/10 border-primary' : 'hover:bg-muted'}`}>
+                  {account.type === 'bank' ? <Landmark className="h-6 w-6 text-muted-foreground" /> : <CreditCard className="h-6 w-6 text-muted-foreground" />}
+                  <div>
+                    <p className="font-semibold">{account.name}</p>
+                    <p className="text-sm text-muted-foreground">{account.provider} •••• {account.last4}</p>
+                  </div>
+                </div>
+              )) : (
+                <div className="text-center text-sm text-muted-foreground border-2 border-dashed rounded-lg p-4">
+                  <p>No linked accounts found.</p>
+                  <Link href="/dashboard/settings">
+                    <Button variant="link">Link an account</Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+          {selectedAccount && (
+            <div className="grid gap-2">
+              <Label htmlFor="add-amount">Amount (USD)</Label>
+              <Input id="add-amount" type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0.00" />
+            </div>
+          )}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
+          <Button onClick={handleAdd} disabled={!selectedAccount || accounts.length === 0}>
+            <ArrowDownToLine className="mr-2 h-4 w-4" /> Add Money
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 
 function SendMoneyDialog({ onSend }: { onSend: (amount: number, recipient: string) => void }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -96,7 +184,7 @@ function SendMoneyDialog({ onSend }: { onSend: (amount: number, recipient: strin
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <div className="w-full">
+        <div className="w-full cursor-pointer">
             <QuickActionButton icon={ArrowUp} label="Send" />
         </div>
       </DialogTrigger>
@@ -311,8 +399,8 @@ export default function DashboardPage() {
           {/* Quick Actions */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
              <SendMoneyDialog onSend={(amount, recipient) => handleTransaction(amount, 'send', recipient)} />
-             <QuickActionButton icon={UserPlus} label="Request" />
-             <QuickActionButton icon={PlusCircle} label="Add Money" />
+             <div className="w-full cursor-pointer"><QuickActionButton icon={UserPlus} label="Request" /></div>
+             <AddMoneyDialog onAddMoney={(amount) => handleTransaction(amount, 'add')} />
              <QuickActionButton icon={ScanLine} label="Scan & Pay" href="/dashboard/payments" />
           </div>
           
@@ -407,3 +495,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    

@@ -25,6 +25,10 @@ export type VirtualCard = {
   isPrimary: boolean;
   status: 'active' | 'blocked';
   theme: CardTheme;
+  settings: {
+    allowOnline: boolean;
+    allowContactless: boolean;
+  }
 };
 
 export type User = {
@@ -137,7 +141,11 @@ export const initialVirtualCards: VirtualCard[] = [
     cardholder: 'Alex Doe',
     isPrimary: true,
     status: 'active',
-    theme: { start: '#16a34a', end: '#4ade80' },
+    theme: { start: 'hsl(221.2 83.2% 53.3%)', end: 'hsl(221.2 83.2% 43.3%)' },
+    settings: {
+        allowOnline: true,
+        allowContactless: true,
+    }
   },
   {
     id: 'card_2',
@@ -150,6 +158,10 @@ export const initialVirtualCards: VirtualCard[] = [
     isPrimary: false,
     status: 'active',
     theme: { start: '#f59e0b', end: '#fcd34d' },
+    settings: {
+        allowOnline: true,
+        allowContactless: false,
+    }
   },
    {
     id: 'card_3',
@@ -162,6 +174,10 @@ export const initialVirtualCards: VirtualCard[] = [
     isPrimary: false,
     status: 'blocked',
     theme: { start: '#171717', end: '#525252' },
+    settings: {
+        allowOnline: false,
+        allowContactless: false,
+    }
   },
 ];
 

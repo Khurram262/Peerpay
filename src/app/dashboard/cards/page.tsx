@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { initialVirtualCards, type VirtualCard, type CardTheme, user, setUser } from '@/lib/data';
-import { CreditCard, PlusCircle, Trash, CheckCircle } from 'lucide-react';
+import { CreditCard, PlusCircle, Trash, CheckCircle, Edit, Snowflake, Wifi, ShoppingBag } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -40,6 +40,7 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { AnimatedVirtualCard } from '@/components/animated-virtual-card';
+import { Separator } from '@/components/ui/separator';
 
 const availableThemes: Record<string, CardTheme> = {
   blue: { start: 'hsl(221.2 83.2% 53.3%)', end: 'hsl(221.2 83.2% 43.3%)' },
@@ -78,6 +79,10 @@ function CreateCardDialog({
     isPrimary: false,
     status: 'active',
     theme: selectedTheme,
+    settings: {
+        allowOnline: true,
+        allowContactless: true,
+    }
   };
 
   return (
@@ -235,6 +240,47 @@ function OrderPhysicalCard() {
   );
 }
 
+function EditCardDialog({ card, onUpdate, children }: { card: VirtualCard, onUpdate: (newName: string) => void, children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [name, setName] = useState(card.name);
+
+  const handleSave = () => {
+    onUpdate(name);
+    setIsOpen(false);
+  }
+
+  return (
+     <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        {children}
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Edit Card</DialogTitle>
+          <DialogDescription>
+            Change the name of your virtual card.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="card-name-edit">Card Name</Label>
+            <Input
+              id="card-name-edit"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g., Online Shopping"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
+          <Button onClick={handleSave}>Save Changes</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 
 export default function CardsPage() {
   const [cards, setCardsState] = useState<VirtualCard[]>(initialVirtualCards);
@@ -249,7 +295,12 @@ export default function CardsPage() {
       try {
         const parsedCards = JSON.parse(storedCards);
         if (Array.isArray(parsedCards)) {
-          setCardsState(parsedCards);
+          // Add settings if they don't exist from previous versions
+          const updatedCards = parsedCards.map(c => ({
+              ...c,
+              settings: c.settings || { allowOnline: true, allowContactless: true }
+          }))
+          setCardsState(updatedCards);
         }
       } catch (e) {
         console.error("Failed to parse virtual cards from localStorage", e);
@@ -274,7 +325,7 @@ export default function CardsPage() {
   };
 
 
-  const handleToggleBlock = (cardId: string) => {
+  const handleToggleFreeze = (cardId: string) => {
     const newCards = cards.map((card) =>
         card.id === cardId
           ? {
@@ -287,10 +338,20 @@ export default function CardsPage() {
 
     const card = cards.find(c => c.id === cardId);
     toast({
-        title: `Card ${card?.status === 'active' ? 'Blocked' : 'Unblocked'}`,
-        description: `Your card ending in ${card?.last4} has been ${card?.status === 'active' ? 'blocked' : 'unblocked'}.`,
+        title: `Card ${card?.status === 'active' ? 'Frozen' : 'Unfrozen'}`,
+        description: `Your card ending in ${card?.last4} has been ${card?.status === 'active' ? 'frozen' : 'unfrozen'}.`,
     })
   };
+
+  const handleToggleSetting = (cardId: string, setting: 'allowOnline' | 'allowContactless') => {
+      const newCards = cards.map(card => {
+          if (card.id === cardId) {
+              return { ...card, settings: { ...card.settings, [setting]: !card.settings[setting] }};
+          }
+          return card;
+      });
+      updateCards(newCards);
+  }
 
   const handleRemoveCard = (cardId: string) => {
     const cardToRemove = cards.find((c) => c.id === cardId);
@@ -323,6 +384,10 @@ export default function CardsPage() {
       isPrimary: cards.length === 0,
       status: 'active',
       theme,
+      settings: {
+          allowOnline: true,
+          allowContactless: true,
+      }
     };
     
     const newUser = { ...user, name: cardholder };
@@ -344,6 +409,15 @@ export default function CardsPage() {
       title: 'Primary Card Updated',
       description: `Card ending in ${cards.find(c => c.id === cardId)?.last4} is now your primary card.`,
     });
+  }
+
+  const handleUpdateCardName = (cardId: string, newName: string) => {
+    const newCards = cards.map(c => c.id === cardId ? { ...c, name: newName } : c);
+    updateCards(newCards);
+    toast({
+        title: 'Card Updated',
+        description: 'Your card name has been changed.'
+    })
   }
 
   const handleToggleVisibility = (cardId: string) => {
@@ -369,76 +443,105 @@ export default function CardsPage() {
             <CreateCardDialog onCreateCard={handleCreateCard} />
           </div>
         </CardHeader>
-        <CardContent className="grid gap-6 md:grid-cols-2">
+        <CardContent className="grid gap-8 md:grid-cols-2">
           {cards.map((card) => (
-            <div key={card.id} className="space-y-4">
+            <div key={card.id} className="space-y-4 p-4 border rounded-xl shadow-sm">
               <div onClick={() => handleToggleVisibility(card.id)} className="cursor-pointer">
                 <AnimatedVirtualCard card={card} isVisible={visibleCardId === card.id} />
               </div>
-              <div className="flex flex-col sm:flex-row justify-between items-center gap-2 p-2 border rounded-lg">
+
+               {card.isPrimary && (
+                  <div className="text-xs font-bold text-primary py-1 px-2 rounded-full bg-primary/10 flex items-center gap-1 w-fit">
+                    <CheckCircle className='h-3 w-3' />
+                    PRIMARY
+                  </div>
+                )}
+              
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                  {card.isPrimary ? (
-                    <div className="text-xs font-bold text-primary py-1 px-2 rounded-full bg-primary/10 flex items-center gap-1">
-                      <CheckCircle className='h-3 w-3' />
-                      PRIMARY
-                    </div>
-                  ) : (
-                    <Button variant="ghost" size="sm" onClick={() => handleSetPrimary(card.id)}>Set as primary</Button>
+                    <Snowflake className="h-5 w-5 text-muted-foreground" />
+                    <Label htmlFor={`freeze-switch-${card.id}`} className="font-medium">Freeze Card</Label>
+                  </div>
+                  <Switch
+                    id={`freeze-switch-${card.id}`}
+                    checked={card.status === 'blocked'}
+                    onCheckedChange={() => handleToggleFreeze(card.id)}
+                    aria-label={card.status === 'active' ? 'Freeze card' : 'Unfreeze card'}
+                  />
+                </div>
+                <Separator />
+                 <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ShoppingBag className="h-5 w-5 text-muted-foreground" />
+                    <Label htmlFor={`online-switch-${card.id}`} className="font-medium">Online Transactions</Label>
+                  </div>
+                  <Switch
+                    id={`online-switch-${card.id}`}
+                    checked={card.settings.allowOnline}
+                    onCheckedChange={() => handleToggleSetting(card.id, 'allowOnline')}
+                    aria-label="Toggle online transactions"
+                  />
+                </div>
+                 <Separator />
+                 <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Wifi className="h-5 w-5 text-muted-foreground" />
+                    <Label htmlFor={`contactless-switch-${card.id}`} className="font-medium">Contactless Payments</Label>
+                  </div>
+                  <Switch
+                    id={`contactless-switch-${card.id}`}
+                    checked={card.settings.allowContactless}
+                    onCheckedChange={() => handleToggleSetting(card.id, 'allowContactless')}
+                    aria-label="Toggle contactless payments"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 pt-4 border-t">
+                  {!card.isPrimary && (
+                    <Button variant="outline" size="sm" onClick={() => handleSetPrimary(card.id)}>Set as primary</Button>
                   )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          id={`block-switch-${card.id}`}
-                          checked={card.status === 'blocked'}
-                          onCheckedChange={() => handleToggleBlock(card.id)}
-                          aria-label={
-                            card.status === 'active' ? 'Block card' : 'Unblock card'
-                          }
-                        />
-                        <Label
-                          htmlFor={`block-switch-${card.id}`}
-                          className="text-sm text-muted-foreground"
+                  <EditCardDialog card={card} onUpdate={(name) => handleUpdateCardName(card.id, name)}>
+                      <Button variant="outline" size="sm"><Edit className="mr-2 h-4 w-4" /> Edit</Button>
+                  </EditCardDialog>
+                  
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="ml-auto"
+                        disabled={card.isPrimary}
+                      >
+                        <Trash className="mr-2 h-4 w-4" /> Remove
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently
+                          delete your virtual card.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleRemoveCard(card.id)}
                         >
-                          {card.status === 'active' ? 'Active' : 'Blocked'}
-                        </Label>
-                      </div>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-muted-foreground hover:text-destructive"
-                            disabled={card.isPrimary}
-                          >
-                            <Trash className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This action cannot be undone. This will permanently
-                              delete your virtual card.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleRemoveCard(card.id)}
-                            >
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                  </div>
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
               </div>
             </div>
           ))}
           {cards.length === 0 && (
               <div className="text-center py-12 text-muted-foreground md:col-span-2">
-                  <p>You have no virtual cards.</p>
+                  <CreditCard className="mx-auto h-12 w-12 text-muted-foreground" />
+                  <p className="mt-4 font-semibold">You have no virtual cards.</p>
                   <p className="text-sm">Create one to get started!</p>
               </div>
           )}

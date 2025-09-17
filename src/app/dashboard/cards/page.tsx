@@ -279,7 +279,7 @@ export default function CardsPage() {
         card.id === cardId
           ? {
               ...card,
-              status: card.status === 'blocked' ? 'active' : 'active',
+              status: card.status === 'blocked' ? 'active' : 'blocked',
             }
           : card
       )

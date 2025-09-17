@@ -29,6 +29,10 @@ const formatCardNumber = (cardNumber: string) => {
     return cardNumber.replace(/(\d{4})/g, '$1 ').trim();
 };
 
+const maskCardNumber = (cardNumber: string) => {
+    return `**** **** **** ${cardNumber.slice(-4)}`;
+};
+
 export function AnimatedVirtualCard({ card, isVisible = false }: { card: VirtualCard, isVisible?: boolean }) {
 
   const cardBaseStyle =
@@ -40,7 +44,7 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
   };
 
   return (
-    <div className="group w-full max-w-md mx-auto h-56 [transform-style:preserve-3d]">
+    <div className="group w-full max-w-md mx-auto h-56 [perspective:1000px]">
       <div
         className={cn(
           'relative h-full w-full rounded-2xl [transform-style:preserve-3d] transition-transform duration-700',
@@ -64,7 +68,7 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
           <div className="relative flex justify-between items-start z-10">
             <div className="flex items-center gap-2">
               <span className="text-lg sm:text-xl font-semibold tracking-wider">
-                PeerPay
+                {card.name}
               </span>
             </div>
 
@@ -76,7 +80,7 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
           <div className="relative text-left z-10 space-y-2">
             <div className="flex items-center gap-4">
                <p className="font-mono text-lg sm:text-xl md:text-2xl tracking-wider whitespace-nowrap">
-                {formatCardNumber(card.fullNumber)}
+                {isVisible ? formatCardNumber(card.fullNumber) : maskCardNumber(card.fullNumber)}
               </p>
             </div>
 

@@ -117,7 +117,7 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
           <div className="relative text-left z-10 space-y-2">
             <div className="flex items-center gap-4">
                <p className="font-mono text-xl tracking-wider whitespace-nowrap md:text-2xl">
-                {isVisible ? formatCardNumber(card.fullNumber) : formatHiddenCardNumber(card.fullNumber)}
+                {formatHiddenCardNumber(card.fullNumber)}
               </p>
             </div>
 
@@ -134,7 +134,7 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
                     Expires
                   </p>
                   <p className="font-medium tracking-wide text-white">
-                     {isVisible ? card.expiry : 'MM/YY'}
+                     {card.expiry}
                   </p>
                 </div>
                 <MastercardLogo />

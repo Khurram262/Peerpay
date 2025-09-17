@@ -13,6 +13,10 @@ import {
   Send,
   Landmark,
   ArrowDownToLine,
+  Receipt,
+  Gift,
+  BrainCircuit,
+  Settings,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -57,7 +61,6 @@ import { format, parseISO } from 'date-fns';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { DashboardNav } from '@/components/dashboard-nav';
 
 
 function AddMoneyDialog({ onAddMoney }: { onAddMoney: (amount: number) => void }) {
@@ -327,6 +330,15 @@ function QuickActionButton({ icon: Icon, label, href, onClick }: { icon: React.E
     return <div className="w-full" onClick={onClick}>{content}</div>
 }
 
+const navItems = [
+  { href: '/dashboard/cards', icon: CreditCard, label: 'Cards' },
+  { href: '/dashboard/payments', icon: Receipt, label: 'Payments' },
+  { href: '/dashboard/rewards', icon: Gift, label: 'Rewards' },
+  { href: '/dashboard/insights', icon: BrainCircuit, label: 'Insights' },
+  { href: '/dashboard/transactions', icon: History, label: 'Transactions' },
+  { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
+]
+
 export default function DashboardPage() {
   const [user, setUser] = useState<User>(initialUser);
   const [cards, setCards] = useState<VirtualCard[]>([]);
@@ -486,6 +498,20 @@ export default function DashboardPage() {
                 </DialogContent>
              </Dialog>
           </div>
+
+          {/* Quick Links */}
+          <Card>
+            <CardHeader>
+                <CardTitle>Quick Links</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+                {navItems.map((item) => (
+                   <QuickActionButton key={item.href} icon={item.icon} label={item.label} href={item.href} />
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Recent Activity */}
           <Card>

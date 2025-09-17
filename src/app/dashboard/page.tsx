@@ -13,7 +13,8 @@ import {
   Gift,
   BrainCircuit,
   History,
-  Settings
+  Settings,
+  Send,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -29,6 +30,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import {
   Table,
   TableBody,
@@ -46,6 +56,9 @@ import type { VirtualCard, User } from '@/lib/data';
 import Link from 'next/link';
 import { user as initialUser } from '@/lib/data';
 import { format, parseISO } from 'date-fns';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 const navItems = [
   { href: '/dashboard/transactions', icon: History, label: 'History' },
@@ -56,7 +69,90 @@ const navItems = [
   { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
 ];
 
-function QuickActionButton({ icon: Icon, label, href, onAction }: { icon: React.ElementType, label: string, href?: string, onAction?: () => void }) {
+function SendMoneyDialog({ onSend }: { onSend: (amount: number, recipient: string) => void }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [recipient, setRecipient] = useState('');
+  const [amount, setAmount] = useState('');
+  const [note, setNote] = useState('');
+  const { toast } = useToast();
+
+  const handleSend = () => {
+    const sendAmount = parseFloat(amount);
+    if (!recipient || !sendAmount || sendAmount <= 0) {
+      toast({
+        title: 'Invalid Details',
+        description: 'Please enter a valid recipient and amount.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    onSend(sendAmount, recipient);
+    setIsOpen(false);
+    setRecipient('');
+    setAmount('');
+    setNote('');
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <div className="w-full">
+            <QuickActionButton icon={ArrowUp} label="Send" />
+        </div>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Send Money</DialogTitle>
+          <DialogDescription>
+            Enter the recipient's details and the amount to send.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="recipient">Recipient</Label>
+            <Input
+              id="recipient"
+              value={recipient}
+              onChange={(e) => setRecipient(e.target.value)}
+              placeholder="Email or Account No."
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="amount">Amount (USD)</Label>
+            <Input
+              id="amount"
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0.00"
+            />
+          </div>
+           <div className="grid gap-2">
+            <Label htmlFor="note">Note (Optional)</Label>
+            <Textarea
+              id="note"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="e.g., For dinner last night"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setIsOpen(false)}>
+            Cancel
+          </Button>
+          <Button onClick={handleSend}>
+            <Send className="mr-2 h-4 w-4" />
+            Send Money
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+
+function QuickActionButton({ icon: Icon, label, href }: { icon: React.ElementType, label: string, href?: string }) {
     const content = (
         <div className="flex flex-col items-center justify-center gap-2 rounded-lg bg-secondary hover:bg-secondary/80 p-4 w-full transition-colors h-full">
             <div className="p-3 bg-background rounded-full shadow-sm">
@@ -67,10 +163,10 @@ function QuickActionButton({ icon: Icon, label, href, onAction }: { icon: React.
     )
 
     if (href) {
-        return <Link href={href}>{content}</Link>
+        return <Link href={href} className="w-full">{content}</Link>
     }
     
-    return <button onClick={onAction} className="w-full">{content}</button>
+    return <div className="w-full">{content}</div>
 }
 
 export default function DashboardPage() {
@@ -123,41 +219,52 @@ export default function DashboardPage() {
 
   const primaryCard = cards.find((vc) => vc.isPrimary) || (cards.length > 0 ? cards[0] : null);
 
-  const handleTransaction = (amount: number, type: 'send' | 'request' | 'pay' | 'add') => {
-    const newBalance = type === 'add'
-      ? currentWallet.balance + amount
-      : currentWallet.balance - amount;
-    
-    const newWallet = { ...currentWallet, balance: newBalance };
-    setWallet(newWallet);
-    setCurrentWallet(newWallet);
-
+  const handleTransaction = (amount: number, type: 'send' | 'request' | 'pay' | 'add', recipient?: string) => {
+    let newBalance: number;
     let title = '';
     let description = '';
 
     switch(type) {
         case 'add':
+            newBalance = currentWallet.balance + amount;
             title = 'Money Added!';
-            description = 'Your balance has been updated.';
+            description = `Your balance has been updated. New balance: $${newBalance.toFixed(2)}`;
             break;
         case 'send':
+            if (currentWallet.balance < amount) {
+                toast({ title: 'Insufficient Funds', description: 'You do not have enough money to complete this transaction.', variant: 'destructive' });
+                return;
+            }
+            newBalance = currentWallet.balance - amount;
             title = 'Money Sent!';
-            description = `Successfully sent $${amount.toFixed(2)}.`;
+            description = `Successfully sent $${amount.toFixed(2)} to ${recipient}.`;
             break;
         case 'pay':
+             if (currentWallet.balance < amount) {
+                toast({ title: 'Insufficient Funds', description: 'You do not have enough money to complete this payment.', variant: 'destructive' });
+                return;
+            }
+            newBalance = currentWallet.balance - amount;
             title = 'Payment Sent!';
             description = `Successfully paid $${amount.toFixed(2)}.`;
             break;
         case 'request':
             title = 'Request Sent!';
             description = `Your request for $${amount.toFixed(2)} has been sent.`;
-            return; // Don't show toast for request
+            toast({ title, description });
+            return; // No balance change for requests
+        default:
+            return;
     }
+    
+    const newWallet = { ...currentWallet, balance: newBalance };
+    setWallet(newWallet);
+    setCurrentWallet(newWallet);
 
     toast({ title, description });
   };
-
-  if (!isClient) {
+  
+   if (!isClient) {
     return (
       <div className="flex flex-col gap-8">
         <h1 className="text-3xl font-bold tracking-tight">Welcome back!</h1>
@@ -188,7 +295,7 @@ export default function DashboardPage() {
                             <AnimatedVirtualCard card={primaryCard} isVisible={isCardFlipped} />
                         </div>
                         ) : (
-                        <Card className="h-48 flex items-center justify-center w-full bg-muted">
+                        <Card className="h-48 flex items-center justify-center w-full max-w-[320px] bg-muted">
                             <div className="text-center text-muted-foreground">
                             <p>No primary card found.</p>
                             <Link href="/dashboard/cards">
@@ -203,9 +310,9 @@ export default function DashboardPage() {
 
           {/* Quick Actions */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-             <QuickActionButton icon={ArrowUp} label="Send" onAction={() => handleTransaction(50, 'send')} />
-             <QuickActionButton icon={UserPlus} label="Request" onAction={() => handleTransaction(20, 'request')} />
-             <QuickActionButton icon={PlusCircle} label="Add Money" onAction={() => handleTransaction(100, 'add')} />
+             <SendMoneyDialog onSend={(amount, recipient) => handleTransaction(amount, 'send', recipient)} />
+             <QuickActionButton icon={UserPlus} label="Request" />
+             <QuickActionButton icon={PlusCircle} label="Add Money" />
              <QuickActionButton icon={ScanLine} label="Scan & Pay" href="/dashboard/payments" />
           </div>
           
@@ -262,7 +369,7 @@ export default function DashboardPage() {
                           </Avatar>
                           <div>
                             <p className="font-medium">{transaction.name}</p>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-muted-foreground md:hidden">
                               {format(parseISO(transaction.date), "MMM d, yyyy")}
                             </p>
                           </div>

@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { transactions as allTransactions, type Transaction } from '@/lib/data';
+import { transactions as allTransactions } from '@/lib/data';
 import { format, parseISO } from 'date-fns';
 import React, { useState, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
@@ -29,13 +29,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Search } from 'lucide-react';
+import { Search, ArrowUpDown, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function TransactionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [sortOrder, setSortOrder] = useState('desc');
 
-  const filteredTransactions = useMemo(() => {
+  const filteredAndSortedTransactions = useMemo(() => {
     return allTransactions
       .filter((transaction) => {
         if (filterType === 'all') return true;
@@ -44,8 +46,13 @@ export default function TransactionsPage() {
       .filter((transaction) =>
         transaction.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         transaction.email.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-  }, [searchTerm, filterType]);
+      )
+      .sort((a, b) => {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+      });
+  }, [searchTerm, filterType, sortOrder]);
 
   return (
     <Card>
@@ -58,7 +65,13 @@ export default function TransactionsPage() {
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <div className="relative w-full sm:w-64">
+            <Button variant="outline" size="sm">
+                <Download className="mr-2 h-4 w-4" /> Export
+            </Button>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 pt-4">
+            <div className="relative w-full sm:w-auto flex-grow">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search by name or email..."
@@ -79,7 +92,6 @@ export default function TransactionsPage() {
               </SelectContent>
             </Select>
           </div>
-        </div>
       </CardHeader>
       <CardContent>
         <Table>
@@ -87,17 +99,21 @@ export default function TransactionsPage() {
             <TableRow>
               <TableHead>Details</TableHead>
               <TableHead className="hidden md:table-cell">Type</TableHead>
-              <TableHead className="hidden sm:table-cell">Date</TableHead>
+              <TableHead className="hidden sm:table-cell cursor-pointer" onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}>
+                <div className="flex items-center gap-1">
+                  Date <ArrowUpDown className="h-3 w-3" />
+                </div>
+              </TableHead>
               <TableHead className="text-right">Amount</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredTransactions.length > 0 ? (
-              filteredTransactions.map((transaction) => (
+            {filteredAndSortedTransactions.length > 0 ? (
+              filteredAndSortedTransactions.map((transaction) => (
                 <TableRow key={transaction.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-9 w-9">
+                      <Avatar className="h-9 w-9 border">
                         <AvatarImage
                           src={transaction.avatar}
                           alt={transaction.name}
@@ -122,7 +138,7 @@ export default function TransactionsPage() {
                           ? 'default'
                           : 'secondary'
                       }
-                      className={transaction.type === 'received' ? 'bg-primary' : ''}
+                      className={transaction.type === 'received' ? 'bg-green-500/80' : ''}
                     >
                       {transaction.type}
                     </Badge>
@@ -133,8 +149,8 @@ export default function TransactionsPage() {
                   <TableCell
                     className={`text-right font-semibold ${
                       transaction.type === 'sent'
-                        ? 'text-destructive'
-                        : 'text-primary'
+                        ? 'text-destructive-foreground dark:text-red-400'
+                        : 'text-green-600 dark:text-green-400'
                     }`}
                   >
                     {transaction.type === 'sent' ? '-' : '+'} $

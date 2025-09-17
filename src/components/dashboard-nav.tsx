@@ -10,6 +10,7 @@ import {
   Receipt,
   Gift,
   BrainCircuit,
+  History,
 } from 'lucide-react';
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 
@@ -41,7 +42,7 @@ const navItems = [
   },
   {
     href: '/dashboard/transactions',
-    icon: Receipt,
+    icon: History,
     label: 'Transactions',
   },
   {

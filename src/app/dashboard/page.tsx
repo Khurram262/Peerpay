@@ -2,17 +2,13 @@
 'use client';
 
 import {
-  ArrowDown,
   ArrowUp,
-  Send,
   UserPlus,
   PlusCircle,
   ScanLine,
   ArrowRight,
-  Landmark,
-  Receipt,
-  CreditCard,
-  BrainCircuit,
+  MoreHorizontal,
+  TrendingUp,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,14 +19,25 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
-  TableHeader,
   TableRow,
 } from '@/components/ui/table';
 import { wallet, transactions, setWallet, type Wallet } from '@/lib/data';
+import {
+  Bar,
+  BarChart,
+  ResponsiveContainer,
+  XAxis,
+  Tooltip,
+} from "recharts"
 import { QrPaymentForm } from '@/components/qr-payment-form';
 import { AnimatedVirtualCard } from '@/components/animated-virtual-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -51,283 +58,33 @@ import { initialVirtualCards } from '@/lib/data';
 import type { VirtualCard, User } from '@/lib/data';
 import Link from 'next/link';
 import { user as initialUser } from '@/lib/data';
-import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, subDays } from 'date-fns';
 
-function SendMoneyDialog({ onSend }: { onSend: (amount: number) => void }) {
-  const { toast } = useToast();
-  const [amount, setAmount] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
+const chartData = [
+  { date: format(subDays(new Date(), 6), "MMM d"), total: Math.floor(Math.random() * 200) + 50 },
+  { date: format(subDays(new Date(), 5), "MMM d"), total: Math.floor(Math.random() * 200) + 50 },
+  { date: format(subDays(new Date(), 4), "MMM d"), total: Math.floor(Math.random() * 200) + 50 },
+  { date: format(subDays(new Date(), 3), "MMM d"), total: Math.floor(Math.random() * 200) + 50 },
+  { date: format(subDays(new Date(), 2), "MMM d"), total: Math.floor(Math.random() * 200) + 50 },
+  { date: format(subDays(new Date(), 1), "MMM d"), total: Math.floor(Math.random() * 200) + 50 },
+  { date: format(new Date(), "MMM d"), total: Math.floor(Math.random() * 200) + 50 },
+]
 
-  const handleSend = () => {
-    const sendAmount = parseFloat(amount);
-    if (isNaN(sendAmount) || sendAmount <= 0) {
-      toast({
-        title: 'Invalid Amount',
-        description: 'Please enter a valid amount to send.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    onSend(sendAmount);
-    toast({
-      title: 'Money Sent!',
-      description: 'Your transaction has been processed successfully.',
-    });
-    setAmount('');
-    setIsOpen(false);
-  };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <button className="flex flex-col items-center justify-center gap-2 rounded-lg bg-secondary hover:bg-secondary/80 p-4 w-full transition-colors">
-          <div className="p-3 bg-background rounded-full">
-            <ArrowUp className="h-6 w-6 text-primary" />
-          </div>
-          <span className="text-sm font-medium">Send</span>
-        </button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Send Money</DialogTitle>
-          <DialogDescription>
-            Enter the details of the recipient and the amount to send.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-6 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="recipient-email">Recipient&apos;s Email</Label>
-            <Input
-              id="recipient-email"
-              placeholder="name@example.com"
-              type="email"
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="send-amount">Amount (USD)</Label>
-            <Input
-              id="send-amount"
-              placeholder="0.00"
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-          </div>
-          <div>
-            <h4 className="text-sm font-medium mb-2">Recent Contacts</h4>
-            <div className="flex items-center gap-4 overflow-x-auto pb-2">
-              {transactions.slice(0, 4).map((t) => (
-                <button
-                  key={t.id}
-                  className="flex flex-col items-center gap-1.5 text-center w-20"
-                >
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage
-                      src={t.avatar}
-                      alt={t.name}
-                      data-ai-hint="person face"
-                    />
-                    <AvatarFallback>{t.name[0]}</AvatarFallback>
-                  </Avatar>
-                  <span className="text-xs text-muted-foreground truncate w-full">
-                    {t.name}
-                  </span>
-                </button>
-              ))}
+function QuickActionButton({ icon: Icon, label, href, onAction }: { icon: React.ElementType, label: string, href?: string, onAction?: () => void }) {
+    const content = (
+        <div className="flex flex-col items-center justify-center gap-2 rounded-lg bg-secondary hover:bg-secondary/80 p-4 w-full transition-colors h-full">
+            <div className="p-3 bg-background rounded-full shadow-sm">
+                <Icon className="h-6 w-6 text-primary" />
             </div>
-          </div>
+            <span className="text-sm font-medium">{label}</span>
         </div>
-        <DialogFooter>
-          <Button onClick={handleSend} className="w-full">
-            <Send className="mr-2 h-4 w-4" />
-            Send Now
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
+    )
 
-function RequestMoneyDialog({
-  onRequest,
-}: {
-  onRequest: (amount: number) => void;
-}) {
-  const { toast } = useToast();
-  const [amount, setAmount] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleRequest = () => {
-    const requestAmount = parseFloat(amount);
-    if (isNaN(requestAmount) || requestAmount <= 0) {
-      toast({
-        title: 'Invalid Amount',
-        description: 'Please enter a valid amount to request.',
-        variant: 'destructive',
-      });
-      return;
+    if (href) {
+        return <Link href={href}>{content}</Link>
     }
-    onRequest(requestAmount);
-    toast({
-      title: 'Request Sent!',
-      description: 'Your request for has been sent.',
-    });
-    setAmount('');
-    setIsOpen(false);
-  };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <button className="flex flex-col items-center justify-center gap-2 rounded-lg bg-secondary hover:bg-secondary/80 p-4 w-full transition-colors">
-          <div className="p-3 bg-background rounded-full">
-            <ArrowDown className="h-6 w-6 text-primary" />
-          </div>
-          <span className="text-sm font-medium">Request</span>
-        </button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Request Money</DialogTitle>
-          <DialogDescription>
-            Enter the details to request money from another user.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-6 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="requester-email">Request from (Email)</Label>
-            <Input
-              id="requester-email"
-              placeholder="name@example.com"
-              type="email"
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="request-amount">Amount (USD)</Label>
-            <Input
-              id="request-amount"
-              placeholder="0.00"
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-          </div>
-          <div>
-            <h4 className="text-sm font-medium mb-2">Recent Contacts</h4>
-            <div className="flex items-center gap-4 overflow-x-auto pb-2">
-              {transactions.slice(0, 4).map((t) => (
-                <button
-                  key={t.id}
-                  className="flex flex-col items-center gap-1.5 text-center w-20"
-                >
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage
-                      src={t.avatar}
-                      alt={t.name}
-                      data-ai-hint="person face"
-                    />
-                    <AvatarFallback>{t.name[0]}</AvatarFallback>
-                  </Avatar>
-                  <span className="text-xs text-muted-foreground truncate w-full">
-                    {t.name}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-        <DialogFooter>
-          <Button onClick={handleRequest} className="w-full">
-            <UserPlus className="mr-2 h-4 w-4" />
-            Send Request
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
-
-function AddMoneyDialog({
-  onAdd,
-}: {
-  onAdd: (amount: number) => void;
-}) {
-  const { toast } = useToast();
-  const [amount, setAmount] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleAdd = () => {
-    const addAmount = parseFloat(amount);
-    if (isNaN(addAmount) || addAmount <= 0) {
-      toast({
-        title: 'Invalid Amount',
-        description: 'Please enter a valid amount to add.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    onAdd(addAmount);
-    toast({
-      title: 'Money Added!',
-      description: 'Your balance has been updated.',
-    });
-    setAmount('');
-    setIsOpen(false);
-  };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <button className="flex flex-col items-center justify-center gap-2 rounded-lg bg-secondary hover:bg-secondary/80 p-4 w-full transition-colors">
-          <div className="p-3 bg-background rounded-full">
-            <PlusCircle className="h-6 w-6 text-primary" />
-          </div>
-          <span className="text-sm font-medium">Add Money</span>
-        </button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Add Money</DialogTitle>
-          <DialogDescription>
-            Select a source and amount to add to your balance.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-6 py-4">
-           <div className="grid gap-2">
-            <Label>From</Label>
-             <div className="flex items-center gap-4 border p-3 rounded-lg bg-muted cursor-pointer hover:bg-muted/80">
-                <Landmark className="h-6 w-6 text-muted-foreground" />
-                <div>
-                  <p className="font-semibold">Main Savings</p>
-                  <p className="text-sm text-muted-foreground">
-                    Capital Bank •••• 1234
-                  </p>
-                </div>
-                <ArrowRight className="ml-auto h-5 w-5 text-muted-foreground" />
-            </div>
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="add-amount">Amount (USD)</Label>
-            <Input
-              id="add-amount"
-              placeholder="0.00"
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button onClick={handleAdd} className="w-full">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Add Funds
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
+    
+    return <button onClick={onAction} className="w-full">{content}</button>
 }
 
 
@@ -337,6 +94,7 @@ export default function DashboardPage() {
   const [currentWallet, setCurrentWallet] = useState<Wallet>(wallet);
   const [isClient, setIsClient] = useState(false);
   const [isCardFlipped, setIsCardFlipped] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     setIsClient(true);
@@ -382,13 +140,37 @@ export default function DashboardPage() {
 
 
   const handleTransaction = (amount: number, type: 'send' | 'request' | 'pay' | 'add') => {
-    const newBalance = type === 'request' || type === 'add'
+    const newBalance = type === 'add'
       ? currentWallet.balance + amount
       : currentWallet.balance - amount;
     
     const newWallet = { ...currentWallet, balance: newBalance };
     setWallet(newWallet);
     setCurrentWallet(newWallet);
+
+    let title = '';
+    let description = '';
+
+    switch(type) {
+        case 'add':
+            title = 'Money Added!';
+            description = 'Your balance has been updated.';
+            break;
+        case 'send':
+            title = 'Money Sent!';
+            description = `Successfully sent $${amount.toFixed(2)}.`;
+            break;
+        case 'pay':
+            title = 'Payment Sent!';
+            description = `Successfully paid $${amount.toFixed(2)}.`;
+            break;
+        case 'request':
+            title = 'Request Sent!';
+            description = `Your request for $${amount.toFixed(2)} has been sent.`;
+            return; // Don't show toast for request
+    }
+
+    toast({ title, description });
   };
 
   if (!isClient) {
@@ -409,42 +191,47 @@ export default function DashboardPage() {
         <div className="md:col-span-7 lg:col-span-8 space-y-8">
           
           {/* Wallet Card */}
-          <Card className="flex flex-col md:flex-row items-center p-6 gap-6">
-            <div className="flex-1 w-full">
-              <p className="text-sm text-muted-foreground">Available Balance</p>
-              <div className="text-4xl font-bold tracking-tight">
-                ${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-              </div>
-            </div>
-             <div className="w-full md:w-auto md:min-w-[320px]">
-              {primaryCard ? (
-                <div onClick={() => setIsCardFlipped(f => !f)} className="cursor-pointer">
-                  <AnimatedVirtualCard card={primaryCard} isVisible={isCardFlipped} />
+          <Card>
+            <CardHeader>
+                <CardDescription>Available Balance</CardDescription>
+                <CardTitle className="text-4xl tracking-tight">${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="h-40">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={chartData}>
+                            <XAxis
+                                dataKey="date"
+                                stroke="#888888"
+                                fontSize={12}
+                                tickLine={false}
+                                axisLine={false}
+                                />
+                             <Tooltip
+                                contentStyle={{
+                                    background: "hsl(var(--background))",
+                                    border: "1px solid hsl(var(--border))",
+                                    borderRadius: "var(--radius)",
+                                }}
+                                labelStyle={{ color: "hsl(var(--foreground))" }}
+                                />
+                            <Bar
+                                dataKey="total"
+                                fill="hsl(var(--primary))"
+                                radius={[4, 4, 0, 0]}
+                            />
+                        </BarChart>
+                    </ResponsiveContainer>
                 </div>
-              ) : (
-                <Card className="h-56 flex items-center justify-center w-full bg-muted/50">
-                  <div className="text-center text-muted-foreground">
-                    <p>No primary card found.</p>
-                    <Link href="/dashboard/cards">
-                      <Button variant="link" className="mt-2">Create or set a primary card</Button>
-                    </Link>
-                  </div>
-                </Card>
-              )}
-            </div>
+            </CardContent>
           </Card>
 
           {/* Quick Actions */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-             <SendMoneyDialog onSend={(amount) => handleTransaction(amount, 'send')} />
-             <RequestMoneyDialog onRequest={(amount) => handleTransaction(amount, 'request')} />
-             <AddMoneyDialog onAdd={(amount) => handleTransaction(amount, 'add')} />
-             <Link href="/dashboard/payments" className="flex flex-col items-center justify-center gap-2 rounded-lg bg-secondary hover:bg-secondary/80 p-4 w-full transition-colors">
-                <div className="p-3 bg-background rounded-full">
-                  <ScanLine className="h-6 w-6 text-primary" />
-                </div>
-                <span className="text-sm font-medium">Scan & Pay</span>
-            </Link>
+             <QuickActionButton icon={ArrowUp} label="Send" onAction={() => handleTransaction(50, 'send')} />
+             <QuickActionButton icon={UserPlus} label="Request" onAction={() => handleTransaction(20, 'request')} />
+             <QuickActionButton icon={PlusCircle} label="Add Money" onAction={() => handleTransaction(100, 'add')} />
+             <QuickActionButton icon={ScanLine} label="Scan & Pay" href="/dashboard/payments" />
           </div>
 
           {/* Recent Activity */}
@@ -453,7 +240,7 @@ export default function DashboardPage() {
               <div>
                 <CardTitle>Recent Activity</CardTitle>
                 <CardDescription>
-                  Here are the latest movements in your account.
+                  Your latest transactions.
                 </CardDescription>
               </div>
               <Link href="/dashboard/transactions">
@@ -464,10 +251,10 @@ export default function DashboardPage() {
               <Table>
                 <TableBody>
                   {transactions.slice(0, 4).map((transaction) => (
-                    <TableRow key={transaction.id}>
+                    <TableRow key={transaction.id} className="cursor-pointer">
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <Avatar className="h-10 w-10">
+                          <Avatar className="h-10 w-10 border">
                             <AvatarImage
                               src={transaction.avatar}
                               alt={transaction.name}
@@ -486,16 +273,23 @@ export default function DashboardPage() {
                         </div>
                       </TableCell>
                        <TableCell className="text-right">
-                          <p className={cn("font-semibold", transaction.type === 'sent' ? '' : 'text-primary')}>
+                          <p className={`font-semibold ${transaction.type === 'sent' ? '' : 'text-green-600 dark:text-green-400'}`}>
                             {transaction.type === 'sent' ? '-' : '+'} ${transaction.amount.toFixed(2)}
                           </p>
-                          <Badge variant="outline" className={cn(
-                            'capitalize mt-1',
-                            transaction.type === 'sent' ? 'border-destructive/50 text-destructive' :
-                            transaction.type === 'received' ? 'border-primary/50 text-primary' : ''
-                          )}>
-                            {transaction.type}
-                          </Badge>
+                       </TableCell>
+                       <TableCell className="pl-0 text-right">
+                         <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem>View Details</DropdownMenuItem>
+                                <DropdownMenuItem>Repeat Transaction</DropdownMenuItem>
+                                <DropdownMenuItem>Report an Issue</DropdownMenuItem>
+                            </DropdownMenuContent>
+                         </DropdownMenu>
                        </TableCell>
                     </TableRow>
                   ))}
@@ -508,37 +302,30 @@ export default function DashboardPage() {
         {/* Side Column */}
         <div className="md:col-span-5 lg:col-span-4 space-y-8">
            <Card>
-            <CardHeader>
-                <CardTitle>Quick Links</CardTitle>
-                <CardDescription>Your essential shortcuts.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4">
-                <Link href="/dashboard/payments">
-                    <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors">
-                        <Receipt className="h-6 w-6 text-primary" />
-                        <span className="font-medium">Pay Bills</span>
+                <CardHeader>
+                    <CardTitle>My Card</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    {primaryCard ? (
+                    <div onClick={() => setIsCardFlipped(f => !f)} className="cursor-pointer">
+                        <AnimatedVirtualCard card={primaryCard} isVisible={isCardFlipped} />
                     </div>
-                </Link>
-                 <Link href="/dashboard/cards">
-                    <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors">
-                        <CreditCard className="h-6 w-6 text-primary" />
-                        <span className="font-medium">My Cards</span>
-                    </div>
-                </Link>
-                 <Link href="/dashboard/insights">
-                    <div className="flex items-center gap-3 p-4 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors col-span-2">
-                        <BrainCircuit className="h-6 w-6 text-primary" />
-                        <span className="font-medium">AI Spending Insights</span>
-                    </div>
-                </Link>
-            </CardContent>
+                    ) : (
+                    <Card className="h-56 flex items-center justify-center w-full bg-muted/50">
+                        <div className="text-center text-muted-foreground">
+                        <p>No primary card found.</p>
+                        <Link href="/dashboard/cards">
+                            <Button variant="link" className="mt-2">Create or set a primary card</Button>
+                        </Link>
+                        </div>
+                    </Card>
+                    )}
+                </CardContent>
           </Card>
           
-          <QrPaymentForm onPayment={(amount) => handleTransaction(amount, 'send')} />
+          <QrPaymentForm onPayment={(amount) => handleTransaction(amount, 'pay')} />
         </div>
       </div>
     </div>
   );
 }
-
-    

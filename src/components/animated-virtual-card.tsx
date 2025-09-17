@@ -12,7 +12,7 @@ function MastercardLogo() {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 48 48"
-      className="h-12 w-12"
+      className="h-10 w-10"
       aria-label="Mastercard logo"
     >
       <circle fill="#EA001B" cx="18.5" cy="24" r="11.5" />
@@ -29,14 +29,10 @@ const formatCardNumber = (cardNumber: string) => {
     return cardNumber.replace(/(\d{4})/g, '$1 ').trim();
 };
 
-const formatHiddenCardNumber = (cardNumber: string) => {
-  return `**** **** **** ${cardNumber.slice(-4)}`;
-};
-
 export function AnimatedVirtualCard({ card, isVisible = false }: { card: VirtualCard, isVisible?: boolean }) {
 
   const cardBaseStyle =
-    'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl transition-transform duration-700 [backface-visibility:hidden]';
+    'absolute inset-0 w-full h-full rounded-2xl p-4 sm:p-6 text-white overflow-hidden shadow-2xl transition-transform duration-700 [backface-visibility:hidden]';
   const cardFrontStyle = `flex flex-col justify-between`;
   
   const cardBackgroundStyle = {
@@ -67,27 +63,27 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
           )}
           <div className="relative flex justify-between items-start z-10">
             <div className="flex items-center gap-2">
-              <span className="text-xl font-semibold tracking-wider">
+              <span className="text-lg sm:text-xl font-semibold tracking-wider">
                 PeerPay
               </span>
             </div>
 
             <div className="flex items-center gap-2">
-              <Wifi className="h-6 w-6 text-white/80 rotate-90" />
+              <Wifi className="h-5 w-5 sm:h-6 sm:w-6 text-white/80 rotate-90" />
             </div>
           </div>
 
           <div className="relative text-left z-10 space-y-2">
             <div className="flex items-center gap-4">
-               <p className="font-mono text-xl tracking-wider whitespace-nowrap md:text-2xl">
-                {isVisible ? formatCardNumber(card.fullNumber) : formatHiddenCardNumber(card.fullNumber)}
+               <p className="font-mono text-lg sm:text-xl md:text-2xl tracking-wider whitespace-nowrap">
+                {formatCardNumber(card.fullNumber)}
               </p>
             </div>
 
             <div className="flex justify-between items-end">
               <div>
                 <p className="text-xs text-white/80 uppercase">Card Holder</p>
-                <p className="font-medium tracking-wide text-white">
+                <p className="font-medium tracking-wide text-white text-sm sm:text-base">
                   {card.cardholder}
                 </p>
               </div>
@@ -96,7 +92,7 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
                   <p className="text-xs text-white/80 uppercase text-right">
                     Expires
                   </p>
-                  <p className="font-medium tracking-wide text-white">
+                  <p className="font-medium tracking-wide text-white text-sm sm:text-base">
                      {card.expiry}
                   </p>
                 </div>
@@ -120,7 +116,7 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
                 <p className="text-xs text-white/80 uppercase">CVV</p>
                 <div className="h-9 bg-white rounded-md flex items-center justify-end pr-4">
                   <p className="text-black font-mono tracking-widest">
-                    {isVisible ? card.cvv : '***'}
+                    {card.cvv}
                   </p>
                 </div>
               </div>

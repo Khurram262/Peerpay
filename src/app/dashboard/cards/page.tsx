@@ -42,11 +42,11 @@ import { Input } from '@/components/ui/input';
 import { AnimatedVirtualCard } from '@/components/animated-virtual-card';
 
 const availableThemes: Record<string, CardTheme> = {
+  blue: { start: 'hsl(221.2 83.2% 53.3%)', end: 'hsl(221.2 83.2% 43.3%)' },
   green: { start: 'hsl(142.1 76.2% 36.3%)', end: 'hsl(142.1 76.2% 26.3%)' },
   gold: { start: '#f59e0b', end: '#fcd34d' },
   black: { start: '#171717', end: '#525252' },
   purple: { start: '#7e22ce', end: '#a855f7' },
-  blue: { start: '#2563eb', end: '#60a5fa' },
   rose: { start: '#e11d48', end: '#fb7185' },
 };
 
@@ -56,7 +56,7 @@ function CreateCardDialog({
 }: {
   onCreateCard: (theme: CardTheme, cardholder: string, name: string) => void;
 }) {
-  const [selectedTheme, setSelectedTheme] = useState(availableThemes.green);
+  const [selectedTheme, setSelectedTheme] = useState(availableThemes.blue);
   const [cardholderName, setCardholderName] = useState(user.name);
   const [cardName, setCardName] = useState('');
   const [isOpen, setIsOpen] = useState(false);

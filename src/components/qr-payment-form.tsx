@@ -28,13 +28,14 @@ import { type QRPaymentFromImageOutput } from '@/ai/flows/qr-payment-from-image'
 import { Label } from './ui/label';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
-function CameraPayDialog({ onScan }: { onScan: (dataUri: string) => void }) {
+function CameraPayDialog({ onScan, onOpenChange }: { onScan: (dataUri: string) => void, onOpenChange: (open: boolean) => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
+    onOpenChange(isOpen);
     if (!isOpen) return;
 
     const getCameraPermission = async () => {
@@ -65,7 +66,7 @@ function CameraPayDialog({ onScan }: { onScan: (dataUri: string) => void }) {
         stream.getTracks().forEach((track) => track.stop());
       }
     };
-  }, [isOpen, toast]);
+  }, [isOpen, toast, onOpenChange]);
 
   const handleCaptureAndScan = () => {
     if (!videoRef.current) return;
@@ -126,7 +127,8 @@ function CameraPayDialog({ onScan }: { onScan: (dataUri: string) => void }) {
 export function QrPaymentForm({ onPayment }: { onPayment: (amount: number) => void }) {
   const [isLoading, setIsLoading] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState<QRPaymentFromImageOutput | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isCameraPayOpen, setIsCameraPayOpen] = useState(false);
   const [fileName, setFileName] = useState('');
   const { toast } = useToast();
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -146,7 +148,7 @@ export function QrPaymentForm({ onPayment }: { onPayment: (amount: number) => vo
 
     if (result.success) {
       setPaymentDetails(result.data);
-      setIsDialogOpen(true);
+      setIsConfirmOpen(true);
     } else {
       toast({
         title: 'Payment Scan Failed',
@@ -168,18 +170,17 @@ export function QrPaymentForm({ onPayment }: { onPayment: (amount: number) => vo
     setFileName('Camera Capture');
     setIsLoading(true);
     
-    // Convert data URI to file
     const response = await fetch(dataUri);
     const blob = await response.blob();
-    const file = new FormData();
-    file.append('qrCodeImageFile', blob, 'camera.png');
+    const formData = new FormData();
+    formData.append('qrCodeImageFile', blob, 'camera.png');
 
-    const result = await processQrCode(file);
+    const result = await processQrCode(formData);
     setIsLoading(false);
 
     if (result.success) {
       setPaymentDetails(result.data);
-      setIsDialogOpen(true);
+      setIsConfirmOpen(true);
     } else {
       toast({
         title: 'Payment Scan Failed',
@@ -193,7 +194,7 @@ export function QrPaymentForm({ onPayment }: { onPayment: (amount: number) => vo
   const handlePay = () => {
     if (!paymentDetails) return;
     onPayment(paymentDetails.paymentAmount);
-    setIsDialogOpen(false);
+    setIsConfirmOpen(false);
     toast({
       title: 'Payment Sent!',
       description: `Successfully sent $${paymentDetails?.paymentAmount.toFixed(2)} to ${paymentDetails?.recipientAddress}.`,
@@ -206,7 +207,7 @@ export function QrPaymentForm({ onPayment }: { onPayment: (amount: number) => vo
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Scan & Pay</CardTitle>
+          <CardTitle>Scan &amp; Pay</CardTitle>
           <CardDescription>
             Pay instantly by uploading or scanning a QR code.
           </CardDescription>
@@ -214,7 +215,7 @@ export function QrPaymentForm({ onPayment }: { onPayment: (amount: number) => vo
         <CardContent>
           <div
             className="flex justify-center items-center border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 cursor-pointer hover:bg-accent/50 transition-colors"
-            onClick={() => !isLoading && fileInputRef.current?.click()}
+            onClick={() => !isLoading && !isCameraPayOpen && fileInputRef.current?.click()}
           >
             <div className="text-center">
              {isLoading ? (
@@ -223,7 +224,7 @@ export function QrPaymentForm({ onPayment }: { onPayment: (amount: number) => vo
                 <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
               )}
               <p className="mt-2 text-sm text-muted-foreground">
-                {isLoading ? 'Scanning...' : fileName ? `Selected: ${fileName}` : 'Click to upload or drag & drop'}
+                {isLoading ? 'Scanning...' : fileName ? `Selected: ${fileName}` : 'Click to upload or drag &amp; drop'}
               </p>
               <p className="text-xs text-muted-foreground/70">
                 PNG, JPG, GIF up to 4MB
@@ -237,18 +238,22 @@ export function QrPaymentForm({ onPayment }: { onPayment: (amount: number) => vo
               onChange={handleFileChange}
               accept="image/png, image/jpeg, image/gif, image/webp"
               disabled={isLoading}
+              onClick={(e) => {
+                // Prevent click if camera dialog is open
+                if (isCameraPayOpen) e.preventDefault();
+              }}
             />
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-2">
-          <Button className="w-full" disabled={isLoading} onClick={() => fileInputRef.current?.click()}>
+          <Button className="w-full" disabled={isLoading || isCameraPayOpen} onClick={() => fileInputRef.current?.click()}>
             <QrCode className="mr-2 h-4 w-4" />
             Select Image
           </Button>
-          <CameraPayDialog onScan={handleCameraScan} />
+          <CameraPayDialog onScan={handleCameraScan} onOpenChange={setIsCameraPayOpen} />
         </CardFooter>
       </Card>
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirm Payment</DialogTitle>
@@ -276,7 +281,7 @@ export function QrPaymentForm({ onPayment }: { onPayment: (amount: number) => vo
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+            <Button variant="outline" onClick={() => setIsConfirmOpen(false)}>
               Cancel
             </Button>
             <Button onClick={handlePay}>
@@ -289,3 +294,5 @@ export function QrPaymentForm({ onPayment }: { onPayment: (amount: number) => vo
     </>
   );
 }
+
+    

@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import {
@@ -240,7 +239,7 @@ function SendMoneyDialog({ onSend }: { onSend: (amount: number, recipient: strin
 }
 
 
-function QuickActionButton({ icon: Icon, label, href }: { icon: React.ElementType, label: string, href?: string }) {
+function QuickActionButton({ icon: Icon, label, href, onClick }: { icon: React.ElementType, label: string, href?: string, onClick?: () => void }) {
     const content = (
         <div className="flex flex-col items-center justify-center gap-2 rounded-lg bg-secondary hover:bg-secondary/80 p-4 w-full transition-colors h-full">
             <div className="p-3 bg-background rounded-full shadow-sm">
@@ -254,7 +253,7 @@ function QuickActionButton({ icon: Icon, label, href }: { icon: React.ElementTyp
         return <Link href={href} className="w-full">{content}</Link>
     }
     
-    return <div className="w-full">{content}</div>
+    return <div className="w-full" onClick={onClick}>{content}</div>
 }
 
 export default function DashboardPage() {
@@ -263,6 +262,7 @@ export default function DashboardPage() {
   const [currentWallet, setCurrentWallet] = useState<Wallet>(wallet);
   const [isClient, setIsClient] = useState(false);
   const [isCardFlipped, setIsCardFlipped] = useState(false);
+  const [isQrPaymentOpen, setIsQrPaymentOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -401,7 +401,19 @@ export default function DashboardPage() {
              <SendMoneyDialog onSend={(amount, recipient) => handleTransaction(amount, 'send', recipient)} />
              <div className="w-full cursor-pointer"><QuickActionButton icon={UserPlus} label="Request" /></div>
              <AddMoneyDialog onAddMoney={(amount) => handleTransaction(amount, 'add')} />
-             <QuickActionButton icon={ScanLine} label="Scan & Pay" href="/dashboard/payments" />
+             <Dialog open={isQrPaymentOpen} onOpenChange={setIsQrPaymentOpen}>
+                <DialogTrigger asChild>
+                    <div className="w-full cursor-pointer">
+                        <QuickActionButton icon={ScanLine} label="Scan & Pay" />
+                    </div>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                     <QrPaymentForm onPayment={(amount) => {
+                        handleTransaction(amount, 'pay');
+                        setIsQrPaymentOpen(false);
+                     }} />
+                </DialogContent>
+             </Dialog>
           </div>
           
            {/* Navigation Links */}
@@ -489,11 +501,12 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <QrPaymentForm onPayment={(amount) => handleTransaction(amount, 'pay')} />
         </div>
       </div>
     </div>
   );
 }
+
+    
 
     

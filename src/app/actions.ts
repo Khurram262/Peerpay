@@ -72,3 +72,5 @@ export async function fetchSpendingInsights(transactions: Transaction[]): Promis
     };
   }
 }
+
+    

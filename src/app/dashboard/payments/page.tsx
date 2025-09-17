@@ -1,5 +1,4 @@
 
-
 'use client'
 
 
@@ -23,8 +22,10 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { setWallet, wallet as initialWallet, type Wallet } from '@/lib/data';
-import { Lightbulb, Droplets, Wifi, Smartphone, Flame, Youtube, Sprout } from 'lucide-react';
+import { Lightbulb, Droplets, Wifi, Smartphone, Flame, Youtube, Sprout, QrCode } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
+import { QrPaymentForm } from '@/components/qr-payment-form';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 function UtilityPayments({onPay}: {onPay: (amount: number) => void}) {
   const { toast } = useToast();
@@ -180,7 +181,7 @@ function SubscriptionPayments({onPay}: {onPay: (amount: number) => void}) {
   }
 
   useEffect(() => {
-    if(service) {
+    if(service && subscriptionDetails[service]) {
       setAmount(subscriptionDetails[service].defaultAmount);
     } else {
       setAmount('');
@@ -261,6 +262,7 @@ function SubscriptionPayments({onPay}: {onPay: (amount: number) => void}) {
 
 export default function PaymentsPage() {
   const [currentWallet, setCurrentWallet] = useState<Wallet>(initialWallet);
+  const [isQrPaymentOpen, setIsQrPaymentOpen] = useState(false);
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -283,7 +285,7 @@ export default function PaymentsPage() {
     };
   }, []);
 
-  const handlePayment = (amount: number, type: 'bill' | 'topup' | 'subscription') => {
+  const handlePayment = (amount: number, type: 'bill' | 'topup' | 'subscription' | 'qr') => {
     const pointsEarned = type === 'bill' ? Math.floor(amount / 10) : 0;
     const newWallet: Wallet = {
       ...currentWallet,
@@ -296,11 +298,26 @@ export default function PaymentsPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Payments</h1>
-        <p className="text-muted-foreground mt-1">
-          Manage your bills, mobile recharges, and subscriptions with ease.
-        </p>
+      <div className="flex flex-col sm:flex-row justify-between sm:items-start gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Payments</h1>
+          <p className="text-muted-foreground mt-1">
+            Manage your bills, mobile recharges, and subscriptions with ease.
+          </p>
+        </div>
+        <Dialog open={isQrPaymentOpen} onOpenChange={setIsQrPaymentOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <QrCode className="mr-2 h-4 w-4" /> Scan &amp; Pay
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <QrPaymentForm onPayment={(amount) => {
+              handlePayment(amount, 'qr');
+              setIsQrPaymentOpen(false);
+            }} />
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2">
@@ -315,3 +332,5 @@ export default function PaymentsPage() {
     </div>
   );
 }
+
+    

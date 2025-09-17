@@ -2,7 +2,7 @@
 
 PeerPay is a feature-rich, modern peer-to-peer (P2P) payment application built with Next.js and powered by Google's AI. It offers a seamless and secure way to manage your finances, send money to friends, pay bills, and earn rewards, all within a sleek and user-friendly interface.
 
-This project was built inside **Firebase Studio**, an AI-powered development environment for building and prototyping full-stack web applications.
+This project was built inside **Firebase Studio**, an AI-powered development environment for building and prototyping full-stack web applications. This application demonstrates how to build a modern, full-stack fintech application that combines a best-in-class web framework with powerful AI capabilities for features like QR code scanning and spending analysis.
 
 ## ✨ Key Features
 

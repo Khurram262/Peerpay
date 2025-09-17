@@ -21,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { setWallet, wallet as initialWallet, type Wallet } from '@/lib/data';
 import { Lightbulb, Droplets, Wifi, Smartphone, Flame, Youtube, Sprout } from 'lucide-react';
@@ -297,29 +296,22 @@ export default function PaymentsPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="text-center">
+      <div>
         <h1 className="text-3xl font-bold tracking-tight">Payments</h1>
-        <p className="text-muted-foreground">
-          Manage your bills and top-ups with ease.
+        <p className="text-muted-foreground mt-1">
+          Manage your bills, mobile recharges, and subscriptions with ease.
         </p>
       </div>
 
-      <Tabs defaultValue="utility" className="w-full max-w-2xl mx-auto">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="utility">Utility Bills</TabsTrigger>
-          <TabsTrigger value="mobile">Mobile Recharge</TabsTrigger>
-          <TabsTrigger value="subscriptions">Subscriptions</TabsTrigger>
-        </TabsList>
-        <TabsContent value="utility">
+      <div className="grid gap-8 lg:grid-cols-2">
+        <div className="space-y-8">
           <UtilityPayments onPay={(amount) => handlePayment(amount, 'bill')} />
-        </TabsContent>
-        <TabsContent value="mobile">
-          <MobileTopUp onTopUp={(amount) => handlePayment(amount, 'topup')} />
-        </TabsContent>
-        <TabsContent value="subscriptions">
           <SubscriptionPayments onPay={(amount) => handlePayment(amount, 'subscription')} />
-        </TabsContent>
-      </Tabs>
+        </div>
+        <div className="space-y-8">
+          <MobileTopUp onTopUp={(amount) => handlePayment(amount, 'topup')} />
+        </div>
+      </div>
     </div>
   );
 }

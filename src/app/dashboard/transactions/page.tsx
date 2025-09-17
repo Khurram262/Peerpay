@@ -70,18 +70,18 @@ export default function TransactionsPage() {
             </Button>
           </div>
         </div>
-        <div className="flex items-center gap-2 pt-4">
-            <div className="relative w-full sm:w-auto flex-grow">
+        <div className="flex flex-col sm:flex-row items-center gap-2 pt-4">
+            <div className="relative w-full flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search by name or email..."
-                className="pl-9"
+                className="pl-9 w-full"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <Select value={filterType} onValueChange={setFilterType}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Filter by type" />
               </SelectTrigger>
               <SelectContent>
@@ -98,8 +98,8 @@ export default function TransactionsPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Details</TableHead>
-              <TableHead className="hidden md:table-cell">Type</TableHead>
-              <TableHead className="hidden sm:table-cell cursor-pointer" onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}>
+              <TableHead className="hidden sm:table-cell">Type</TableHead>
+              <TableHead className="hidden md:table-cell cursor-pointer" onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}>
                 <div className="flex items-center gap-1">
                   Date <ArrowUpDown className="h-3 w-3" />
                 </div>
@@ -113,7 +113,7 @@ export default function TransactionsPage() {
                 <TableRow key={transaction.id}>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-9 w-9 border">
+                      <Avatar className="h-9 w-9 border hidden sm:flex">
                         <AvatarImage
                           src={transaction.avatar}
                           alt={transaction.name}
@@ -123,13 +123,13 @@ export default function TransactionsPage() {
                       </Avatar>
                       <div>
                         <p className="font-medium">{transaction.name}</p>
-                        <p className="text-sm text-muted-foreground hidden sm:block">
-                          {transaction.email}
+                        <p className="text-sm text-muted-foreground md:hidden">
+                           {format(parseISO(transaction.date), 'MMM d, yyyy')}
                         </p>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">
+                  <TableCell className="hidden sm:table-cell">
                     <Badge
                       variant={
                         transaction.type === 'sent'
@@ -143,7 +143,7 @@ export default function TransactionsPage() {
                       {transaction.type}
                     </Badge>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell">
+                  <TableCell className="hidden md:table-cell">
                     {format(parseISO(transaction.date), 'MMMM d, yyyy')}
                   </TableCell>
                   <TableCell

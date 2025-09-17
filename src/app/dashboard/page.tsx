@@ -166,13 +166,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-4">
       <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user.name.split(' ')[0]}!</h1>
       
-      <div className="grid gap-8 md:grid-cols-1">
+      <div className="grid gap-4 md:grid-cols-1">
         
         {/* Main Column */}
-        <div className="space-y-8">
+        <div className="space-y-4">
           
           {/* Combined Wallet and Card */}
           <Card className="overflow-hidden">

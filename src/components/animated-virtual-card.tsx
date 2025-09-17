@@ -83,7 +83,7 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
           <div className="relative flex justify-between items-start z-10">
             <div>
               <span className="text-lg sm:text-xl font-semibold tracking-wider">
-                {card.name}
+                {card.name || 'Virtual Card'}
               </span>
             </div>
 

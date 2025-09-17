@@ -5,11 +5,14 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { UserNav } from '@/components/user-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { Sidebar, SidebarProvider, SidebarTrigger, SidebarContent, SidebarInset, SidebarHeader } from '@/components/ui/sidebar';
+import { DashboardNav } from '@/components/dashboard-nav';
 
 const AppLogo = () => (
     <Link
         href="/dashboard"
         className="flex items-center gap-2 font-semibold"
+        data-sidebar="logo"
     >
         <svg
         role="img"
@@ -29,10 +32,20 @@ const AppLogo = () => (
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
-      <div className="flex min-h-screen w-full flex-col">
+      <SidebarProvider>
+        <Sidebar>
+            <SidebarHeader>
+                <AppLogo />
+            </SidebarHeader>
+            <SidebarContent>
+                <DashboardNav />
+            </SidebarContent>
+        </Sidebar>
+
+        <SidebarInset>
             <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur-sm px-4 md:px-6 z-50">
-                <div className="flex h-full items-center">
-                  <AppLogo />
+                <div className="flex items-center md:hidden">
+                  <SidebarTrigger />
                 </div>
                 <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4 justify-end">
                     <ThemeToggle />
@@ -42,6 +55,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
             {children}
             </main>
-      </div>
+        </SidebarInset>
+      </SidebarProvider>
   );
 }

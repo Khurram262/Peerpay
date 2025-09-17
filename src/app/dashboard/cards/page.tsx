@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { initialVirtualCards, type VirtualCard, type CardTheme, user, setUser } from '@/lib/data';
-import { CreditCard, PlusCircle, Trash, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { CreditCard, PlusCircle, Trash, CheckCircle } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -363,7 +363,7 @@ export default function CardsPage() {
             <div>
               <CardTitle>Virtual Cards</CardTitle>
               <CardDescription>
-                Manage your virtual cards for secure online spending.
+                Manage your virtual cards for secure online spending. Click on a card to flip it.
               </CardDescription>
             </div>
             <CreateCardDialog onCreateCard={handleCreateCard} />
@@ -372,7 +372,9 @@ export default function CardsPage() {
         <CardContent className="grid gap-6 md:grid-cols-2">
           {cards.map((card) => (
             <div key={card.id} className="space-y-4">
-              <AnimatedVirtualCard card={card} isVisible={visibleCardId === card.id} />
+              <div onClick={() => handleToggleVisibility(card.id)} className="cursor-pointer">
+                <AnimatedVirtualCard card={card} isVisible={visibleCardId === card.id} />
+              </div>
               <div className="flex flex-col sm:flex-row justify-between items-center gap-2 p-2 border rounded-lg">
                   <div className="flex items-center gap-2">
                   {card.isPrimary ? (
@@ -385,10 +387,6 @@ export default function CardsPage() {
                   )}
                   </div>
                   <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm" onClick={() => handleToggleVisibility(card.id)}>
-                        {visibleCardId === card.id ? <EyeOff /> : <Eye />}
-                        <span className="ml-2">{visibleCardId === card.id ? 'Hide' : 'View'} Details</span>
-                      </Button>
                       <div className="flex items-center space-x-2">
                         <Switch
                           id={`block-switch-${card.id}`}

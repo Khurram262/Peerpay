@@ -7,6 +7,21 @@ import type { VirtualCard } from '@/lib/data';
 import { Ban, Wifi } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+function PeerPayLogo() {
+    return (
+        <svg
+            role="img"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 text-white/90"
+            fill="currentColor"
+        >
+            <title>PeerPay</title>
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-2.88 18.514V5.486h2.16c1.359 0 2.463.315 3.312.945.85.63 1.274 1.516 1.274 2.658 0 1.05-.38 1.91-1.139 2.58-.759.67-1.78.981-3.063.981h-2.544v6.864H9.12zm2.16-8.244h2.467c.72 0 1.29-.183 1.71-.55.42-.367.63- .885.63-1.554 0-1.17-.635-1.755-1.908-1.755h-2.899v3.859z" />
+        </svg>
+    )
+}
+
 function MastercardLogo() {
   return (
     <svg
@@ -23,21 +38,6 @@ function MastercardLogo() {
       />
     </svg>
   );
-}
-
-function PeerPayLogo() {
-    return (
-        <svg
-            role="img"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-white/90"
-            fill="currentColor"
-        >
-            <title>PeerPay</title>
-            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-2.88 18.514V5.486h2.16c1.359 0 2.463.315 3.312.945.85.63 1.274 1.516 1.274 2.658 0 1.05-.38 1.91-1.139 2.58-.759.67-1.78.981-3.063.981h-2.544v6.864H9.12zm2.16-8.244h2.467c.72 0 1.29-.183 1.71-.55.42-.367.63- .885.63-1.554 0-1.17-.635-1.755-1.908-1.755h-2.899v3.859z" />
-        </svg>
-    )
 }
 
 const formatCardNumber = (cardNumber: string) => {
@@ -59,7 +59,7 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
   };
 
   return (
-    <div className="group w-full max-w-md mx-auto h-56 [perspective:1000px]">
+    <div className="group w-full max-w-[320px] mx-auto h-48 [perspective:1000px]">
       <div
         className={cn(
           'relative h-full w-full rounded-2xl [transform-style:preserve-3d] transition-transform duration-700',
@@ -82,20 +82,20 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
           )}
           <div className="relative flex justify-between items-start z-10">
             <div>
-              <span className="text-lg sm:text-xl font-semibold tracking-wider">
+              <span className="text-base font-semibold tracking-wider">
                 {card.name || 'Virtual Card'}
               </span>
             </div>
 
             <div className="flex items-center gap-2">
-              <Wifi className="h-5 w-5 sm:h-6 sm:w-6 text-white/80 rotate-90" />
+              <Wifi className="h-5 w-5 text-white/80 rotate-90" />
               <PeerPayLogo />
             </div>
           </div>
 
           <div className="relative text-left z-10 space-y-2">
             <div className="flex items-center gap-4">
-               <p className="font-mono text-lg sm:text-xl md:text-2xl tracking-wider whitespace-nowrap">
+               <p className="font-mono text-lg sm:text-xl tracking-wider whitespace-nowrap">
                 {isVisible ? formatCardNumber(card.fullNumber) : maskCardNumber(card.fullNumber)}
               </p>
             </div>
@@ -103,7 +103,7 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
             <div className="flex justify-between items-end">
               <div>
                 <p className="text-xs text-white/80 uppercase">Card Holder</p>
-                <p className="font-medium tracking-wide text-white text-sm sm:text-base">
+                <p className="font-medium tracking-wide text-white text-sm">
                   {card.cardholder}
                 </p>
               </div>
@@ -112,7 +112,7 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
                   <p className="text-xs text-white/80 uppercase text-right">
                     Expires
                   </p>
-                  <p className="font-medium tracking-wide text-white text-sm sm:text-base">
+                  <p className="font-medium tracking-wide text-white text-sm">
                      {card.expiry}
                   </p>
                 </div>
@@ -130,22 +130,22 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
           style={cardBackgroundStyle}
         >
           <div className="relative w-full h-full rounded-2xl p-0 flex flex-col justify-start">
-            <div className="w-full h-12 bg-black/80 mt-6"></div>
-            <div className="px-6 py-4 space-y-4">
+            <div className="w-full h-10 bg-black/80 mt-6"></div>
+            <div className="px-4 py-3 space-y-3">
               <div className="text-right">
                 <p className="text-xs text-white/80 uppercase">CVV</p>
-                <div className="h-9 bg-white rounded-md flex items-center justify-end pr-4">
-                  <p className="text-black font-mono tracking-widest">
+                <div className="h-8 bg-white rounded-md flex items-center justify-end pr-3">
+                  <p className="text-black font-mono tracking-widest text-sm">
                     {card.cvv}
                   </p>
                 </div>
               </div>
                <div className="flex justify-start items-center gap-2">
-                <div className="h-8 w-1/2 bg-white/60 rounded"></div>
-                <div className="h-8 w-1/4 bg-white/60 rounded"></div>
+                <div className="h-6 w-1/2 bg-white/60 rounded"></div>
+                <div className="h-6 w-1/4 bg-white/60 rounded"></div>
                </div>
             </div>
-            <div className="text-xs text-white/60 mt-auto px-6 pb-4 text-center">
+            <div className="text-[0.6rem] text-white/60 mt-auto px-4 pb-3 text-center">
               <p>
                 This card is issued by PeerPay Inc. Use of this card
                 constitutes acceptance of the terms and conditions.
@@ -157,3 +157,5 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
     </div>
   );
 }
+
+    

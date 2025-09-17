@@ -378,7 +378,8 @@ export default function DashboardPage() {
     };
   }, []);
 
-  const primaryCard = cards.find((vc) => vc.isPrimary);
+  const primaryCard = cards.find((vc) => vc.isPrimary) || (cards.length > 0 ? cards[0] : null);
+
 
   const handleTransaction = (amount: number, type: 'send' | 'request' | 'pay' | 'add') => {
     const newBalance = type === 'request' || type === 'add'
@@ -415,14 +416,19 @@ export default function DashboardPage() {
                 ${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
               </div>
             </div>
-             <div className="w-full md:w-auto">
+             <div className="w-full md:w-auto md:min-w-[320px]">
               {primaryCard ? (
                 <div onClick={() => setIsCardFlipped(f => !f)} className="cursor-pointer">
                   <AnimatedVirtualCard card={primaryCard} isVisible={isCardFlipped} />
                 </div>
               ) : (
-                <Card className="h-56 flex items-center justify-center w-full">
-                  <p className="text-muted-foreground">No primary card available.</p>
+                <Card className="h-56 flex items-center justify-center w-full bg-muted/50">
+                  <div className="text-center text-muted-foreground">
+                    <p>No primary card found.</p>
+                    <Link href="/dashboard/cards">
+                      <Button variant="link" className="mt-2">Create or set a primary card</Button>
+                    </Link>
+                  </div>
                 </Card>
               )}
             </div>
@@ -480,7 +486,7 @@ export default function DashboardPage() {
                         </div>
                       </TableCell>
                        <TableCell className="text-right">
-                          <p className={cn("font-semibold", transaction.type === 'sent' ? 'text-destructive' : 'text-primary')}>
+                          <p className={cn("font-semibold", transaction.type === 'sent' ? '' : 'text-primary')}>
                             {transaction.type === 'sent' ? '-' : '+'} ${transaction.amount.toFixed(2)}
                           </p>
                           <Badge variant="outline" className={cn(

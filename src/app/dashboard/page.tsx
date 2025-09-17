@@ -295,6 +295,7 @@ export default function DashboardPage() {
   const [currentWallet, setCurrentWallet] = useState<Wallet>(wallet);
   const isMobile = useIsMobile();
   const [isClient, setIsClient] = useState(false);
+  const [isCardFlipped, setIsCardFlipped] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -400,7 +401,9 @@ export default function DashboardPage() {
         </div>
         <div className="md:col-span-5 lg:col-span-4 row-start-1 md:row-start-auto">
           {primaryCard ? (
-             <AnimatedVirtualCard card={primaryCard} />
+            <div onClick={() => setIsCardFlipped(f => !f)} className="cursor-pointer">
+              <AnimatedVirtualCard card={primaryCard} isVisible={isCardFlipped} />
+            </div>
           ) : (
              <Card className="h-56 flex items-center justify-center">
                 <p className="text-muted-foreground">No primary card available.</p>
@@ -477,3 +480,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    

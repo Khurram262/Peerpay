@@ -238,6 +238,88 @@ function SendMoneyDialog({ onSend }: { onSend: (amount: number, recipient: strin
   );
 }
 
+function RequestMoneyDialog({ onRequest }: { onRequest: (amount: number, recipient: string) => void }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [recipient, setRecipient] = useState('');
+  const [amount, setAmount] = useState('');
+  const [note, setNote] = useState('');
+  const { toast } = useToast();
+
+  const handleRequest = () => {
+    const requestAmount = parseFloat(amount);
+    if (!recipient || !requestAmount || requestAmount <= 0) {
+      toast({
+        title: 'Invalid Details',
+        description: 'Please enter a valid recipient and amount.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    onRequest(requestAmount, recipient);
+    setIsOpen(false);
+    setRecipient('');
+    setAmount('');
+    setNote('');
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <div className="w-full cursor-pointer">
+          <QuickActionButton icon={UserPlus} label="Request" />
+        </div>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Request Money</DialogTitle>
+          <DialogDescription>
+            Enter the contact's details and the amount to request.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="request-recipient">From</Label>
+            <Input
+              id="request-recipient"
+              value={recipient}
+              onChange={(e) => setRecipient(e.target.value)}
+              placeholder="Email or Account No."
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="request-amount">Amount (USD)</Label>
+            <Input
+              id="request-amount"
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0.00"
+            />
+          </div>
+           <div className="grid gap-2">
+            <Label htmlFor="request-note">Note (Optional)</Label>
+            <Textarea
+              id="request-note"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="e.g., For our upcoming trip"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setIsOpen(false)}>
+            Cancel
+          </Button>
+          <Button onClick={handleRequest}>
+            <UserPlus className="mr-2 h-4 w-4" />
+            Send Request
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 
 function QuickActionButton({ icon: Icon, label, href, onClick }: { icon: React.ElementType, label: string, href?: string, onClick?: () => void }) {
     const content = (
@@ -338,7 +420,7 @@ export default function DashboardPage() {
             break;
         case 'request':
             title = 'Request Sent!';
-            description = `Your request for $${amount.toFixed(2)} has been sent.`;
+            description = `Your request for $${amount.toFixed(2)} to ${recipient} has been sent.`;
             toast({ title, description });
             return; // No balance change for requests
         default:
@@ -399,7 +481,7 @@ export default function DashboardPage() {
           {/* Quick Actions */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
              <SendMoneyDialog onSend={(amount, recipient) => handleTransaction(amount, 'send', recipient)} />
-             <div className="w-full cursor-pointer"><QuickActionButton icon={UserPlus} label="Request" /></div>
+             <RequestMoneyDialog onRequest={(amount, recipient) => handleTransaction(amount, 'request', recipient)} />
              <AddMoneyDialog onAddMoney={(amount) => handleTransaction(amount, 'add')} />
              <Dialog open={isQrPaymentOpen} onOpenChange={setIsQrPaymentOpen}>
                 <DialogTrigger asChild>
@@ -506,6 +588,8 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
 
     
 

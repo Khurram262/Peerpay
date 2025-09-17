@@ -8,6 +8,12 @@ import {
   ScanLine,
   ArrowRight,
   MoreHorizontal,
+  CreditCard,
+  Receipt,
+  Gift,
+  BrainCircuit,
+  History,
+  Settings
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -40,6 +46,15 @@ import type { VirtualCard, User } from '@/lib/data';
 import Link from 'next/link';
 import { user as initialUser } from '@/lib/data';
 import { format, parseISO } from 'date-fns';
+
+const navItems = [
+  { href: '/dashboard/transactions', icon: History, label: 'History' },
+  { href: '/dashboard/cards', icon: CreditCard, label: 'Cards' },
+  { href: '/dashboard/payments', icon: Receipt, label: 'Payments' },
+  { href: '/dashboard/rewards', icon: Gift, label: 'Rewards' },
+  { href: '/dashboard/insights', icon: BrainCircuit, label: 'Insights' },
+  { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
+];
 
 function QuickActionButton({ icon: Icon, label, href, onAction }: { icon: React.ElementType, label: string, href?: string, onAction?: () => void }) {
     const content = (
@@ -161,7 +176,7 @@ export default function DashboardPage() {
           
           {/* Combined Wallet and Card */}
           <Card className="overflow-hidden">
-            <div className="grid md:grid-cols-2">
+            <div className="grid md:grid-cols-2 items-center">
                 <div className="p-6">
                     <CardDescription>Available Balance</CardDescription>
                     <CardTitle className="text-4xl tracking-tight">${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</CardTitle>
@@ -193,6 +208,27 @@ export default function DashboardPage() {
              <QuickActionButton icon={PlusCircle} label="Add Money" onAction={() => handleTransaction(100, 'add')} />
              <QuickActionButton icon={ScanLine} label="Scan & Pay" href="/dashboard/payments" />
           </div>
+          
+           {/* Navigation Links */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Links</CardTitle>
+              <CardDescription>Navigate to other parts of the app.</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {navItems.map((item) => (
+                <Link href={item.href} key={item.href}>
+                   <div className="flex flex-col items-center justify-center gap-2 rounded-lg bg-secondary hover:bg-secondary/80 p-4 w-full transition-colors h-full">
+                      <div className="p-3 bg-background rounded-full shadow-sm">
+                          <item.icon className="h-6 w-6 text-primary" />
+                      </div>
+                      <span className="text-sm font-medium">{item.label}</span>
+                  </div>
+                </Link>
+              ))}
+            </CardContent>
+          </Card>
+
 
           {/* Recent Activity */}
           <Card>

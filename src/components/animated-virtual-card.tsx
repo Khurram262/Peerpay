@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useRef, useState } from 'react';
@@ -64,7 +63,7 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
   };
 
   const cardBaseStyle =
-    'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl transition-transform duration-300';
+    'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl transition-transform duration-300 [backface-visibility:hidden]';
   const cardFrontStyle = `flex flex-col justify-between`;
   
   const cardBackgroundStyle = {
@@ -90,7 +89,7 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
           className={cn(
             cardBaseStyle,
             cardFrontStyle,
-            '[backface-visibility:hidden] border border-white/10',
+            'border border-white/10',
           )}
           style={cardBackgroundStyle}
         >
@@ -108,16 +107,13 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
 
             <div className="flex items-center gap-2">
               <Wifi className="h-6 w-6 text-white/80 rotate-90" />
-              <div className="w-12 h-8 bg-black/10 rounded-md shadow-inner flex items-center justify-center">
-                <div className="w-8 h-5 bg-black/20 rounded-sm" />
-              </div>
             </div>
           </div>
 
           <div className="relative text-left z-10 space-y-2">
             <div className="flex items-center gap-4">
                <p className="font-mono text-xl tracking-wider whitespace-nowrap md:text-2xl">
-                {formatHiddenCardNumber(card.fullNumber)}
+                {isVisible ? formatCardNumber(card.fullNumber) : formatHiddenCardNumber(card.fullNumber)}
               </p>
             </div>
 
@@ -146,7 +142,7 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
         <div
           className={cn(
             cardBaseStyle,
-            '[transform:rotateY(180deg)] [backface-visibility:hidden] border border-white/10'
+            '[transform:rotateY(180deg)] border border-white/10'
           )}
           style={cardBackgroundStyle}
         >

@@ -176,15 +176,15 @@ export default function DashboardPage() {
           
           {/* Combined Wallet and Card */}
           <Card className="overflow-hidden">
-            <div className="grid md:grid-cols-2 items-center">
-                <div className="p-6">
+            <div className="grid md:grid-cols-2">
+                <div className="p-6 flex flex-col justify-center">
                     <CardDescription>Available Balance</CardDescription>
                     <CardTitle className="text-4xl tracking-tight">${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</CardTitle>
                     <p className="text-xs text-muted-foreground mt-2">+20.1% from last month</p>
                 </div>
-                 <div className="p-6 bg-muted/50 flex items-center justify-center">
+                 <div className="p-6 bg-muted/50 flex items-center justify-center min-h-[220px]">
                      {primaryCard ? (
-                        <div onClick={() => setIsCardFlipped(f => !f)} className="cursor-pointer">
+                        <div onClick={() => setIsCardFlipped(f => !f)} className="cursor-pointer w-full flex justify-center">
                             <AnimatedVirtualCard card={primaryCard} isVisible={isCardFlipped} />
                         </div>
                         ) : (

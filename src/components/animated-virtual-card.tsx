@@ -2,7 +2,7 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import type { VirtualCard } from '@/lib/data';
 import { Ban, Wifi } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -36,7 +36,7 @@ const formatHiddenCardNumber = (cardNumber: string) => {
 export function AnimatedVirtualCard({ card, isVisible = false }: { card: VirtualCard, isVisible?: boolean }) {
 
   const cardBaseStyle =
-    'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl transition-transform duration-300 [backface-visibility:hidden]';
+    'absolute inset-0 w-full h-full rounded-2xl p-6 text-white overflow-hidden shadow-2xl transition-transform duration-700 [backface-visibility:hidden]';
   const cardFrontStyle = `flex flex-col justify-between`;
   
   const cardBackgroundStyle = {
@@ -44,9 +44,7 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
   };
 
   return (
-    <div
-      className="group w-full max-w-md mx-auto h-56 [transform-style:preserve-3d] transition-transform duration-300 ease-out"
-    >
+    <div className="group w-full max-w-md mx-auto h-56 [transform-style:preserve-3d]">
       <div
         className={cn(
           'relative h-full w-full rounded-2xl [transform-style:preserve-3d] transition-transform duration-700',

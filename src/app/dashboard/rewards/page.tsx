@@ -16,13 +16,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { wallet as initialWallet, type Wallet, rewardHistory, type Reward, user } from '@/lib/data';
-import { Gift, Star, Copy, Share2 } from 'lucide-react';
+import { wallet as initialWallet, type Wallet, rewardHistory, type Reward, user, setWallet, vouchers, type Voucher } from '@/lib/data';
+import { Gift, Star, Copy, Share2, Ticket, CheckCircle } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { format, parseISO } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 export default function RewardsPage() {
   const [currentWallet, setCurrentWallet] = useState<Wallet>(initialWallet);
@@ -57,14 +58,41 @@ export default function RewardsPage() {
     });
   }
 
+  const handleRedeemVoucher = (voucher: Voucher) => {
+    if (currentWallet.rewardsPoints < voucher.points) {
+      toast({
+        title: 'Not Enough Points',
+        description: `You need ${voucher.points} points to redeem this voucher.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+    const newWallet = {
+      ...currentWallet,
+      rewardsPoints: currentWallet.rewardsPoints - voucher.points,
+    };
+    setWallet(newWallet);
+    setCurrentWallet(newWallet);
+    toast({
+        title: 'Voucher Redeemed!',
+        description: `You have successfully redeemed "${voucher.title}". Your code is ${voucher.code}.`,
+        duration: 9000,
+        action: (
+            <Button size="sm" onClick={() => navigator.clipboard.writeText(voucher.code)}>
+                <Copy className="mr-2 h-4 w-4" /> Copy Code
+            </Button>
+        )
+    })
+  };
+
   return (
     <div className="grid gap-8">
-      <Card className="bg-gradient-to-tr from-amber-500 to-yellow-400 text-white shadow-xl">
+      <Card className="bg-gradient-to-tr from-primary/80 to-primary text-primary-foreground shadow-xl">
         <CardHeader>
           <div className="flex items-center gap-4">
             <Gift className="h-10 w-10" />
             <div>
-              <CardDescription className="text-yellow-200">
+              <CardDescription className="text-primary-foreground/80">
                 Your Rewards Points
               </CardDescription>
               <CardTitle className="text-4xl font-bold">
@@ -74,11 +102,62 @@ export default function RewardsPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-yellow-100">
+          <p className="text-primary-foreground/90">
             Earn points on bill payments, referrals and more. Redeem them for exciting rewards!
           </p>
         </CardContent>
       </Card>
+      
+      <Card>
+        <CardHeader>
+            <CardTitle>Redeem Rewards</CardTitle>
+            <CardDescription>Use your points to get exclusive vouchers and discounts.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {vouchers.map(voucher => (
+                <Card key={voucher.id} className="flex flex-col">
+                    <CardHeader>
+                        <div className="flex items-start justify-between">
+                            <div>
+                                <CardTitle className="text-xl">{voucher.title}</CardTitle>
+                                <CardDescription>{voucher.description}</CardDescription>
+                            </div>
+                            <div className="p-2 bg-muted rounded-full">
+                                <Ticket className="h-6 w-6 text-primary" />
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="flex-grow">
+                        <p className="text-2xl font-bold text-primary flex items-center gap-2">
+                           <Star className="h-6 w-6 text-amber-400 fill-amber-400" /> {voucher.points.toLocaleString()} Points
+                        </p>
+                    </CardContent>
+                    <CardFooter>
+                         <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button className="w-full" disabled={currentWallet.rewardsPoints < voucher.points}>Redeem Now</Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Confirm Redemption</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Are you sure you want to redeem "{voucher.title}" for {voucher.points} points? This action cannot be undone.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleRedeemVoucher(voucher)}>
+                                        Confirm
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </CardFooter>
+                </Card>
+            ))}
+        </CardContent>
+      </Card>
+
 
       <Card>
         <CardHeader>

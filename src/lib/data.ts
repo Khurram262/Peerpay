@@ -58,6 +58,14 @@ export type LinkedAccount = {
   last4: string;
 }
 
+export type Voucher = {
+    id: string;
+    title: string;
+    description: string;
+    points: number;
+    code: string;
+}
+
 export let wallet: Wallet = {
   balance: 2342.78,
   currency: 'USD',
@@ -234,5 +242,29 @@ export const initialLinkedAccounts: LinkedAccount[] = [
         name: 'Visa Debit',
         provider: 'Global Trust Bank',
         last4: '5678',
+    }
+]
+
+export const vouchers: Voucher[] = [
+    {
+        id: 'voucher_1',
+        title: '$5 Cashback',
+        description: 'Get $5 cashback on your next transaction.',
+        points: 500,
+        code: 'CASHBACK5',
+    },
+    {
+        id: 'voucher_2',
+        title: '10% Off Bills',
+        description: 'Get 10% off your next utility bill payment.',
+        points: 800,
+        code: 'BILLS10',
+    },
+    {
+        id: 'voucher_3',
+        title: '$25 Amazon Gift Card',
+        description: 'Redeem for a $25 Amazon gift card.',
+        points: 2500,
+        code: 'AMZN25GC',
     }
 ]

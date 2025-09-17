@@ -8,7 +8,6 @@ import {
   ScanLine,
   ArrowRight,
   MoreHorizontal,
-  TrendingUp,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -35,24 +34,12 @@ import { QrPaymentForm } from '@/components/qr-payment-form';
 import { AnimatedVirtualCard } from '@/components/animated-virtual-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import React, { useState, useEffect } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { initialVirtualCards } from '@/lib/data';
 import type { VirtualCard, User } from '@/lib/data';
 import Link from 'next/link';
 import { user as initialUser } from '@/lib/data';
 import { format, parseISO } from 'date-fns';
-
 
 function QuickActionButton({ icon: Icon, label, href, onAction }: { icon: React.ElementType, label: string, href?: string, onAction?: () => void }) {
     const content = (
@@ -70,7 +57,6 @@ function QuickActionButton({ icon: Icon, label, href, onAction }: { icon: React.
     
     return <button onClick={onAction} className="w-full">{content}</button>
 }
-
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User>(initialUser);
@@ -122,7 +108,6 @@ export default function DashboardPage() {
 
   const primaryCard = cards.find((vc) => vc.isPrimary) || (cards.length > 0 ? cards[0] : null);
 
-
   const handleTransaction = (amount: number, type: 'send' | 'request' | 'pay' | 'add') => {
     const newBalance = type === 'add'
       ? currentWallet.balance + amount
@@ -169,20 +154,36 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-8">
       <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user.name.split(' ')[0]}!</h1>
       
-      <div className="grid gap-8 md:grid-cols-12">
+      <div className="grid gap-8 md:grid-cols-1">
         
         {/* Main Column */}
-        <div className="md:col-span-7 lg:col-span-8 space-y-8">
+        <div className="space-y-8">
           
-          {/* Wallet Card */}
-          <Card>
-            <CardHeader>
-                <CardDescription>Available Balance</CardDescription>
-                <CardTitle className="text-4xl tracking-tight">${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p className="text-xs text-muted-foreground">+20.1% from last month</p>
-            </CardContent>
+          {/* Combined Wallet and Card */}
+          <Card className="overflow-hidden">
+            <div className="grid md:grid-cols-2">
+                <div className="p-6">
+                    <CardDescription>Available Balance</CardDescription>
+                    <CardTitle className="text-4xl tracking-tight">${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</CardTitle>
+                    <p className="text-xs text-muted-foreground mt-2">+20.1% from last month</p>
+                </div>
+                 <div className="p-6 bg-muted/50 flex items-center justify-center">
+                     {primaryCard ? (
+                        <div onClick={() => setIsCardFlipped(f => !f)} className="cursor-pointer">
+                            <AnimatedVirtualCard card={primaryCard} isVisible={isCardFlipped} />
+                        </div>
+                        ) : (
+                        <Card className="h-48 flex items-center justify-center w-full bg-muted">
+                            <div className="text-center text-muted-foreground">
+                            <p>No primary card found.</p>
+                            <Link href="/dashboard/cards">
+                                <Button variant="link" className="mt-2">Create or set a primary card</Button>
+                            </Link>
+                            </div>
+                        </Card>
+                    )}
+                 </div>
+            </div>
           </Card>
 
           {/* Quick Actions */}
@@ -256,32 +257,7 @@ export default function DashboardPage() {
               </Table>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Side Column */}
-        <div className="md:col-span-5 lg:col-span-4 space-y-8">
-           <Card>
-                <CardHeader>
-                    <CardTitle>My Card</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    {primaryCard ? (
-                    <div onClick={() => setIsCardFlipped(f => !f)} className="cursor-pointer">
-                        <AnimatedVirtualCard card={primaryCard} isVisible={isCardFlipped} />
-                    </div>
-                    ) : (
-                    <Card className="h-56 flex items-center justify-center w-full bg-muted/50">
-                        <div className="text-center text-muted-foreground">
-                        <p>No primary card found.</p>
-                        <Link href="/dashboard/cards">
-                            <Button variant="link" className="mt-2">Create or set a primary card</Button>
-                        </Link>
-                        </div>
-                    </Card>
-                    )}
-                </CardContent>
-          </Card>
-          
           <QrPaymentForm onPayment={(amount) => handleTransaction(amount, 'pay')} />
         </div>
       </div>

@@ -3,7 +3,6 @@
 'use client';
 
 import {
-  ArrowUp,
   UserPlus,
   PlusCircle,
   ScanLine,
@@ -450,20 +449,22 @@ export default function DashboardPage() {
         
         <div className="space-y-4">
           
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden bg-gradient-to-br from-primary/10 to-primary/20 dark:from-primary/5 dark:to-primary/10">
             <div className="grid md:grid-cols-2">
-                <div className="p-6 flex flex-col justify-center">
-                    <CardDescription>Available Balance</CardDescription>
-                    <CardTitle className="text-4xl tracking-tight">${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</CardTitle>
-                    <p className="text-xs text-muted-foreground mt-2">+20.1% from last month</p>
+                <div className="p-6 flex flex-col justify-between">
+                    <div>
+                        <CardDescription>Available Balance</CardDescription>
+                        <CardTitle className="text-4xl tracking-tight">${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</CardTitle>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-4">+20.1% from last month</p>
                 </div>
-                 <div className="p-6 bg-muted/50 flex items-center justify-center min-h-[220px]">
+                 <div className="p-6 flex items-center justify-center min-h-[220px] bg-black/5 dark:bg-black/10">
                      {primaryCard ? (
                         <div onClick={() => setIsCardFlipped(f => !f)} className="cursor-pointer w-full flex justify-center">
                             <AnimatedVirtualCard card={primaryCard} isVisible={isCardFlipped} />
                         </div>
                         ) : (
-                        <Card className="h-48 flex items-center justify-center w-full max-w-[320px] bg-muted">
+                        <Card className="h-48 flex items-center justify-center w-full max-w-[320px] bg-muted/50">
                             <div className="text-center text-muted-foreground">
                             <p>No primary card found.</p>
                             <Link href="/dashboard/cards">

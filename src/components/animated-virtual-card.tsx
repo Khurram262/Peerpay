@@ -63,7 +63,8 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
       <div
         className={cn(
           'relative h-full w-full rounded-2xl [transform-style:preserve-3d] transition-transform duration-700',
-           isVisible ? '[transform:rotateY(180deg)]' : ''
+           isVisible ? '[transform:rotateY(180deg)]' : '',
+           "hover:[transform:rotateY(10deg)_scale(1.05)]"
         )}
       >
         {/* Front of the card */}
@@ -71,10 +72,11 @@ export function AnimatedVirtualCard({ card, isVisible = false }: { card: Virtual
           className={cn(
             cardBaseStyle,
             cardFrontStyle,
-            'border border-white/10',
+            'border border-white/10'
           )}
           style={cardBackgroundStyle}
         >
+            <div className="absolute -inset-2 -z-10 bg-gradient-to-br from-primary/50 to-transparent opacity-30 blur-2xl group-hover:opacity-60 transition-opacity"></div>
           {card.status === 'blocked' && (
             <div className="absolute inset-0 bg-black/60 rounded-xl flex items-center justify-center z-20">
               <Ban className="w-16 h-16 text-white/70" />

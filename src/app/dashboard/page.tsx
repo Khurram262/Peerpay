@@ -74,6 +74,7 @@ function AddMoneyDialog({ children, onAddMoney }: { children: React.ReactNode, o
   const { toast } = useToast();
 
   useEffect(() => {
+    if (!isOpen) return;
     const storedAccounts = localStorage.getItem('linkedAccounts');
     if (storedAccounts) {
       setAccounts(JSON.parse(storedAccounts));
@@ -450,32 +451,36 @@ export default function DashboardPage() {
         
         <div className="space-y-4">
           
-          <Card className="overflow-hidden bg-gradient-to-br from-primary/10 to-primary/20 dark:from-primary/5 dark:to-primary/10">
-            <div className="grid md:grid-cols-2">
-                <div className="p-6 flex flex-col justify-between">
-                    <div>
-                        <CardDescription>Available Balance</CardDescription>
-                        <CardTitle className="text-4xl tracking-tight">${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</CardTitle>
-                    </div>
+          <div className="relative isolate w-full overflow-hidden rounded-2xl border bg-background/50 p-6 backdrop-blur-xl md:grid md:grid-cols-2 md:gap-6">
+            <div className="absolute -z-10 h-full w-1/2 bg-gradient-to-br from-primary/20 to-transparent"></div>
+            <div className="flex flex-col justify-between">
+                <div>
+                    <p className="text-sm text-muted-foreground">Available Balance</p>
+                    <p className="text-4xl font-bold tracking-tight">${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
                 </div>
-                 <div className="p-6 flex items-center justify-center min-h-[220px] bg-black/5 dark:bg-black/10">
-                     {primaryCard ? (
-                        <div onClick={() => setIsCardFlipped(f => !f)} className="cursor-pointer w-full flex justify-center">
-                            <AnimatedVirtualCard card={primaryCard} isVisible={isCardFlipped} />
-                        </div>
-                        ) : (
-                        <Card className="h-48 flex items-center justify-center w-full max-w-[320px] bg-muted/50">
-                            <div className="text-center text-muted-foreground">
-                            <p>No primary card found.</p>
-                            <Link href="/dashboard/cards">
-                                <Button variant="link" className="mt-2">Create or set a primary card</Button>
-                            </Link>
-                            </div>
-                        </Card>
-                    )}
-                 </div>
+                <AddMoneyDialog onAddMoney={(amount) => handleTransaction(amount, 'add')}>
+                    <Button variant="outline" className="mt-4 w-full md:w-auto">
+                        <PlusCircle /> Top Up
+                    </Button>
+                </AddMoneyDialog>
             </div>
-          </Card>
+             <div className="mt-6 flex items-center justify-center md:mt-0">
+                 {primaryCard ? (
+                    <div onClick={() => setIsCardFlipped(f => !f)} className="cursor-pointer w-full flex justify-center">
+                        <AnimatedVirtualCard card={primaryCard} isVisible={isCardFlipped} />
+                    </div>
+                    ) : (
+                    <Card className="h-48 flex items-center justify-center w-full max-w-[320px] bg-muted/50">
+                        <div className="text-center text-muted-foreground">
+                        <p>No primary card found.</p>
+                        <Link href="/dashboard/cards">
+                            <Button variant="link" className="mt-2">Create or set a primary card</Button>
+                        </Link>
+                        </div>
+                    </Card>
+                )}
+             </div>
+          </div>
 
           <Card>
             <CardHeader>

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import type { ReactNode } from 'react';
@@ -8,7 +9,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 
 const AppLogo = () => (
     <Link
-        href="/dashboard"
+        href="/"
         className="flex items-center gap-2 font-semibold"
     >
         <svg

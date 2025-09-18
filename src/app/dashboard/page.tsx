@@ -312,11 +312,12 @@ function RequestMoneyDialog({ children, onRequest }: { children: React.ReactNode
 function ActionButton({ icon: Icon, label, href, onClick, className }: { icon: React.ElementType, label: string, href?: string, onClick?: () => void, className?: string }) {
     const content = (
          <div className={cn(
-            "group relative flex w-full flex-col items-center justify-center gap-2 rounded-xl bg-card text-card-foreground border-b-4 border-primary/20 p-4 text-center transition-transform active:translate-y-0.5 active:border-b-2",
+            "group relative flex w-full flex-col items-center justify-center gap-2 rounded-xl bg-card text-card-foreground p-4 text-center transition-all duration-200 ease-in-out hover:scale-105 active:scale-95",
+            "hover:bg-primary/5 dark:hover:bg-primary/10",
             className
           )}>
-            <div className="rounded-full bg-muted p-3 transition-colors group-hover:bg-primary/10">
-                <Icon className="h-7 w-7 text-primary transition-colors group-hover:text-primary" />
+            <div className="rounded-full bg-muted p-4 transition-colors group-hover:bg-primary/10">
+                <Icon className="h-6 w-6 text-primary" />
             </div>
             <span className="text-sm font-semibold text-foreground">{label}</span>
         </div>
@@ -325,7 +326,7 @@ function ActionButton({ icon: Icon, label, href, onClick, className }: { icon: R
     const Wrapper = onClick ? 'div' : Link;
     const props = onClick ? { onClick } : { href: href || '#' };
 
-    return <Wrapper {...props}>{content}</Wrapper>;
+    return <Wrapper {...props} className="cursor-pointer">{content}</Wrapper>;
 }
 
 const navItems = [

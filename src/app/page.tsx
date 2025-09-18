@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CreditCard, Zap, Bot, Menu } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import Image from 'next/image';
 
 const AppLogo = () => (
@@ -80,11 +80,14 @@ export default function Home() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right">
-                <div className="flex flex-col p-6 gap-6">
-                  <AppLogo />
+                <SheetHeader className="mb-6">
+                  <SheetTitle><AppLogo /></SheetTitle>
+                  <SheetDescription className="sr-only">Main navigation menu</SheetDescription>
+                </SheetHeader>
+                <div className="flex flex-col gap-6">
                   <Link href="#features" className="text-lg font-medium">Features</Link>
                   <Link href="/dashboard" className="text-lg font-medium">Dashboard</Link>
-                  <div className="flex flex-col gap-2 mt-auto">
+                  <div className="flex flex-col gap-2 mt-auto absolute bottom-6 w-[calc(100%-3rem)]">
                     <Link href="/login">
                       <Button variant="outline" className="w-full">Log In</Button>
                     </Link>

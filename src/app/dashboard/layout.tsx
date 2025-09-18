@@ -68,7 +68,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen w-full flex-col">
           <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur-sm px-4 md:px-6 z-50">
               <div className="flex items-center gap-2">
-                 <Link href="/dashboard"><AppLogo /></Link>
+                 <AppLogo />
               </div>
               <div className="hidden md:flex items-center gap-6 text-sm font-medium ml-10">
                 {navItems.map(item => (

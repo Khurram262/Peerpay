@@ -330,15 +330,6 @@ function ActionButton({ icon: Icon, label, href, onClick, className }: { icon: R
     return <Wrapper {...props} className="cursor-pointer">{content}</Wrapper>;
 }
 
-const navItems = [
-  { href: '/dashboard/cards', icon: CreditCard, label: 'Cards' },
-  { href: '/dashboard/payments', icon: Receipt, label: 'Payments' },
-  { href: '/dashboard/rewards', icon: Gift, label: 'Rewards' },
-  { href: '/dashboard/insights', icon: BrainCircuit, label: 'Insights' },
-  { href: '/dashboard/transactions', icon: History, label: 'History' },
-  { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
-]
-
 const transactionIcons = {
   sent: ArrowUpRight,
   received: ArrowDownLeft,
@@ -451,7 +442,9 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user.name.split(' ')[0]}!</h1>
+      <div className="block md:hidden">
+        <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user.name.split(' ')[0]}!</h1>
+      </div>
       
       <div className="grid gap-4 md:grid-cols-1">
         
@@ -464,7 +457,6 @@ export default function DashboardPage() {
                         <CardDescription>Available Balance</CardDescription>
                         <CardTitle className="text-4xl tracking-tight">${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</CardTitle>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-4">+20.1% from last month</p>
                 </div>
                  <div className="p-6 flex items-center justify-center min-h-[220px] bg-black/5 dark:bg-black/10">
                      {primaryCard ? (
@@ -511,9 +503,9 @@ export default function DashboardPage() {
                         }} />
                     </DialogContent>
                 </Dialog>
-                {navItems.map((item) => (
-                   <ActionButton key={item.href} icon={item.icon} label={item.label} href={item.href} />
-                ))}
+                <ActionButton icon={Receipt} label="Payments" href="/dashboard/payments" />
+                <ActionButton icon={Gift} label="Rewards" href="/dashboard/rewards" />
+                <ActionButton icon={BrainCircuit} label="Insights" href="/dashboard/insights" />
               </div>
             </CardContent>
           </Card>

@@ -9,48 +9,53 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, User } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 
-export default function LoginPage() {
+export default function SignupDetailsPage() {
   return (
     <Card className="mx-auto max-w-sm w-full">
-      <CardHeader>
-        <CardTitle className="text-2xl">Welcome Back</CardTitle>
+      <CardHeader className="space-y-4">
+        <div className="flex items-center gap-2">
+          <User />
+          <CardTitle className="text-2xl">Your Details</CardTitle>
+        </div>
         <CardDescription>
-          Enter your phone number and PIN to log in.
+          Please provide your legal name and email address.
         </CardDescription>
+        <Progress value={100} className="w-full" />
       </CardHeader>
       <CardContent>
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="phone">Phone Number</Label>
+            <Label htmlFor="full-name">Full Name</Label>
             <Input
-              id="phone"
-              type="tel"
-              placeholder="+1 (555) 123-4567"
+              id="full-name"
+              placeholder="e.g., Alex Doe"
               required
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="pin">PIN</Label>
-            <Input id="pin" type="password" placeholder="••••" required maxLength={4} />
+            <Label htmlFor="email">Email Address</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="you@example.com"
+              required
+            />
           </div>
           <Link href="/dashboard" className="w-full">
             <Button className="w-full">
-              Log In <ArrowRight className="ml-2" />
+              Complete Setup <ArrowRight className="ml-2" />
             </Button>
           </Link>
         </div>
         <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{' '}
-          <Link href="/signup" className="underline">
-            Sign up
-          </Link>
-        </div>
-         <div className="mt-2 text-center text-sm">
+          By continuing, you agree to our{' '}
           <Link href="#" className="underline">
-            Forgot PIN?
+            Terms of Service
           </Link>
+          .
         </div>
       </CardContent>
     </Card>

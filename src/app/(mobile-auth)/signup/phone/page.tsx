@@ -9,21 +9,26 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Smartphone } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 
-export default function LoginPage() {
+export default function SignupPhonePage() {
   return (
     <Card className="mx-auto max-w-sm w-full">
-      <CardHeader>
-        <CardTitle className="text-2xl">Welcome Back</CardTitle>
+      <CardHeader className="space-y-4">
+        <div className="flex items-center gap-2">
+            <Smartphone />
+            <CardTitle className="text-2xl">Get Started</CardTitle>
+        </div>
         <CardDescription>
-          Enter your phone number and PIN to log in.
+          Enter your mobile number to create your PeerPay account.
         </CardDescription>
+        <Progress value={0} className="w-full" />
       </CardHeader>
       <CardContent>
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="phone">Phone Number</Label>
+            <Label htmlFor="phone">Mobile Number</Label>
             <Input
               id="phone"
               type="tel"
@@ -31,25 +36,16 @@ export default function LoginPage() {
               required
             />
           </div>
-          <div className="grid gap-2">
-            <Label htmlFor="pin">PIN</Label>
-            <Input id="pin" type="password" placeholder="••••" required maxLength={4} />
-          </div>
-          <Link href="/dashboard" className="w-full">
+          <Link href="/signup/verify" className="w-full">
             <Button className="w-full">
-              Log In <ArrowRight className="ml-2" />
+              Continue <ArrowRight className="ml-2" />
             </Button>
           </Link>
         </div>
         <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{' '}
-          <Link href="/signup" className="underline">
-            Sign up
-          </Link>
-        </div>
-         <div className="mt-2 text-center text-sm">
-          <Link href="#" className="underline">
-            Forgot PIN?
+          Already have an account?{' '}
+          <Link href="/login" className="underline">
+            Log In
           </Link>
         </div>
       </CardContent>

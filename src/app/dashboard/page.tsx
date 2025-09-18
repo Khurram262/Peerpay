@@ -17,6 +17,8 @@ import {
   Gift,
   BrainCircuit,
   Settings,
+  ArrowUpRight,
+  ArrowDownLeft,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -337,6 +339,12 @@ const navItems = [
   { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
 ]
 
+const transactionIcons = {
+  sent: ArrowUpRight,
+  received: ArrowDownLeft,
+  'top-up': PlusCircle,
+};
+
 export default function DashboardPage() {
   const [user, setUser] = useState<User>(initialUser);
   const [cards, setCards] = useState<VirtualCard[]>([]);
@@ -523,56 +531,54 @@ export default function DashboardPage() {
               </Link>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableBody>
-                  {transactions.slice(0, 4).map((transaction) => (
-                    <TableRow key={transaction.id} className="cursor-pointer">
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-10 w-10 border">
-                            <AvatarImage
-                              src={transaction.avatar}
-                              alt={transaction.name}
-                              data-ai-hint="person face"
-                            />
-                            <AvatarFallback>
-                              {transaction.name[0]}
-                            </AvatarFallback>
-                          </Avatar>
+              <div className="space-y-1">
+                {transactions.slice(0, 4).map((transaction) => {
+                  const Icon = transactionIcons[transaction.type];
+                  const color =
+                    transaction.type === 'sent'
+                      ? 'text-red-500 dark:text-red-400'
+                      : transaction.type === 'received'
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-muted-foreground';
+
+                  return (
+                    <Card key={transaction.id} className="p-4 shadow-none border-0 border-b last:border-b-0 rounded-none">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className={cn('p-2 rounded-full bg-muted', color)}>
+                            <Icon className="h-5 w-5 bg-transparent text-current" />
+                          </div>
                           <div>
-                            <p className="font-medium">{transaction.name}</p>
-                            <p className="text-sm text-muted-foreground md:hidden">
-                              {format(parseISO(transaction.date), "MMM d, yyyy")}
+                            <p className="font-bold">{transaction.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {format(parseISO(transaction.date), 'MMM d, yyyy')}
                             </p>
                           </div>
                         </div>
-                      </TableCell>
-                       <TableCell className="text-right">
-                          <p className={`font-semibold ${transaction.type === 'sent' ? 'text-red-500 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
+                        <div className="text-right">
+                           <p className={cn('font-semibold', color)}>
                             {transaction.type === 'sent' ? '-' : '+'} ${transaction.amount.toFixed(2)}
                           </p>
-                       </TableCell>
-                       <TableCell className="pl-0 text-right">
-                         <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem>View Details</DropdownMenuItem>
-                                <DropdownMenuItem>Repeat Transaction</DropdownMenuItem>
-                                <DropdownMenuItem>Report an Issue</DropdownMenuItem>
-                            </DropdownMenuContent>
-                         </DropdownMenu>
-                       </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                           <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 relative -right-2">
+                                      <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                  <DropdownMenuItem>View Details</DropdownMenuItem>
+                                  <DropdownMenuItem>Repeat Transaction</DropdownMenuItem>
+                                  <DropdownMenuItem>Report an Issue</DropdownMenuItem>
+                              </DropdownMenuContent>
+                           </DropdownMenu>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
             </CardContent>
           </Card>
-
         </div>
       </div>
     </div>

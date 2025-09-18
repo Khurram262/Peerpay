@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Landmark, CreditCard, PlusCircle, ArrowDownToLine, ArrowUpFromLine, Fingerprint, Languages, DollarSign, Edit } from 'lucide-react';
+import { Landmark, CreditCard, PlusCircle, Fingerprint, Languages, DollarSign, Edit, Mail, MessageSquare, Bell, Smartphone, Monitor } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -24,13 +24,13 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { initialLinkedAccounts, type LinkedAccount, user, wallet as initialWallet, setWallet, type Wallet } from '@/lib/data';
+import { initialLinkedAccounts, type LinkedAccount, user as initialUser, setUser, wallet as initialWallet, setWallet, type Wallet } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import VerificationPage from '../verification/page';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { Progress } from '@/components/ui/progress';
+import { Textarea } from '@/components/ui/textarea';
 
 
 function LinkAccountDialog({
@@ -120,7 +120,21 @@ function LinkAccountDialog({
 
 export default function SettingsPage() {
   const [accounts, setAccounts] = useState<LinkedAccount[]>([]);
+  const [currentUser, setCurrentUser] = useState(initialUser);
   const [currentWallet, setCurrentWallet] = useState<Wallet>(initialWallet);
+  const [sendLimit, setSendLimit] = useState(5000);
+  const [withdrawLimit, setWithdrawLimit] = useState(2000);
+  const [isTwoFactorEnabled, setIsTwoFactorEnabled] = useState(false);
+  const [isBiometricEnabled, setIsBiometricEnabled] = useState(true);
+  
+  const [notifications, setNotifications] = useState({
+      transactions: { email: true, push: true, sms: false },
+      security: { email: true, push: true, sms: true },
+      promotions: { email: true, push: false, sms: false },
+  });
+  
+  const [supportMessage, setSupportMessage] = useState('');
+
   const { toast } = useToast();
   const userAvatar = PlaceHolderImages.find((img) => img.id === 'user-avatar-1');
 
@@ -128,16 +142,14 @@ export default function SettingsPage() {
   useEffect(() => {
     const handleStorageChange = () => {
       const storedAccounts = localStorage.getItem('linkedAccounts');
-      if (storedAccounts) {
-        setAccounts(JSON.parse(storedAccounts));
-      } else {
-        setAccounts(initialLinkedAccounts);
-      }
+      if (storedAccounts) setAccounts(JSON.parse(storedAccounts));
+      else setAccounts(initialLinkedAccounts);
 
       const storedWallet = localStorage.getItem('wallet');
-      if(storedWallet) {
-        setCurrentWallet(JSON.parse(storedWallet));
-      }
+      if(storedWallet) setCurrentWallet(JSON.parse(storedWallet));
+      
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) setCurrentUser(JSON.parse(storedUser));
     };
     
     window.addEventListener('storage', handleStorageChange);
@@ -150,6 +162,14 @@ export default function SettingsPage() {
     setAccounts(newAccounts);
     localStorage.setItem('linkedAccounts', JSON.stringify(newAccounts));
   };
+  
+  const handleSaveProfile = () => {
+      setUser(currentUser);
+      toast({
+          title: 'Profile Updated',
+          description: 'Your personal information has been saved.'
+      })
+  }
 
   const handleLinkAccount = (
     newAccountDetails: Omit<LinkedAccount, 'id' | 'type'>
@@ -175,6 +195,50 @@ export default function SettingsPage() {
     });
   };
 
+  const handleSecurityChange = (setter: React.Dispatch<React.SetStateAction<boolean>>, feature: string) => {
+    setter(prev => {
+        const newState = !prev;
+        toast({
+            title: 'Security Setting Updated',
+            description: `${feature} has been ${newState ? 'enabled' : 'disabled'}.`
+        })
+        return newState;
+    });
+  };
+
+  const handleLimitChange = (limitType: 'send' | 'withdraw', value: number[]) => {
+    const newLimit = value[0];
+    if (limitType === 'send') setSendLimit(newLimit);
+    if (limitType === 'withdraw') setWithdrawLimit(newLimit);
+  };
+  
+  const handleSaveLimits = () => {
+      toast({
+          title: 'Limits Updated',
+          description: 'Your transaction limits have been successfully updated.'
+      });
+  }
+  
+  const handleNotificationChange = (category: keyof typeof notifications, type: keyof typeof notifications.transactions, value: boolean) => {
+    setNotifications(prev => {
+        const newNotifications = { ...prev, [category]: { ...prev[category], [type]: value } };
+        toast({
+            title: 'Notification Settings Updated',
+            description: `You will now ${value ? 'receive' : 'no longer receive'} ${type} notifications for ${category}.`
+        });
+        return newNotifications;
+    });
+  };
+  
+  const handleSendSupportMessage = () => {
+      if (!supportMessage.trim()) {
+          toast({ title: 'Message is empty', description: 'Please write a message before sending.', variant: 'destructive'});
+          return;
+      }
+      toast({ title: 'Message Sent!', description: 'Our support team will get back to you shortly.'});
+      setSupportMessage('');
+  }
+
   return (
     <div className="grid gap-8">
        <Card>
@@ -188,9 +252,9 @@ export default function SettingsPage() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
             <Avatar className="h-24 w-24">
               {userAvatar && (
-                <AvatarImage src={userAvatar.imageUrl} alt={user.name} />
+                <AvatarImage src={userAvatar.imageUrl} alt={currentUser.name} />
               )}
-              <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+              <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <div className='space-y-2 flex-grow'>
               <Label>Profile Picture</Label>
@@ -203,15 +267,15 @@ export default function SettingsPage() {
           <div className="grid md:grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label htmlFor="name">Full Name</Label>
-              <Input id="name" defaultValue={user.name} />
+              <Input id="name" value={currentUser.name} onChange={e => setCurrentUser({...currentUser, name: e.target.value})} />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" defaultValue={user.email} />
+              <Input id="email" type="email" value={currentUser.email} onChange={e => setCurrentUser({...currentUser, email: e.target.value})} />
             </div>
           </div>
           <div className="flex justify-end">
-            <Button>Save Changes</Button>
+            <Button onClick={handleSaveProfile}>Save Changes</Button>
           </div>
         </CardContent>
       </Card>
@@ -233,7 +297,7 @@ export default function SettingsPage() {
                 Add an extra layer of security to your account.
               </p>
             </div>
-            <Switch id="2fa" />
+            <Switch id="2fa" checked={isTwoFactorEnabled} onCheckedChange={() => handleSecurityChange(setIsTwoFactorEnabled, 'Two-Factor Authentication')} />
           </div>
            <div className="flex items-center justify-between rounded-lg border p-4">
             <div>
@@ -244,7 +308,7 @@ export default function SettingsPage() {
                 Use your face or fingerprint to log in.
               </p>
             </div>
-            <Switch id="biometric" />
+            <Switch id="biometric" checked={isBiometricEnabled} onCheckedChange={() => handleSecurityChange(setIsBiometricEnabled, 'Biometric Login')} />
           </div>
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div>
@@ -266,24 +330,24 @@ export default function SettingsPage() {
         <CardContent className="space-y-6">
           <div>
             <Label className="text-base font-medium">Transaction Limits</Label>
-            <p className="text-sm text-muted-foreground mb-4">Your current limits per transaction.</p>
-            <div className="space-y-4">
-                <div className="space-y-1">
+            <p className="text-sm text-muted-foreground mb-4">Set your limits per transaction.</p>
+            <div className="space-y-6">
+                <div className="space-y-2">
                     <div className="flex justify-between items-center text-sm">
                         <span>Send Money</span>
-                        <span className="font-semibold">$5,000.00</span>
+                        <span className="font-semibold">${sendLimit.toLocaleString()}</span>
                     </div>
-                    <Progress value={50} />
+                    <Slider value={[sendLimit]} onValueChange={(v) => handleLimitChange('send', v)} max={10000} step={100} />
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-2">
                      <div className="flex justify-between items-center text-sm">
                         <span>Withdraw</span>
-                        <span className="font-semibold">$2,000.00</span>
+                        <span className="font-semibold">${withdrawLimit.toLocaleString()}</span>
                     </div>
-                    <Progress value={20} />
+                    <Slider value={[withdrawLimit]} onValueChange={(v) => handleLimitChange('withdraw', v)} max={5000} step={50} />
                 </div>
                  <div className="flex justify-end">
-                    <Button variant="outline" size="sm"><Edit className="mr-2 h-4 w-4" /> Request Limit Increase</Button>
+                    <Button onClick={handleSaveLimits}>Save Limits</Button>
                 </div>
             </div>
           </div>
@@ -337,6 +401,34 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
       
+       <Card>
+        <CardHeader>
+          <CardTitle>Notifications</CardTitle>
+          <CardDescription>Choose how you want to be notified.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+            {(Object.keys(notifications) as Array<keyof typeof notifications>).map(category => (
+                <div key={category} className="space-y-4 rounded-lg border p-4">
+                    <h4 className="font-semibold capitalize">{category}</h4>
+                    <div className="grid sm:grid-cols-3 gap-4">
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor={`email-${category}`} className="flex items-center gap-2"><Mail/> Email</Label>
+                            <Switch id={`email-${category}`} checked={notifications[category].email} onCheckedChange={(c) => handleNotificationChange(category, 'email', c)} />
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor={`push-${category}`} className="flex items-center gap-2"><Monitor/> Push</Label>
+                            <Switch id={`push-${category}`} checked={notifications[category].push} onCheckedChange={(c) => handleNotificationChange(category, 'push', c)} />
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor={`sms-${category}`} className="flex items-center gap-2"><Smartphone/> SMS</Label>
+                            <Switch id={`sms-${category}`} checked={notifications[category].sms} onCheckedChange={(c) => handleNotificationChange(category, 'sms', c)} />
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>Preferences</CardTitle>
@@ -385,9 +477,30 @@ export default function SettingsPage() {
           </div>
         </CardContent>
       </Card>
+
+       <Card>
+        <CardHeader>
+          <CardTitle>Contact Support</CardTitle>
+          <CardDescription>Have a question or need help? Send us a message.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-2">
+            <Label htmlFor="support-message">Your Message</Label>
+            <Textarea
+              id="support-message"
+              placeholder="Describe your issue or question here..."
+              rows={5}
+              value={supportMessage}
+              onChange={(e) => setSupportMessage(e.target.value)}
+            />
+          </div>
+          <Button onClick={handleSendSupportMessage}>
+            <MessageSquare className="mr-2 h-4 w-4" /> Send Message
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }
-
 
     

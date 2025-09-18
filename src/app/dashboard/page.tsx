@@ -149,7 +149,7 @@ function AddMoneyDialog({ children, onAddMoney }: { children: React.ReactNode, o
 }
 
 
-function SendMoneyDialog({ children, onSend }: { children: React.ReactNode, onSend: (amount: number, recipient: string) => void }) {
+function SendMoneyDialog({ children, onSend }: { children: React.ReactNode, onSend: (amount: number, recipient: string, note: string) => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
@@ -166,7 +166,7 @@ function SendMoneyDialog({ children, onSend }: { children: React.ReactNode, onSe
       });
       return;
     }
-    onSend(sendAmount, recipient);
+    onSend(sendAmount, recipient, note);
     setIsOpen(false);
     setRecipient('');
     setAmount('');
@@ -192,7 +192,7 @@ function SendMoneyDialog({ children, onSend }: { children: React.ReactNode, onSe
               id="recipient"
               value={recipient}
               onChange={(e) => setRecipient(e.target.value)}
-              placeholder="Email or Account No."
+              placeholder="Email, phone, or bank account"
             />
           </div>
           <div className="grid gap-2">
@@ -229,7 +229,7 @@ function SendMoneyDialog({ children, onSend }: { children: React.ReactNode, onSe
   );
 }
 
-function RequestMoneyDialog({ children, onRequest }: { children: React.ReactNode, onRequest: (amount: number, recipient: string) => void }) {
+function RequestMoneyDialog({ children, onRequest }: { children: React.ReactNode, onRequest: (amount: number, recipient: string, note: string) => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
@@ -246,7 +246,7 @@ function RequestMoneyDialog({ children, onRequest }: { children: React.ReactNode
       });
       return;
     }
-    onRequest(requestAmount, recipient);
+    onRequest(requestAmount, recipient, note);
     setIsOpen(false);
     setRecipient('');
     setAmount('');
@@ -272,7 +272,7 @@ function RequestMoneyDialog({ children, onRequest }: { children: React.ReactNode
               id="request-recipient"
               value={recipient}
               onChange={(e) => setRecipient(e.target.value)}
-              placeholder="Email or Account No."
+              placeholder="Email, phone, or account no."
             />
           </div>
           <div className="grid gap-2">
@@ -387,7 +387,7 @@ export default function DashboardPage() {
 
   const primaryCard = cards.find((vc) => vc.isPrimary) || (cards.length > 0 ? cards[0] : null);
 
-  const handleTransaction = (amount: number, type: 'send' | 'request' | 'pay' | 'add', recipient?: string) => {
+  const handleTransaction = (amount: number, type: 'send' | 'request' | 'pay' | 'add', recipient?: string, note?: string) => {
     let newBalance: number;
     let title = '';
     let description = '';
@@ -405,7 +405,7 @@ export default function DashboardPage() {
             }
             newBalance = currentWallet.balance - amount;
             title = 'Money Sent!';
-            description = `Successfully sent $${amount.toFixed(2)} to ${recipient}.`;
+            description = `Successfully sent $${amount.toFixed(2)} to ${recipient}. ${note ? `Note: ${note}`: ''}`;
             break;
         case 'pay':
              if (currentWallet.balance < amount) {
@@ -418,7 +418,7 @@ export default function DashboardPage() {
             break;
         case 'request':
             title = 'Request Sent!';
-            description = `Your request for $${amount.toFixed(2)} to ${recipient} has been sent.`;
+            description = `Your request for $${amount.toFixed(2)} to ${recipient} has been sent. ${note ? `Note: ${note}`: ''}`;
             toast({ title, description });
             return; // No balance change for requests
         default:
@@ -483,10 +483,10 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                 <SendMoneyDialog onSend={(amount, recipient) => handleTransaction(amount, 'send', recipient)}>
+                 <SendMoneyDialog onSend={(amount, recipient, note) => handleTransaction(amount, 'send', recipient, note)}>
                     <ActionButton icon={Send} label="Send" />
                 </SendMoneyDialog>
-                <RequestMoneyDialog onRequest={(amount, recipient) => handleTransaction(amount, 'request', recipient)}>
+                <RequestMoneyDialog onRequest={(amount, recipient, note) => handleTransaction(amount, 'request', recipient, note)}>
                     <ActionButton icon={UserPlus} label="Request" />
                 </RequestMoneyDialog>
                  <AddMoneyDialog onAddMoney={(amount) => handleTransaction(amount, 'add')}>

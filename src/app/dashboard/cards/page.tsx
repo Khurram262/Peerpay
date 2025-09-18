@@ -487,7 +487,7 @@ export default function CardsPage() {
                  <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Wifi className="h-5 w-5 text-muted-foreground" />
-                    <Label htmlFor={`contactless-switch-${card.id}`} className="font-medium">Contactless Payments</Label>
+                    <Label htmlFor={`contactless-switch-${card.id}`} className="font-medium">Contactless / Tap & Pay</Label>
                   </div>
                   <Switch
                     id={`contactless-switch-${card.id}`}

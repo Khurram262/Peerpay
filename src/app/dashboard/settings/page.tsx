@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Landmark, CreditCard, PlusCircle, ArrowDownToLine, ArrowUpFromLine, ShieldCheck } from 'lucide-react';
+import { Landmark, CreditCard, PlusCircle, ArrowDownToLine, ArrowUpFromLine, Fingerprint, Languages, DollarSign, Edit } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import {
   Dialog,
@@ -28,6 +28,8 @@ import { initialLinkedAccounts, type LinkedAccount, user, wallet as initialWalle
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import VerificationPage from '../verification/page';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
 
 
 function LinkAccountDialog({
@@ -115,95 +117,6 @@ function LinkAccountDialog({
   );
 }
 
-function AddWithdrawMoneyDialog({
-  account,
-  mode,
-  onTransaction,
-}: {
-  account: LinkedAccount;
-  mode: 'add' | 'withdraw';
-  onTransaction: (amount: number, mode: 'add' | 'withdraw') => void;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [amount, setAmount] = useState('');
-  const { toast } = useToast();
-
-  const title = mode === 'add' ? 'Add Money to PeerPay' : 'Withdraw Money from PeerPay';
-  const description = mode === 'add'
-    ? `Transfer funds from your ${account.name} account.`
-    : `Transfer funds to your ${account.name} account.`;
-  
-  const handleConfirm = () => {
-    const transactionAmount = parseFloat(amount);
-    if (isNaN(transactionAmount) || transactionAmount <= 0) {
-      toast({
-        title: 'Invalid Amount',
-        description: 'Please enter a valid positive amount.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    onTransaction(transactionAmount, mode);
-    setIsOpen(false);
-    setAmount('');
-  };
-
-  return (
-     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          {mode === 'add' ? (
-            <ArrowDownToLine className="mr-2 h-4 w-4" />
-          ) : (
-            <ArrowUpFromLine className="mr-2 h-4 w-4" />
-          )}
-          {mode === 'add' ? 'Add Money' : 'Withdraw'}
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-           <div className="grid gap-2">
-            <Label>Account</Label>
-            <div className="flex items-center gap-4 border p-3 rounded-lg bg-muted">
-               {account.type === 'bank' ? (
-                  <Landmark className="h-6 w-6 text-muted-foreground" />
-                ) : (
-                  <CreditCard className="h-6 w-6 text-muted-foreground" />
-                )}
-                <div>
-                  <p className="font-semibold">{account.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {account.provider} •••• {account.last4}
-                  </p>
-                </div>
-            </div>
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="amount">Amount (USD)</Label>
-            <Input
-              id="amount"
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0.00"
-            />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setIsOpen(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleConfirm}>Confirm</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
 export default function SettingsPage() {
   const [accounts, setAccounts] = useState<LinkedAccount[]>([]);
   const [currentWallet, setCurrentWallet] = useState<Wallet>(initialWallet);
@@ -261,39 +174,13 @@ export default function SettingsPage() {
     });
   };
 
-  const handleFundTransaction = (amount: number, mode: 'add' | 'withdraw') => {
-    const newBalance = mode === 'add' 
-      ? currentWallet.balance + amount
-      : currentWallet.balance - amount;
-
-    if (mode === 'withdraw' && newBalance < 0) {
-      toast({
-        title: 'Insufficient Funds',
-        description: 'You do not have enough balance to withdraw this amount.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    
-    const newWallet = { ...currentWallet, balance: newBalance };
-    setWallet(newWallet);
-    setCurrentWallet(newWallet);
-
-    toast({
-      title: `Transaction Successful`,
-      description: mode === 'add'
-        ? `$${amount.toFixed(2)} has been added to your PeerPay wallet.`
-        : `$${amount.toFixed(2)} has been withdrawn to your account.`
-    });
-  };
-
   return (
     <div className="grid gap-8">
        <Card>
         <CardHeader>
           <CardTitle>Profile</CardTitle>
           <CardDescription>
-            Manage your personal information and account verification.
+            Manage your personal information.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-6">
@@ -338,7 +225,7 @@ export default function SettingsPage() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div>
-              <Label htmlFor="2fa" className="text-base">
+              <Label htmlFor="2fa" className="text-base font-medium flex items-center gap-2">
                 Two-Factor Authentication
               </Label>
               <p className="text-sm text-muted-foreground">
@@ -347,12 +234,22 @@ export default function SettingsPage() {
             </div>
             <Switch id="2fa" />
           </div>
+           <div className="flex items-center justify-between rounded-lg border p-4">
+            <div>
+              <Label htmlFor="biometric" className="text-base font-medium flex items-center gap-2">
+                <Fingerprint /> Biometric Login
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Use your face or fingerprint to log in.
+              </p>
+            </div>
+            <Switch id="biometric" />
+          </div>
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div>
-              <Label className="text-base">Change Password</Label>
+              <Label className="text-base font-medium">Change Password</Label>
               <p className="text-sm text-muted-foreground">
-                It&apos;s a good idea to use a strong password that you&apos;re not
-                using elsewhere.
+                It&apos;s a good idea to use a strong password.
               </p>
             </div>
             <Button variant="outline">Change</Button>
@@ -362,58 +259,132 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
-          <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
-            <div>
-              <CardTitle>Linked Accounts</CardTitle>
-              <CardDescription>
-                Manage your connected bank accounts and cards for funding and
-                withdrawals.
-              </CardDescription>
-            </div>
-            <LinkAccountDialog onLinkAccount={handleLinkAccount} />
-          </div>
+          <CardTitle>Payment Settings</CardTitle>
+          <CardDescription>Manage transaction limits and funding sources.</CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-4">
-          {accounts.map((account) => (
-            <div
-              key={account.id}
-              className="border p-4 rounded-lg flex flex-col sm:flex-row justify-between sm:items-center gap-4"
-            >
-              <div className="flex items-center gap-4">
-                {account.type === 'bank' ? (
-                  <Landmark className="h-8 w-8 text-muted-foreground" />
-                ) : (
-                  <CreditCard className="h-8 w-8 text-muted-foreground" />
-                )}
-                <div>
-                  <p className="font-semibold">{account.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {account.provider} •••• {account.last4}
-                  </p>
+        <CardContent className="space-y-6">
+          <div>
+            <Label className="text-base font-medium">Transaction Limits</Label>
+            <p className="text-sm text-muted-foreground mb-4">Your current limits per transaction.</p>
+            <div className="space-y-4">
+                <div className="space-y-1">
+                    <div className="flex justify-between items-center text-sm">
+                        <span>Send Money</span>
+                        <span className="font-semibold">$5,000.00</span>
+                    </div>
+                    <Progress value={50} />
                 </div>
-              </div>
-              <div className='flex items-center gap-2'>
-                 <AddWithdrawMoneyDialog account={account} mode="add" onTransaction={handleFundTransaction} />
-                 <AddWithdrawMoneyDialog account={account} mode="withdraw" onTransaction={handleFundTransaction} />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleRemoveAccount(account.id)}
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                <div className="space-y-1">
+                     <div className="flex justify-between items-center text-sm">
+                        <span>Withdraw</span>
+                        <span className="font-semibold">$2,000.00</span>
+                    </div>
+                    <Progress value={20} />
+                </div>
+                 <div className="flex justify-end">
+                    <Button variant="outline" size="sm"><Edit className="mr-2 h-4 w-4" /> Request Limit Increase</Button>
+                </div>
+            </div>
+          </div>
+          <div className="space-y-4">
+             <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                <div>
+                    <Label className="text-base font-medium">Linked Accounts</Label>
+                    <p className="text-sm text-muted-foreground">Manage your funding sources.</p>
+                </div>
+                <LinkAccountDialog onLinkAccount={handleLinkAccount} />
+            </div>
+            <div className="grid gap-4">
+              {accounts.map((account) => (
+                <div
+                  key={account.id}
+                  className="border p-4 rounded-lg flex flex-col sm:flex-row justify-between sm:items-center gap-4"
                 >
-                  Remove
-                </Button>
-              </div>
+                  <div className="flex items-center gap-4">
+                    {account.type === 'bank' ? (
+                      <Landmark className="h-8 w-8 text-muted-foreground" />
+                    ) : (
+                      <CreditCard className="h-8 w-8 text-muted-foreground" />
+                    )}
+                    <div>
+                      <p className="font-semibold">{account.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {account.provider} •••• {account.last4}
+                      </p>
+                    </div>
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveAccount(account.id)}
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              {accounts.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
+                    <p>You have no linked accounts.</p>
+                    <p className="text-sm">Link one to get started!</p>
+                </div>
+              )}
             </div>
-          ))}
-          {accounts.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground">
-                <p>You have no linked accounts.</p>
-                <p className="text-sm">Link one to get started!</p>
+          </div>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Preferences</CardTitle>
+          <CardDescription>Customize your app experience.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between rounded-lg border p-4">
+            <div>
+                <Label htmlFor="language" className="text-base font-medium flex items-center gap-2">
+                    <Languages /> Language
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                    Choose your preferred language.
+                </p>
             </div>
-        )}
+            <Select defaultValue="en-us">
+                <SelectTrigger id="language" className="w-[180px]">
+                    <SelectValue placeholder="Language" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="en-us">English (US)</SelectItem>
+                    <SelectItem value="es">Español</SelectItem>
+                    <SelectItem value="fr">Français</SelectItem>
+                </SelectContent>
+            </Select>
+          </div>
+           <div className="flex items-center justify-between rounded-lg border p-4">
+            <div>
+                <Label htmlFor="currency" className="text-base font-medium flex items-center gap-2">
+                    <DollarSign /> Currency
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                    Choose your display currency.
+                </p>
+            </div>
+            <Select defaultValue="usd">
+                <SelectTrigger id="currency" className="w-[180px]">
+                    <SelectValue placeholder="Currency" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="usd">USD - US Dollar</SelectItem>
+                    <SelectItem value="eur">EUR - Euro</SelectItem>
+                    <SelectItem value="gbp">GBP - British Pound</SelectItem>
+                </SelectContent>
+            </Select>
+          </div>
         </CardContent>
       </Card>
     </div>
   );
 }
+

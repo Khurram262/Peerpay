@@ -62,9 +62,10 @@ import { format, parseISO } from 'date-fns';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 
 
-function AddMoneyDialog({ onAddMoney }: { onAddMoney: (amount: number) => void }) {
+function AddMoneyDialog({ children, onAddMoney }: { children: React.ReactNode, onAddMoney: (amount: number) => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const [amount, setAmount] = useState('');
   const [selectedAccount, setSelectedAccount] = useState<LinkedAccount | null>(null);
@@ -99,9 +100,7 @@ function AddMoneyDialog({ onAddMoney }: { onAddMoney: (amount: number) => void }
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full justify-start text-base h-12">
-            <PlusCircle className="mr-4 text-primary" /> Add Money
-        </Button>
+        {children}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -149,7 +148,7 @@ function AddMoneyDialog({ onAddMoney }: { onAddMoney: (amount: number) => void }
 }
 
 
-function SendMoneyDialog({ onSend }: { onSend: (amount: number, recipient: string) => void }) {
+function SendMoneyDialog({ children, onSend }: { children: React.ReactNode, onSend: (amount: number, recipient: string) => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
@@ -176,9 +175,7 @@ function SendMoneyDialog({ onSend }: { onSend: (amount: number, recipient: strin
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="w-full text-base h-12">
-            <ArrowUp className="mr-4" /> Send
-        </Button>
+        {children}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -231,7 +228,7 @@ function SendMoneyDialog({ onSend }: { onSend: (amount: number, recipient: strin
   );
 }
 
-function RequestMoneyDialog({ onRequest }: { onRequest: (amount: number, recipient: string) => void }) {
+function RequestMoneyDialog({ children, onRequest }: { children: React.ReactNode, onRequest: (amount: number, recipient: string) => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
@@ -258,9 +255,7 @@ function RequestMoneyDialog({ onRequest }: { onRequest: (amount: number, recipie
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="secondary" className="w-full text-base h-12">
-            <UserPlus className="mr-4" /> Request
-        </Button>
+        {children}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -314,21 +309,23 @@ function RequestMoneyDialog({ onRequest }: { onRequest: (amount: number, recipie
 }
 
 
-function QuickActionButton({ icon: Icon, label, href, onClick }: { icon: React.ElementType, label: string, href?: string, onClick?: () => void }) {
+function ActionButton({ icon: Icon, label, href, onClick, className }: { icon: React.ElementType, label: string, href?: string, onClick?: () => void, className?: string }) {
     const content = (
-        <div className="flex flex-col items-center justify-center gap-2 rounded-lg bg-secondary hover:bg-secondary/80 p-4 w-full transition-colors h-full">
-            <div className="p-3 bg-background rounded-full shadow-sm">
-                <Icon className="h-6 w-6 text-primary" />
+         <div className={cn(
+            "group relative flex w-full flex-col items-center justify-center gap-2 rounded-xl bg-card text-card-foreground border-b-4 border-primary/20 p-4 text-center transition-transform active:translate-y-0.5 active:border-b-2",
+            className
+          )}>
+            <div className="rounded-full bg-muted p-3 transition-colors group-hover:bg-primary/10">
+                <Icon className="h-7 w-7 text-primary transition-colors group-hover:text-primary" />
             </div>
-            <span className="text-sm font-medium">{label}</span>
+            <span className="text-sm font-semibold text-foreground">{label}</span>
         </div>
-    )
+    );
 
-    if (href) {
-        return <Link href={href} className="w-full">{content}</Link>
-    }
-    
-    return <div className="w-full" onClick={onClick}>{content}</div>
+    const Wrapper = onClick ? 'div' : Link;
+    const props = onClick ? { onClick } : { href: href || '#' };
+
+    return <Wrapper {...props}>{content}</Wrapper>;
 }
 
 const navItems = [
@@ -336,7 +333,7 @@ const navItems = [
   { href: '/dashboard/payments', icon: Receipt, label: 'Payments' },
   { href: '/dashboard/rewards', icon: Gift, label: 'Rewards' },
   { href: '/dashboard/insights', icon: BrainCircuit, label: 'Insights' },
-  { href: '/dashboard/transactions', icon: History, label: 'Transactions' },
+  { href: '/dashboard/transactions', icon: History, label: 'History' },
   { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
 ]
 
@@ -450,10 +447,8 @@ export default function DashboardPage() {
       
       <div className="grid gap-4 md:grid-cols-1">
         
-        {/* Main Column */}
         <div className="space-y-4">
           
-          {/* Combined Wallet and Card */}
           <Card className="overflow-hidden">
             <div className="grid md:grid-cols-2">
                 <div className="p-6 flex flex-col justify-center">
@@ -480,23 +475,24 @@ export default function DashboardPage() {
             </div>
           </Card>
 
-          {/* Quick Actions */}
           <Card>
             <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
+                <CardTitle>Actions</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <SendMoneyDialog onSend={(amount, recipient) => handleTransaction(amount, 'send', recipient)} />
-                <RequestMoneyDialog onRequest={(amount, recipient) => handleTransaction(amount, 'request', recipient)} />
-              </div>
-               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <AddMoneyDialog onAddMoney={(amount) => handleTransaction(amount, 'add')} />
-                <Dialog open={isQrPaymentOpen} onOpenChange={setIsQrPaymentOpen}>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                 <SendMoneyDialog onSend={(amount, recipient) => handleTransaction(amount, 'send', recipient)}>
+                    <ActionButton icon={Send} label="Send" />
+                </SendMoneyDialog>
+                <RequestMoneyDialog onRequest={(amount, recipient) => handleTransaction(amount, 'request', recipient)}>
+                    <ActionButton icon={UserPlus} label="Request" />
+                </RequestMoneyDialog>
+                 <AddMoneyDialog onAddMoney={(amount) => handleTransaction(amount, 'add')}>
+                    <ActionButton icon={PlusCircle} label="Add Money" />
+                 </AddMoneyDialog>
+                 <Dialog open={isQrPaymentOpen} onOpenChange={setIsQrPaymentOpen}>
                     <DialogTrigger asChild>
-                         <Button variant="outline" className="w-full justify-start text-base h-12">
-                            <ScanLine className="mr-4 text-primary" /> Scan & Pay
-                        </Button>
+                         <ActionButton icon={ScanLine} label="Scan & Pay" />
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-md">
                         <QrPaymentForm onPayment={(amount) => {
@@ -505,26 +501,13 @@ export default function DashboardPage() {
                         }} />
                     </DialogContent>
                 </Dialog>
-              </div>
-            </CardContent>
-          </Card>
-
-
-          {/* Quick Links */}
-          <Card>
-            <CardHeader>
-                <CardTitle>Quick Links</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
                 {navItems.map((item) => (
-                   <QuickActionButton key={item.href} icon={item.icon} label={item.label} href={item.href} />
+                   <ActionButton key={item.href} icon={item.icon} label={item.label} href={item.href} />
                 ))}
               </div>
             </CardContent>
           </Card>
 
-          {/* Recent Activity */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
@@ -563,7 +546,7 @@ export default function DashboardPage() {
                         </div>
                       </TableCell>
                        <TableCell className="text-right">
-                          <p className={`font-semibold ${transaction.type === 'sent' ? '' : 'text-green-600 dark:text-green-400'}`}>
+                          <p className={`font-semibold ${transaction.type === 'sent' ? 'text-red-500 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>
                             {transaction.type === 'sent' ? '-' : '+'} ${transaction.amount.toFixed(2)}
                           </p>
                        </TableCell>

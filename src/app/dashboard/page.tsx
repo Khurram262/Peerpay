@@ -497,6 +497,12 @@ export default function DashboardPage() {
                          <ActionButton icon={ScanLine} label="Scan & Pay" />
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle>Scan & Pay</DialogTitle>
+                            <DialogDescription>
+                            Pay instantly by uploading or scanning a QR code.
+                            </DialogDescription>
+                        </DialogHeader>
                         <QrPaymentForm onPayment={(amount) => {
                             handleTransaction(amount, 'pay');
                             setIsQrPaymentOpen(false);

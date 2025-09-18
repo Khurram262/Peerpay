@@ -30,6 +30,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import VerificationPage from '../verification/page';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
+import { Progress } from '@/components/ui/progress';
 
 
 function LinkAccountDialog({
@@ -388,3 +389,5 @@ export default function SettingsPage() {
   );
 }
 
+
+    

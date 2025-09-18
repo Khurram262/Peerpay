@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/select';
 import { Search, ArrowUpDown, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export default function TransactionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -138,7 +139,10 @@ export default function TransactionsPage() {
                           ? 'default'
                           : 'secondary'
                       }
-                      className={transaction.type === 'received' ? 'bg-green-500/80' : ''}
+                      className={cn(
+                        transaction.type === 'sent' && 'bg-red-500/10 text-red-700 dark:bg-red-900/50 dark:text-red-400 border-red-500/20',
+                        transaction.type === 'received' && 'bg-green-500/10 text-green-700 dark:bg-green-900/50 dark:text-green-400 border-green-500/20',
+                      )}
                     >
                       {transaction.type}
                     </Badge>
@@ -147,11 +151,13 @@ export default function TransactionsPage() {
                     {format(parseISO(transaction.date), 'MMMM d, yyyy')}
                   </TableCell>
                   <TableCell
-                    className={`text-right font-semibold ${
+                    className={cn('text-right font-semibold',
                       transaction.type === 'sent'
-                        ? 'text-destructive-foreground dark:text-red-400'
-                        : 'text-green-600 dark:text-green-400'
-                    }`}
+                        ? 'text-red-600 dark:text-red-400'
+                        : transaction.type === 'received'
+                        ? 'text-green-600 dark:text-green-400'
+                        : 'text-muted-foreground'
+                    )}
                   >
                     {transaction.type === 'sent' ? '-' : '+'} $
                     {transaction.amount.toFixed(2)}

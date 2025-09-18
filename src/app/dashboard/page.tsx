@@ -455,13 +455,6 @@ export default function DashboardPage() {
               ${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <AddMoneyDialog onAddMoney={(amount) => handleTransaction(amount, 'add')}>
-              <Button size="sm">
-                <PlusCircle /> Top Up
-              </Button>
-            </AddMoneyDialog>
-          </CardContent>
         </Card>
 
         <Card>

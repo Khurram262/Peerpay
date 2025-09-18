@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -98,9 +99,9 @@ function AddMoneyDialog({ onAddMoney }: { onAddMoney: (amount: number) => void }
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <div className="w-full cursor-pointer">
-          <QuickActionButton icon={PlusCircle} label="Add Money" />
-        </div>
+        <Button variant="outline" className="w-full justify-start text-base h-12">
+            <PlusCircle className="mr-4 text-primary" /> Add Money
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -175,9 +176,9 @@ function SendMoneyDialog({ onSend }: { onSend: (amount: number, recipient: strin
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <div className="w-full cursor-pointer">
-            <QuickActionButton icon={ArrowUp} label="Send" />
-        </div>
+        <Button className="w-full text-base h-12">
+            <ArrowUp className="mr-4" /> Send
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -257,9 +258,9 @@ function RequestMoneyDialog({ onRequest }: { onRequest: (amount: number, recipie
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <div className="w-full cursor-pointer">
-          <QuickActionButton icon={UserPlus} label="Request" />
-        </div>
+        <Button variant="secondary" className="w-full text-base h-12">
+            <UserPlus className="mr-4" /> Request
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -480,24 +481,34 @@ export default function DashboardPage() {
           </Card>
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-             <SendMoneyDialog onSend={(amount, recipient) => handleTransaction(amount, 'send', recipient)} />
-             <RequestMoneyDialog onRequest={(amount, recipient) => handleTransaction(amount, 'request', recipient)} />
-             <AddMoneyDialog onAddMoney={(amount) => handleTransaction(amount, 'add')} />
-             <Dialog open={isQrPaymentOpen} onOpenChange={setIsQrPaymentOpen}>
-                <DialogTrigger asChild>
-                    <div className="w-full cursor-pointer">
-                        <QuickActionButton icon={ScanLine} label="Scan & Pay" />
-                    </div>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
-                     <QrPaymentForm onPayment={(amount) => {
-                        handleTransaction(amount, 'pay');
-                        setIsQrPaymentOpen(false);
-                     }} />
-                </DialogContent>
-             </Dialog>
-          </div>
+          <Card>
+            <CardHeader>
+                <CardTitle>Quick Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <SendMoneyDialog onSend={(amount, recipient) => handleTransaction(amount, 'send', recipient)} />
+                <RequestMoneyDialog onRequest={(amount, recipient) => handleTransaction(amount, 'request', recipient)} />
+              </div>
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <AddMoneyDialog onAddMoney={(amount) => handleTransaction(amount, 'add')} />
+                <Dialog open={isQrPaymentOpen} onOpenChange={setIsQrPaymentOpen}>
+                    <DialogTrigger asChild>
+                         <Button variant="outline" className="w-full justify-start text-base h-12">
+                            <ScanLine className="mr-4 text-primary" /> Scan & Pay
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                        <QrPaymentForm onPayment={(amount) => {
+                            handleTransaction(amount, 'pay');
+                            setIsQrPaymentOpen(false);
+                        }} />
+                    </DialogContent>
+                </Dialog>
+              </div>
+            </CardContent>
+          </Card>
+
 
           {/* Quick Links */}
           <Card>

@@ -447,41 +447,46 @@ export default function DashboardPage() {
         <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user.name.split(' ')[0]}!</h1>
       </div>
       
-      <div className="grid gap-4 md:grid-cols-1">
-        
-        <div className="space-y-4">
-          
-          <div className="relative isolate w-full overflow-hidden rounded-2xl border bg-background/50 p-6 backdrop-blur-xl md:grid md:grid-cols-2 md:gap-6">
-            <div className="absolute -z-10 h-full w-1/2 bg-gradient-to-br from-primary/20 to-transparent"></div>
-            <div className="flex flex-col justify-between">
-                <div>
-                    <p className="text-sm text-muted-foreground">Available Balance</p>
-                    <p className="text-4xl font-bold tracking-tight">${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
-                </div>
-                <AddMoneyDialog onAddMoney={(amount) => handleTransaction(amount, 'add')}>
-                    <Button variant="outline" className="mt-4 w-full md:w-auto">
-                        <PlusCircle /> Top Up
-                    </Button>
-                </AddMoneyDialog>
-            </div>
-             <div className="mt-6 flex items-center justify-center md:mt-0">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardDescription>Available Balance</CardDescription>
+            <CardTitle className="text-4xl">
+              ${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AddMoneyDialog onAddMoney={(amount) => handleTransaction(amount, 'add')}>
+              <Button size="sm">
+                <PlusCircle /> Top Up
+              </Button>
+            </AddMoneyDialog>
+          </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle>Primary Card</CardTitle>
+            </CardHeader>
+            <CardContent>
                  {primaryCard ? (
-                    <div onClick={() => setIsCardFlipped(f => !f)} className="cursor-pointer w-full flex justify-center">
+                    <div onClick={() => setIsCardFlipped(f => !f)} className="cursor-pointer">
                         <AnimatedVirtualCard card={primaryCard} isVisible={isCardFlipped} />
                     </div>
                     ) : (
-                    <Card className="h-48 flex items-center justify-center w-full max-w-[320px] bg-muted/50">
-                        <div className="text-center text-muted-foreground">
+                    <div className="text-center text-muted-foreground">
                         <p>No primary card found.</p>
                         <Link href="/dashboard/cards">
                             <Button variant="link" className="mt-2">Create or set a primary card</Button>
                         </Link>
-                        </div>
-                    </Card>
+                    </div>
                 )}
-             </div>
-          </div>
+            </CardContent>
+        </Card>
+      </div>
 
+      <div className="grid gap-4 md:grid-cols-1">
+        <div className="space-y-4">
           <Card>
             <CardHeader>
                 <CardTitle>Actions</CardTitle>

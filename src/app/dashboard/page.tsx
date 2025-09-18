@@ -448,9 +448,9 @@ export default function DashboardPage() {
       </div>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2 bg-gradient-to-br from-primary/90 to-primary text-primary-foreground shadow-lg">
           <CardHeader>
-            <CardDescription>Available Balance</CardDescription>
+            <CardDescription className="text-primary-foreground/80">Available Balance</CardDescription>
             <CardTitle className="text-4xl">
               ${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
             </CardTitle>

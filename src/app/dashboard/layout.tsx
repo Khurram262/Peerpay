@@ -33,7 +33,7 @@ const AppLogo = () => (
             fill="currentColor"
         >
             <title>PeerPay</title>
-            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm4.063 16.313H7.937V7.687h4.063c1.312 0 2.375.438 3.187 1.313.813.875 1.219 2 .813 3.375-.406 1.375-1.25 2.375-2.531 3 .438.25.813.563 1.125.938.313.375.469.813.469 1.313v.188c0 .563-.25 1.063-.75 1.5-.5.438-1.125.688-1.875.688zm-2-6.563h-2v4.5h2c.75 0 1.375-.25 1.875-.75.5-.5.75-1.125.75-1.875s-.25-1.375-.75-1.875c-.5-.5-1.125-.75-1.875-.75z" />
+            <path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm-1.125 4.5h5.25a3.375 3.375 0 0 1 3.375 3.375v5.25a3.375 3.375 0 0 1-3.375 3.375h-5.25a3.375 3.375 0 0 1-3.375-3.375v-5.25A3.375 3.375 0 0 1 10.875 4.5zM9.75 8.25v7.5h.75V9.75a.75.75 0 0 1 .75-.75h2.25a2.25 2.25 0 1 1 0 4.5H12v-1.5h1.5a.75.75 0 1 0 0-1.5h-3a.75.75 0 0 0-.75.75z" />
         </svg>
         <span className="hidden md:inline-block">
         PeerPay
@@ -106,18 +106,21 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
       <div className="flex min-h-screen w-full flex-col">
           <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur-sm px-4 md:px-6 z-50">
-              <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
-                <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold md:text-base">
-                  <AppLogo />
-                </Link>
+              <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold">
+                <AppLogo />
+              </Link>
+              <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6 ml-4">
                 {navItems.map(item => (
-                  <Link key={item.label} href={item.href} className={cn("transition-colors hover:text-foreground", pathname === item.href ? "text-foreground" : "text-muted-foreground")}>
+                  <Link key={item.label} href={item.href} className={cn("transition-colors hover:text-foreground relative", pathname === item.href ? "text-foreground" : "text-muted-foreground")}>
                     {item.label}
+                     {pathname === item.href && (
+                        <span className="absolute -bottom-1 left-0 w-full h-[2px] bg-primary rounded-full" />
+                    )}
                   </Link>
                 ))}
               </nav>
 
-              <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4 justify-end">
+              <div className="flex w-full items-center gap-2 md:ml-auto md:gap-4 justify-end">
                   <ThemeToggle />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

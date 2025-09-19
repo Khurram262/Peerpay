@@ -5,14 +5,22 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { UserNav } from '@/components/user-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Home, CreditCard, History, Settings, Bell, Wallet } from 'lucide-react';
+import { Home, CreditCard, History, Settings, Bell, Wallet, CheckCircle } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const AppLogo = () => (
-    <Link
-        href="/"
+    <div
         className="flex items-center gap-2 font-semibold"
     >
         <svg
@@ -28,7 +36,7 @@ const AppLogo = () => (
         <span >
         PeerPay
         </span>
-    </Link>
+    </div>
 )
 
 const navItems = [
@@ -36,6 +44,21 @@ const navItems = [
     { href: '/dashboard/cards', icon: CreditCard, label: 'Cards' },
     { href: '/dashboard/transactions', icon: History, label: 'History' },
     { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
+]
+
+const notifications = [
+    {
+        title: 'New login from another device.',
+        description: '1 hour ago',
+    },
+    {
+        title: 'Your subscription for Netflix has been paid.',
+        description: '2 hours ago',
+    },
+    {
+        title: 'You received $50 from John Doe.',
+        description: '1 day ago',
+    },
 ]
 
 function MobileNav() {
@@ -68,7 +91,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen w-full flex-col">
           <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur-sm px-4 md:px-6 z-50">
               <div className="flex items-center gap-2">
-                 <AppLogo />
+                 <Link href="/dashboard"><AppLogo /></Link>
               </div>
               <div className="hidden md:flex items-center gap-6 text-sm font-medium ml-10">
                 {navItems.map(item => (
@@ -77,10 +100,36 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               </div>
               <div className="flex w-full items-center gap-2 md:ml-auto md:gap-4 justify-end">
                   <ThemeToggle />
-                   <Link href="#" className="relative">
-                      <Bell className="h-5 w-5 text-muted-foreground" />
-                      <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 justify-center p-0 text-[10px]">3</Badge>
-                   </Link>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="relative">
+                            <Bell className="h-5 w-5 text-muted-foreground" />
+                            {notifications.length > 0 && 
+                                <Badge variant="destructive" className="absolute -top-1 -right-1 h-4 w-4 justify-center p-0 text-[10px]">{notifications.length}</Badge>
+                            }
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-80" align="end">
+                        <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        {notifications.length > 0 ? (
+                            notifications.map((notification, index) => (
+                                <DropdownMenuItem key={index} className="flex flex-col items-start gap-1">
+                                    <p className="font-medium whitespace-normal">{notification.title}</p>
+                                    <p className="text-xs text-muted-foreground">{notification.description}</p>
+                                </DropdownMenuItem>
+                            ))
+                        ) : (
+                             <div className="p-4 text-center text-sm text-muted-foreground">
+                                You have no new notifications.
+                             </div>
+                        )}
+                         <DropdownMenuSeparator />
+                         <DropdownMenuItem className="justify-center text-sm text-primary">
+                            View all notifications
+                         </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                   <UserNav />
               </div>
           </header>

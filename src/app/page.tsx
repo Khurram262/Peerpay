@@ -20,7 +20,7 @@ const AppLogo = () => (
             fill="currentColor"
         >
             <title>PeerPay</title>
-            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm4.063 16.313H7.937V7.687h4.063c1.312 0 2.375.438 3.187 1.313.813.875 1.219 2 .813 3.375-.406 1.375-1.25 2.375-2.531 3 .438.25.813.563 1.125.938.313.375.469.813.469 1.313v.188c0 .563-.25 1.063-.75 1.5-.5.438-1.125.688-1.875.688zm-2-6.563h-2v4.5h2c.75 0 1.375-.25 1.875-.75.5-.5.75-1.125.75-1.875s-.25-1.375-.75-1.875c-.5-.5-1.125-.75-1.875-.75z" />
+            <path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm0 4.5a7.5 7.5 0 0 1 7.5 7.5 7.5 7.5 0 0 1-7.5 7.5A7.5 7.5 0 0 1 4.5 12 7.5 7.5 0 0 1 12 4.5zm-3 3.75a.75.75 0 0 0-.75.75v6a.75.75 0 0 0 .75.75h4.5a3.75 3.75 0 1 0 0-7.5h-4.5zM12 9.75a2.25 2.25 0 0 1 0 4.5h-1.5v-4.5h1.5z" />
         </svg>
         <span >
         PeerPay
@@ -82,7 +82,7 @@ export default function Home() {
               <SheetContent side="right">
                 <SheetHeader className="mb-6">
                   <SheetTitle><AppLogo /></SheetTitle>
-                  <SheetDescription className="sr-only">Main navigation menu</SheetDescription>
+                  <SheetDescription>Main navigation menu</SheetDescription>
                 </SheetHeader>
                 <div className="flex flex-col gap-6">
                   <Link href="#features" className="text-lg font-medium">Features</Link>

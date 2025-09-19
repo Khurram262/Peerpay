@@ -33,7 +33,7 @@ const AppLogo = () => (
             fill="currentColor"
         >
             <title>PeerPay</title>
-            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-1.125 4.5h5.25a3.375 3.375 0 0 1 3.375 3.375v5.25a3.375 3.375 0 0 1-3.375 3.375h-5.25a3.375 3.375 0 0 1-3.375-3.375v-5.25A3.375 3.375 0 0 1 10.875 4.5zM9.75 8.25v7.5h.75V9.75a.75.75 0 0 1 .75-.75h2.25a2.25 2.25 0 1 1 0 4.5H12v-1.5h1.5a.75.75 0 1 0 0-1.5h-3a.75.75 0 0 0-.75.75z" />
+            <path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm0 4.5a7.5 7.5 0 0 1 7.5 7.5 7.5 7.5 0 0 1-7.5 7.5A7.5 7.5 0 0 1 4.5 12 7.5 7.5 0 0 1 12 4.5zm-3 3.75a.75.75 0 0 0-.75.75v6a.75.75 0 0 0 .75.75h4.5a3.75 3.75 0 1 0 0-7.5h-4.5zM12 9.75a2.25 2.25 0 0 1 0 4.5h-1.5v-4.5h1.5z" />
         </svg>
         <span className="hidden md:inline-block">
         PeerPay
@@ -134,7 +134,7 @@ export default function DashboardLayout({
                 ))}
               </nav>
 
-              <div className="flex w-full items-center gap-2 md:ml-auto md:gap-4 justify-end">
+              <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4 justify-end">
                   <ThemeToggle />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

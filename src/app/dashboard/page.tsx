@@ -9,14 +9,12 @@ import {
   ArrowRight,
   MoreHorizontal,
   CreditCard,
-  History,
   Send,
   Landmark,
   ArrowDownToLine,
   Receipt,
   Gift,
   BrainCircuit,
-  Settings,
   ArrowUpRight,
   ArrowDownLeft,
 } from 'lucide-react';
@@ -43,16 +41,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-} from '@/components/ui/table';
 import { wallet, transactions, setWallet, type Wallet, type LinkedAccount, initialLinkedAccounts } from '@/lib/data';
 import { QrPaymentForm } from '@/components/qr-payment-form';
 import { AnimatedVirtualCard } from '@/components/animated-virtual-card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { initialVirtualCards } from '@/lib/data';
@@ -442,50 +433,42 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="block md:hidden">
+    <div className="flex flex-col gap-8">
+      <div>
         <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user.name.split(' ')[0]}!</h1>
       </div>
       
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="lg:col-span-2 bg-gradient-to-br from-primary/90 to-primary text-primary-foreground shadow-lg">
-          <CardHeader>
-            <CardDescription className="text-primary-foreground/80">Available Balance</CardDescription>
-            <CardTitle className="text-4xl">
-              ${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-            </CardTitle>
-          </CardHeader>
-        </Card>
-
-        <Card>
-            <CardHeader>
-                <CardTitle>Primary Card</CardTitle>
-            </CardHeader>
-            <CardContent>
-                 {primaryCard ? (
-                    <div onClick={() => setIsCardFlipped(f => !f)} className="cursor-pointer">
+      <div className="grid gap-8 lg:grid-cols-5">
+        <Card className="lg:col-span-3 bg-gradient-to-br from-primary via-primary/90 to-fuchsia-600 text-primary-foreground shadow-2xl overflow-hidden relative">
+          <div className="p-6 space-y-8">
+            <div className='space-y-1'>
+              <CardDescription className="text-primary-foreground/80 text-lg">Available Balance</CardDescription>
+              <CardTitle className="text-5xl font-bold tracking-tight">
+                ${currentWallet.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+              </CardTitle>
+            </div>
+             <div className="relative">
+                {primaryCard ? (
+                    <div onClick={() => setIsCardFlipped(f => !f)} className="cursor-pointer w-full max-w-sm mx-auto lg:mx-0">
                         <AnimatedVirtualCard card={primaryCard} isVisible={isCardFlipped} />
                     </div>
-                    ) : (
-                    <div className="text-center text-muted-foreground">
+                ) : (
+                    <div className="text-center text-primary-foreground/90 bg-black/20 rounded-xl p-8">
                         <p>No primary card found.</p>
                         <Link href="/dashboard/cards">
-                            <Button variant="link" className="mt-2">Create or set a primary card</Button>
+                            <Button variant="link" className="mt-2 text-white/90">Create or set a primary card</Button>
                         </Link>
                     </div>
                 )}
-            </CardContent>
+             </div>
+          </div>
         </Card>
-      </div>
 
-      <div className="grid gap-4 md:grid-cols-1">
-        <div className="space-y-4">
-          <Card>
+        <Card className="lg:col-span-2">
             <CardHeader>
-                <CardTitle>Actions</CardTitle>
+                <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <CardContent className="grid grid-cols-2 md:grid-cols-2 gap-4">
                  <SendMoneyDialog onSend={(amount, recipient, note) => handleTransaction(amount, 'send', recipient, note)}>
                     <ActionButton icon={Send} label="Send" />
                 </SendMoneyDialog>
@@ -499,7 +482,7 @@ export default function DashboardPage() {
                     <DialogTrigger asChild>
                          <ActionButton icon={ScanLine} label="Scan & Pay" />
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
+                     <DialogContent className="sm:max-w-md">
                         <DialogHeader>
                             <DialogTitle>Scan & Pay</DialogTitle>
                             <DialogDescription>
@@ -515,10 +498,12 @@ export default function DashboardPage() {
                 <ActionButton icon={Receipt} label="Payments" href="/dashboard/payments" />
                 <ActionButton icon={Gift} label="Rewards" href="/dashboard/rewards" />
                 <ActionButton icon={BrainCircuit} label="Insights" href="/dashboard/insights" />
-              </div>
+                 <ActionButton icon={CreditCard} label="My Cards" href="/dashboard/cards" />
             </CardContent>
           </Card>
+      </div>
 
+      <div className="grid gap-4 md:grid-cols-1">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
@@ -580,8 +565,10 @@ export default function DashboardPage() {
               </div>
             </CardContent>
           </Card>
-        </div>
       </div>
     </div>
   );
 }
+
+
+    

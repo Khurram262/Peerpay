@@ -2,10 +2,11 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { UserNav } from '@/components/user-nav';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { Home, CreditCard, History, Settings, Bell, Wallet, CheckCircle } from 'lucide-react';
+import { Home, CreditCard, History, Settings, Bell, Wallet, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -46,16 +47,19 @@ const navItems = [
     { href: '/dashboard/settings', icon: Settings, label: 'Settings' },
 ]
 
-const notifications = [
+const initialNotifications = [
     {
+        id: 1,
         title: 'New login from another device.',
         description: '1 hour ago',
     },
     {
+        id: 2,
         title: 'Your subscription for Netflix has been paid.',
         description: '2 hours ago',
     },
     {
+        id: 3,
         title: 'You received $50 from John Doe.',
         description: '1 day ago',
     },
@@ -87,11 +91,21 @@ function MobileNav() {
 }
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
+  const [notifications, setNotifications] = useState(initialNotifications);
+
+  const handleClearNotification = (id: number) => {
+    setNotifications(notifications.filter(n => n.id !== id));
+  };
+  
+  const handleClearAll = () => {
+    setNotifications([]);
+  };
+  
   return (
       <div className="flex min-h-screen w-full flex-col">
           <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur-sm px-4 md:px-6 z-50">
               <div className="flex items-center gap-2">
-                 <Link href="/dashboard"><AppLogo /></Link>
+                 <AppLogo />
               </div>
               <div className="hidden md:flex items-center gap-6 text-sm font-medium ml-10">
                 {navItems.map(item => (
@@ -113,21 +127,36 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                         <DropdownMenuLabel>Notifications</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         {notifications.length > 0 ? (
-                            notifications.map((notification, index) => (
-                                <DropdownMenuItem key={index} className="flex flex-col items-start gap-1">
-                                    <p className="font-medium whitespace-normal">{notification.title}</p>
-                                    <p className="text-xs text-muted-foreground">{notification.description}</p>
+                            <>
+                                {notifications.map((notification) => (
+                                    <DropdownMenuItem key={notification.id} className="flex items-start gap-1 group">
+                                        <div className="flex-1">
+                                            <p className="font-medium whitespace-normal">{notification.title}</p>
+                                            <p className="text-xs text-muted-foreground">{notification.description}</p>
+                                        </div>
+                                         <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleClearNotification(notification.id);
+                                            }}
+                                         >
+                                            <X className="h-4 w-4" />
+                                         </Button>
+                                    </DropdownMenuItem>
+                                ))}
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={handleClearAll} className="justify-center text-sm text-primary cursor-pointer">
+                                   Clear all notifications
                                 </DropdownMenuItem>
-                            ))
+                            </>
                         ) : (
                              <div className="p-4 text-center text-sm text-muted-foreground">
                                 You have no new notifications.
                              </div>
                         )}
-                         <DropdownMenuSeparator />
-                         <DropdownMenuItem className="justify-center text-sm text-primary">
-                            View all notifications
-                         </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <UserNav />

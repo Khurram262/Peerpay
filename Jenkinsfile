@@ -1,63 +1,33 @@
 pipeline {
-  agent any
+    agent any
 
-  tools {
-    nodejs 'node18'  // Configure NodeJS tool in Jenkins with this name
-  }
-
-  stages {
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
+    tools {
+        nodejs "node18"   // must match what you named in Global Tool Config
     }
 
-    stage('Install Dependencies') {
-      steps {
-        sh 'npm ci'   // clean install using package-lock.json
-      }
-    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/Khurram262/Peerpay.git'
+            }
+        }
 
-    stage('Lint') {
-      steps {
-        sh 'npm run lint'   // Next.js + TS projects usually have lint script
-      }
-    }
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm ci'
+            }
+        }
 
-    stage('Type Check') {
-      steps {
-        sh 'npx tsc --noEmit'   // ensures TypeScript compiles
-      }
-    }
+        stage('Build') {
+            steps {
+                sh 'npm run build'
+            }
+        }
 
-    stage('Build') {
-      steps {
-        sh 'npm run build'   // Next.js build step
-      }
+        stage('Test') {
+            steps {
+                sh 'npm test'
+            }
+        }
     }
-
-    stage('Test') {
-      steps {
-        sh 'npm test'   // if you have a test script (Jest/Playwright etc.)
-      }
-    }
-
-    stage('Archive Build') {
-      steps {
-        archiveArtifacts artifacts: '.next/**', fingerprint: true
-      }
-    }
-  }
-
-  post {
-    success {
-      echo '✅ PeerPay built successfully with Next.js + TypeScript + Tailwind'
-    }
-    failure {
-      echo '❌ Build failed, check logs'
-    }
-    always {
-      cleanWs()
-    }
-  }
 }

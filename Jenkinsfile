@@ -25,10 +25,11 @@ pipeline {
         }
 
        
-       stage('Test') {
+     stage('Test') {
     steps {
-        bat 'npx cypress run'
+        bat 'npx cypress run --config-file path/to/cypress.config.js'
     }
 }
+
     }
 }

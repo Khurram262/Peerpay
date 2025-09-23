@@ -24,9 +24,11 @@ pipeline {
             }
         }
 
+       
         stage('Test') {
             steps {
-                bat 'npm test'
+                // Run Cypress tests in headless mode after build
+                bat 'npm run test'
             }
         }
     }

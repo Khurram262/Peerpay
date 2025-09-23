@@ -12,22 +12,18 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                sh 'npm ci'
-            }
-        }
-
-        stage('Build') {
-            steps {
-                sh 'npm run build'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                sh 'npm test'
-            }
-        }
+       stage('Install Dependencies') {
+    steps {
+        bat 'npm ci'
+    }
+}
+stage('Build') {
+    steps {
+        bat 'npm run build'
+    }
+}
+stage('Test') {
+    steps {
+        bat 'npm test'
     }
 }

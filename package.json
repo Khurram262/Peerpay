@@ -12,7 +12,7 @@
   "typecheck": "tsc --noEmit",
   "cypress:open": "cypress open",
   "cypress:run": "cypress run",
-  "test": "npm run cypress:run"
+  "test": "npx cypress run"
 },
   "dependencies": {
     "@genkit-ai/googleai": "^1.14.1",

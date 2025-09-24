@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs "node18"   // must match what you named in Global Tool Config
+        nodejs "node18"   // must match Node.js version in Jenkins Global Tool Config
     }
 
     stages {
@@ -24,24 +24,11 @@ pipeline {
             }
         }
 
-       
-   stage('Cypress Tests in Parallel') {
-    parallel {
-        stage('Login Tests') {
+        stage('Test') {
             steps {
-                sh 'npx cypress run --spec "cypress/e2e/login.cy.js"'
-            }
-        }
-        stage('Signup Tests') {
-            steps {
-                sh 'npx cypress run --spec "cypress/e2e/signup.cy.js"'
-            }
-        }
-        stage('Dashboard Tests') {
-            steps {
-                sh 'npx cypress run --spec "cypress/e2e/dashboard.cy.js"'
+                // If you don’t want tests, you can comment this out
+                bat 'npm test'
             }
         }
     }
 }
-

@@ -25,11 +25,23 @@ pipeline {
         }
 
        
-     stage('Test') {
-    steps {
-        bat 'npx cypress run --config-file path/to/cypress.config.js'
+   stage('Cypress Tests in Parallel') {
+    parallel {
+        stage('Login Tests') {
+            steps {
+                sh 'npx cypress run --spec "cypress/e2e/login.cy.js"'
+            }
+        }
+        stage('Signup Tests') {
+            steps {
+                sh 'npx cypress run --spec "cypress/e2e/signup.cy.js"'
+            }
+        }
+        stage('Dashboard Tests') {
+            steps {
+                sh 'npx cypress run --spec "cypress/e2e/dashboard.cy.js"'
+            }
+        }
     }
 }
 
-    }
-}
